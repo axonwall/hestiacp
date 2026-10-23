@@ -9,7 +9,7 @@ export default async function UserDetailPage({
 	params: Promise<{ user: string }>;
 	searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
-	await requireSession();
+	const session = await requireSession();
 	const { user } = await params;
 	const query = await searchParams;
 	const username = decodeURIComponent(user);
@@ -36,7 +36,9 @@ export default async function UserDetailPage({
 		<div>
 			<h1>{username}</h1>
 			{query.saved ? <p className="card">Saved.</p> : null}
-			{query.error ? (
+			{query.error === "csrf" ? (
+				<p className="error">Invalid form token. Please reload and try again.</p>
+			) : query.error ? (
 				<p className="error">First name must not be empty.</p>
 			) : null}
 			<div className="card">
@@ -65,6 +67,11 @@ export default async function UserDetailPage({
 				<h2>Edit name</h2>
 				<form action={editNameAction}>
 					<input type="hidden" name="user" value={username} />
+					<input
+						type="hidden"
+						name="token"
+						value={String(session.data.token ?? "")}
+					/>
 					<label htmlFor="firstName">First name</label>
 					<input id="firstName" name="firstName" defaultValue={firstName} required />
 					<label htmlFor="lastName">Last name</label>

@@ -14,16 +14,33 @@ export default async function RootLayout({
 	children: ReactNode;
 }) {
 	const session = await getSession();
+	// Feature gates come from sys config in the session, exactly as the PHP
+	// top bar reads them. (PHP also hides /fm/ while impersonating the
+	// protected admin — impersonation itself is Phase 1 follow-up work.)
+	const showFileManager = session?.data.FILE_MANAGER === "true";
+	const showTerminal =
+		session?.data.WEB_TERMINAL === "true" &&
+		session?.data.login_shell !== "nologin";
 	return (
 		<html lang="en">
 			<body>
 				<header className="topbar">
 					<span className="brand">HestiaCP</span>
-					<span className="codename">Next.js panel · HestiaNG spike</span>
+					<span className="codename">Next.js panel · HestiaNG</span>
+					{showFileManager ? (
+						<a className="top-link" href="/fm/">
+							File manager
+						</a>
+					) : null}
+					{showTerminal ? (
+						<a className="top-link" href="/list/terminal/">
+							Web terminal
+						</a>
+					) : null}
 					<span className="spacer" />
 					{session ? (
 						<>
-							<span className="who">{session.user}</span>
+							<span className="who">{String(session.data.user ?? "")}</span>
 							<form action="/logout" method="post">
 								<button type="submit" className="link-button">
 									Log out

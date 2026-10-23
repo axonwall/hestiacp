@@ -1,41 +1,102 @@
-import { HestiaClient, loadConfig, SessionStore, type PanelSession } from "@hestiacp/lib";
+import {
+	HestiaClient,
+	loadConfig,
+	PhpSessionStore,
+	type PhpSessionData,
+} from "@hestiacp/lib";
+import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 /**
  * App-local wiring of @hestiacp/lib singletons. Everything in the panel
  * reaches Hestia through this module — no other file constructs a client.
+ *
+ * Phase 1 shell: sessions are PHP-format session files (PhpSessionStore)
+ * under the production HESTIASID cookie name, so FileGator (/fm/) and the
+ * web terminal's auth shim — both of which read PHP sessions — keep
+ * working untouched. See apps/panel/docs/phase0-audit.md.
  */
 const config = loadConfig();
 
 export const hestia = new HestiaClient(config);
-export const sessions = new SessionStore(config);
+export const sessions = new PhpSessionStore(config);
 
-export const SESSION_COOKIE = "HESTIANGSID";
+export const SESSION_COOKIE = "HESTIASID";
 
-export async function getSession(): Promise<PanelSession | null> {
-	const jar = await cookies();
-	const id = await sessions.idFromCookie(jar.get(SESSION_COOKIE)?.value);
-	if (!id) return null;
-	return sessions.get(id);
+export interface ShellSession {
+	id: string;
+	data: PhpSessionData;
 }
 
-/** For pages/actions that require a login: bounce to /login when absent. */
-export async function requireSession(): Promise<PanelSession> {
-	const session = await getSession();
-	if (!session) {
-		redirect("/login");
+export async function getSession(): Promise<ShellSession | null> {
+	const jar = await cookies();
+	const id = jar.get(SESSION_COOKIE)?.value;
+	if (!id) return null;
+	try {
+		const data = await sessions.get(id);
+		return data ? { id, data } : null;
+	} catch {
+		return null;
 	}
-	return session;
 }
 
 /**
- * Spike simplification, flagged for Phase 1: the root user is taken from
- * HESTIANG_ROOT_USER (default "admin"). The real panel derives the admin
- * context from v-list-sys-config's ROOT_USER and the account record.
+ * For pages/actions that require a login. Mirrors web/inc/main.php's
+ * per-request discipline:
+ *  - no user / no sys config in session → bounce to /login
+ *  - the account record is re-read every request: a deleted user, an
+ *    admin whose ROLE was revoked, or a suspended user (unless the
+ *    view-suspended policy allows it) destroys the session
+ *  - sys config is refreshed into the session (load_hestia_config),
+ *    and login_shell / role are updated from the account record
  */
-export function userContextFor(user: string): PanelSession["userContext"] {
-	return user === (process.env.HESTIANG_ROOT_USER ?? "admin")
-		? "admin"
-		: "user";
+export async function requireSession(): Promise<ShellSession> {
+	const session = await getSession();
+	if (!session?.data.user || !session.data.VERSION) {
+		redirect("/login");
+	}
+
+	let userRecord;
+	try {
+		userRecord = await hestia.listUser(String(session.data.user));
+	} catch {
+		await sessions.destroy(session.id);
+		redirect("/login");
+	}
+	if (session.data.userContext === "admin" && userRecord.ROLE !== "admin") {
+		await sessions.destroy(session.id);
+		redirect("/login");
+	}
+	if (
+		userRecord.SUSPENDED === "yes" &&
+		session.data.POLICY_USER_VIEW_SUSPENDED !== "yes"
+	) {
+		await sessions.destroy(session.id);
+		redirect("/login");
+	}
+
+	const sys = await hestia.listSysConfig().catch(() => null);
+	if (sys?.config) {
+		Object.assign(session.data, sys.config);
+	}
+	session.data.login_shell = userRecord.SHELL ?? "";
+	session.data.role = userRecord.ROLE ?? "";
+	await sessions.set(session.id, session.data);
+	return session;
+}
+
+/** CSRF token generation, as main.php does: bin2hex(random_bytes(16)). */
+export function newCsrfToken(): string {
+	return randomBytes(16).toString("hex");
+}
+
+/** Verify a mutating form's token against the session token (prevent_csrf.php). */
+export function csrfValid(session: ShellSession, formData: FormData): boolean {
+	const token = formData.get("token");
+	return (
+		typeof token === "string" &&
+		token.length > 0 &&
+		token === session.data.token
+	);
 }

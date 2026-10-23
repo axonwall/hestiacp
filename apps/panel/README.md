@@ -35,12 +35,32 @@ pnpm --filter @hestiacp/panel typecheck
 pnpm --filter @hestiacp/panel build     # production build is the gate (D7)
 ```
 
-## Spike limitations (deliberate, Phase 1 work)
+## Phase 1 shell (2026-10-23)
 
-- No 2FA, no login-as impersonation, no CSRF token beyond Next's server
-  action origin checks.
-- The login IP is recorded in the session but binding is not enforced yet.
-- Admin context is `user === HESTIANG_ROOT_USER` (default `admin`); the real
-  derivation comes from `v-list-sys-config` + the account record.
-- Visuals are placeholder-minimal: D6 is parity-first, and the theme port is
-  Phase 2 work, not spike work.
+On top of the spike slice, the production shell pieces are in:
+
+- **PHP-format sessions.** The session store is the lib's PhpSessionStore:
+  `sess_<id>` files in PHP's own serialization under the production
+  `HESTIASID` cookie, so FileGator (/fm/) and the web terminal's auth
+  shim keep working untouched. The session record is built like
+  main.php's: every sys-config key merged in at login and refreshed per
+  request, userContext from the account record's ROLE, a CSRF token,
+  language, combined IP, LAST_ACTIVITY. Per-request main.php discipline
+  is mirrored in `requireSession` (deleted user / revoked admin role /
+  suspended account destroy the session).
+- **CSRF tokens** on mutating forms (session token, hidden field,
+  verified in the action — see the user edit form).
+- **Legacy API shim** at `POST /api` (D4), a thin adapter over the lib's
+  dispatcher: legacy + access-key auth, IP allowlist, exit-code mapping,
+  `Hestia-Exit-Code` header, `v-make-tmp-file` special case.
+- **Satellite links** in the top bar, gated by the sys-config flags
+  exactly as PHP gates them (FILE_MANAGER → /fm/, WEB_TERMINAL →
+  /list/terminal/; the terminal page itself is a Phase 4 placeholder).
+
+## Remaining limitations (deliberate, later phases)
+
+- No 2FA, no login-as impersonation yet (Phase 1 follow-ups).
+- IP binding recorded (`user_combined_ip`) but not yet enforced like
+  main.php's check.
+- Visuals are placeholder-minimal: D6 is parity-first, and the theme port
+  is Phase 2 work.

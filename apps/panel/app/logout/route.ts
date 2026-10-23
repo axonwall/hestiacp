@@ -5,7 +5,7 @@ import { SESSION_COOKIE, sessions } from "@/lib/panel";
 /** POST /logout — destroys the server-side session and clears the cookie. */
 export async function POST() {
 	const jar = await cookies();
-	const id = await sessions.idFromCookie(jar.get(SESSION_COOKIE)?.value);
+	const id = jar.get(SESSION_COOKIE)?.value;
 	if (id) {
 		await sessions.destroy(id);
 	}

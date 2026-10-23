@@ -8,14 +8,15 @@ import { type NextRequest, NextResponse } from "next/server";
  */
 export function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
+	// /api does its own authentication (legacy API semantics) — no session gate.
 	const isPublic =
 		pathname === "/login" ||
-		pathname.startsWith("/api/health") ||
+		pathname.startsWith("/api") ||
 		pathname.startsWith("/_next");
 	if (isPublic) {
 		return NextResponse.next();
 	}
-	if (!request.cookies.has("HESTIANGSID")) {
+	if (!request.cookies.has("HESTIASID")) {
 		const login = request.nextUrl.clone();
 		login.pathname = "/login";
 		login.search = "";

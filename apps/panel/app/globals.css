@@ -28,6 +28,11 @@ body {
 	font-size: 0.85rem;
 }
 
+.top-link {
+	color: #c7cede;
+	font-size: 0.9rem;
+}
+
 .spacer {
 	flex: 1;
 }
