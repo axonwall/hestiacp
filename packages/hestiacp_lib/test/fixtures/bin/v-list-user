@@ -1,0 +1,42 @@
+#!/bin/bash
+# Fixture: v-list-user USER json — one record keyed by username.
+case "$1" in
+admin)
+	cat <<'JSON'
+{
+    "admin": {
+        "NAME": "Administrator",
+        "PACKAGE": "default",
+        "WEB_DOMAINS": "1",
+        "DNS_DOMAINS": "1",
+        "MAIL_DOMAINS": "0",
+        "DATABASES": "0",
+        "CRON_JOBS": "2",
+        "DISK_QUOTA": "unlimited",
+        "SUSPENDED": "no"
+    }
+}
+JSON
+	;;
+demo)
+	cat <<'JSON'
+{
+    "demo": {
+        "NAME": "Demo User",
+        "PACKAGE": "default",
+        "WEB_DOMAINS": "0",
+        "DNS_DOMAINS": "0",
+        "MAIL_DOMAINS": "0",
+        "DATABASES": "1",
+        "CRON_JOBS": "0",
+        "DISK_QUOTA": "1024",
+        "SUSPENDED": "no"
+    }
+}
+JSON
+	;;
+*)
+	echo "Error: user not found" >&2
+	exit 9
+	;;
+esac

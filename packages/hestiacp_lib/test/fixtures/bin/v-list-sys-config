@@ -1,0 +1,12 @@
+#!/bin/bash
+# Fixture: v-list-sys-config json
+cat <<'JSON'
+{
+    "config": {
+        "VERSION": "1.10.5",
+        "RELEASE_BRANCH": "release",
+        "WEB_SYSTEM": "nginx",
+        "API": "yes"
+    }
+}
+JSON
