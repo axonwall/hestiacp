@@ -14,6 +14,7 @@ export default async function RootLayout({
 	children: ReactNode;
 }) {
 	const session = await getSession();
+	const isAdmin = session?.data.userContext === "admin";
 	// Feature gates come from sys config in the session, exactly as the PHP
 	// top bar reads them. (PHP also hides /fm/ while impersonating the
 	// protected admin — impersonation itself is Phase 1 follow-up work.)
@@ -27,6 +28,16 @@ export default async function RootLayout({
 				<header className="topbar">
 					<span className="brand">HestiaCP</span>
 					<span className="codename">Next.js panel · HestiaNG</span>
+					{session ? (
+						<a className="top-link" href="/users">
+							Users
+						</a>
+					) : null}
+					{isAdmin ? (
+						<a className="top-link" href="/packages">
+							Packages
+						</a>
+					) : null}
 					{showFileManager ? (
 						<a className="top-link" href="/fm/">
 							File manager

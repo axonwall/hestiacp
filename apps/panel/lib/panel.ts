@@ -86,6 +86,21 @@ export async function requireSession(): Promise<ShellSession> {
 	return session;
 }
 
+/** requireSession + the caller must be an admin (user-admin pages). */
+export async function requireAdmin(): Promise<ShellSession> {
+	const session = await requireSession();
+	if (session.data.userContext !== "admin") {
+		redirect("/users");
+	}
+	return session;
+}
+
+/** First line of an error's message, truncated — for ?error= redirects. */
+export function errorMessage(error: unknown): string {
+	const raw = error instanceof Error ? error.message : String(error);
+	return raw.split("\n")[0].slice(0, 200);
+}
+
 /** CSRF token generation, as main.php does: bin2hex(random_bytes(16)). */
 export function newCsrfToken(): string {
 	return randomBytes(16).toString("hex");

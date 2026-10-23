@@ -57,10 +57,24 @@ On top of the spike slice, the production shell pieces are in:
   exactly as PHP gates them (FILE_MANAGER → /fm/, WEB_TERMINAL →
   /list/terminal/; the terminal page itself is a Phase 4 placeholder).
 
+## Phase 1 user administration (2026-10-23)
+
+- **Users**: add (`/add/user`), full edit (`/users/[user]` — name, contact,
+  password, package, shell, role, language, theme, nameservers,
+  login-disabled; **one command per changed field only**, mirroring the
+  PHP page's discipline), suspend/unsuspend from the list, and delete
+  behind a confirm page that refuses the caller's own account and the
+  ROOT_USER. Admin-only surfaces are gated by `requireAdmin`; non-admins
+  can edit only themselves.
+- **Packages**: list, add (prefilled from `default`), edit (force-save via
+  the staged definition file), delete behind a confirm page.
+
 ## Remaining limitations (deliberate, later phases)
 
 - No 2FA, no login-as impersonation yet (Phase 1 follow-ups).
 - IP binding recorded (`user_combined_ip`) but not yet enforced like
   main.php's check.
+- Package template fields are text inputs, not the PHP form's
+  template-select dropdowns.
 - Visuals are placeholder-minimal: D6 is parity-first, and the theme port
   is Phase 2 work.
