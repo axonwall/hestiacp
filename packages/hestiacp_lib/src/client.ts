@@ -9,6 +9,9 @@ import { runHestiaCommand, type CommandResult } from "./exec";
 export interface HestiaUser {
 	NAME: string;
 	PACKAGE: string;
+	ROLE: string;
+	SHELL: string;
+	LANGUAGE: string;
 	WEB_DOMAINS: string;
 	DNS_DOMAINS: string;
 	MAIL_DOMAINS: string;
@@ -77,11 +80,34 @@ export class HestiaClient {
 	}
 
 	/**
+	 * Stage contents in a 0600 temp file under /tmp, run fn with its path,
+	 * and always remove the file afterwards. This is the panel's one staging
+	 * pattern (see the Phase 0 audit): several v-* commands take a file path
+	 * argument for secrets and definitions; func/main.sh only treats ^/tmp/
+	 * paths as file references, so staging anywhere else is refused.
+	 */
+	async withStagedFile<T>(
+		contents: string,
+		fn: (path: string) => Promise<T>,
+	): Promise<T> {
+		if (!tmpdir().startsWith("/tmp")) {
+			throw new Error("withStagedFile requires os.tmpdir() under /tmp");
+		}
+		const dir = await mkdtemp(join(tmpdir(), "hestiang-stage-"));
+		const path = join(dir, "staged");
+		try {
+			await writeFile(path, contents, { mode: 0o600 });
+			return await fn(path);
+		} finally {
+			await rm(dir, { recursive: true, force: true });
+		}
+	}
+
+	/**
 	 * Verify a user's password the way the PHP panel does for yescrypt:
-	 * the secret is written to a 0600 temp file under /tmp and the *path* is
-	 * passed to v-check-user-password (func/main.sh's is_password_valid swaps
-	 * in the file contents). The password therefore never appears in argv,
-	 * and the file is removed immediately afterwards.
+	 * the secret is staged to a file and the *path* is passed to
+	 * v-check-user-password (is_password_valid swaps in the file contents).
+	 * The password therefore never appears in argv.
 	 */
 	async verifyUserPassword(
 		user: string,
@@ -89,25 +115,27 @@ export class HestiaClient {
 		ip = "127.0.0.1",
 	): Promise<boolean> {
 		assertUsername(user);
-		if (!tmpdir().startsWith("/tmp")) {
-			// v-check-user-password only treats ^/tmp/ paths as secret files.
-			// Refuse to fall back to passing the secret on the command line.
-			throw new Error("verifyUserPassword requires os.tmpdir() under /tmp");
-		}
-		const dir = await mkdtemp(join(tmpdir(), "hestiang-auth-"));
-		const secretPath = join(dir, "secret");
-		try {
-			await writeFile(secretPath, `${secret}\n`, { mode: 0o600 });
-			const result = await this.raw(
-				"v-check-user-password",
-				user,
-				secretPath,
-				ip,
-			);
-			return result.code === 0;
-		} finally {
-			await rm(dir, { recursive: true, force: true });
-		}
+		const result = await this.withStagedFile(`${secret}\n`, (path) =>
+			this.raw("v-check-user-password", user, path, ip),
+		);
+		return result.code === 0;
+	}
+
+	/**
+	 * Verify a precomputed password hash via v-check-user-hash, with the
+	 * hash staged to a file (is_hash_valid). This is the legacy API's
+	 * `hash` authentication mode.
+	 */
+	async checkUserHash(
+		user: string,
+		hash: string,
+		ip = "127.0.0.1",
+	): Promise<boolean> {
+		assertUsername(user);
+		const result = await this.withStagedFile(`${hash}\n`, (path) =>
+			this.raw("v-check-user-hash", user, path, ip),
+		);
+		return result.code === 0;
 	}
 
 	/** The spike's one edit: change a user's full name (v-change-user-name USER FIRST [LAST]). */

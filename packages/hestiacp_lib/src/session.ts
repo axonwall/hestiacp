@@ -17,6 +17,10 @@ interface StoredSession extends PanelSession {
 }
 
 /**
+ * SUPERSEDED in Phase 1 by PhpSessionStore (php-session.ts), whose
+ * PHP-format session files keep FileGator and the web terminal working.
+ * Retained for its tests and as a reference; do not use for the panel.
+ *
  * Server-side session store, per decision D3: sessions live on the panel
  * host (one JSON file per session, 0600) so they can be revoked instantly —
  * no JWTs. The cookie carries only the session id plus an HMAC signature;

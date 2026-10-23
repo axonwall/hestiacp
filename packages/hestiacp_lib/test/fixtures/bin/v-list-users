@@ -4,6 +4,9 @@ cat <<'JSON'
 {
     "admin": {
         "NAME": "Administrator",
+        "ROLE": "admin",
+        "SHELL": "/bin/bash",
+        "LANGUAGE": "en",
         "PACKAGE": "default",
         "WEB_DOMAINS": "1",
         "DNS_DOMAINS": "1",
@@ -15,6 +18,9 @@ cat <<'JSON'
     },
     "demo": {
         "NAME": "Demo User",
+        "ROLE": "user",
+        "SHELL": "/bin/bash",
+        "LANGUAGE": "en",
         "PACKAGE": "default",
         "WEB_DOMAINS": "0",
         "DNS_DOMAINS": "0",

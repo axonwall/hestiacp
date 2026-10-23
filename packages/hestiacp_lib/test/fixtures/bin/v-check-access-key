@@ -1,0 +1,16 @@
+#!/bin/bash
+# Fixture: v-check-access-key ID SECRET CMD IP json
+#  AKROOT/root-secret -> root key (USER admin)
+#  AKDEMO/demo-secret -> user key (USER demo, user is arg1)
+key_id="$1"
+secret_key="$2"
+if [ "$key_id" = "AKROOT" ] && [ "$secret_key" = "root-secret" ]; then
+	echo '{"USER": "admin", "USER_ARG_POSITION": "0"}'
+	exit 0
+fi
+if [ "$key_id" = "AKDEMO" ] && [ "$secret_key" = "demo-secret" ]; then
+	echo '{"USER": "demo", "USER_ARG_POSITION": "1"}'
+	exit 0
+fi
+echo "Error: authentication failed" >&2
+exit 9
