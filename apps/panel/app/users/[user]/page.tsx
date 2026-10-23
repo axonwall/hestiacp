@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { hestia, requireSession } from "@/lib/panel";
-import { editUserAction } from "./actions";
+import { disable2faAction, editUserAction, enable2faAction } from "./actions";
 
 export default async function UserDetailPage({
 	params,
@@ -13,7 +14,12 @@ export default async function UserDetailPage({
 	const { user } = await params;
 	const query = await searchParams;
 	const username = decodeURIComponent(user);
-	const isAdmin = session.data.userContext === "admin";
+	// While impersonating, only the looked account's page is in scope.
+	if (session.data.look && session.data.look !== username) {
+		redirect(`/users/${encodeURIComponent(String(session.data.look))}`);
+	}
+	const isAdmin =
+		session.data.userContext === "admin" && !session.data.look;
 	const token = String(session.data.token ?? "");
 
 	let record;
@@ -151,6 +157,37 @@ export default async function UserDetailPage({
 						Save
 					</button>
 				</form>
+			</div>
+			<div className="card" style={{ marginTop: "1rem" }}>
+				<h2>Two-factor authentication</h2>
+				{record.TWOFA ? (
+					<>
+						<p>
+							2FA is <strong>enabled</strong> for this account. Secret:
+						</p>
+						<input readOnly value={record.TWOFA} style={{ width: "100%" }} />
+						{record.QRCODE ? (
+							<p>
+								{/* QRCODE is a data-URI PNG produced by Hestia's own 2fa helper */}
+								<img src={record.QRCODE} alt="2FA QR code" width={200} height={200} />
+							</p>
+						) : null}
+						<form action={disable2faAction}>
+							<input type="hidden" name="user" value={username} />
+							<input type="hidden" name="token" value={token} />
+							<button type="submit">Disable 2FA</button>
+						</form>
+					</>
+				) : (
+					<>
+						<p>2FA is not enabled for this account.</p>
+						<form action={enable2faAction}>
+							<input type="hidden" name="user" value={username} />
+							<input type="hidden" name="token" value={token} />
+							<button type="submit">Enable 2FA</button>
+						</form>
+					</>
+				)}
 			</div>
 			<p>
 				<Link href="/users">Back to users</Link>

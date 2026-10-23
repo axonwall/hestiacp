@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { hestia, requireSession } from "@/lib/panel";
+import { loginAsAction } from "@/app/session/actions";
 import { toggleSuspendAction } from "./actions";
 
 export default async function UsersPage({
@@ -8,6 +10,11 @@ export default async function UsersPage({
 	searchParams: Promise<{ error?: string }>;
 }) {
 	const session = await requireSession();
+	// While impersonating, the panel's home is the looked user's account —
+	// the list belongs to the admin's un-impersonated view (as in PHP).
+	if (session.data.look) {
+		redirect(`/users/${encodeURIComponent(String(session.data.look))}`);
+	}
 	const query = await searchParams;
 	const isAdmin = session.data.userContext === "admin";
 	const token = String(session.data.token ?? "");
@@ -88,6 +95,18 @@ export default async function UsersPage({
 												{suspended ? "Unsuspend" : "Suspend"}
 											</button>
 										</form>{" "}
+										{name !== session.data.user ? (
+											<form
+												action={loginAsAction}
+												style={{ display: "inline" }}
+											>
+												<input type="hidden" name="user" value={name} />
+												<input type="hidden" name="token" value={token} />
+												<button type="submit" className="link-button">
+													Login as
+												</button>
+											</form>
+										) : null}{" "}
 										<Link
 											href={`/users/${encodeURIComponent(name)}/delete`}
 										>

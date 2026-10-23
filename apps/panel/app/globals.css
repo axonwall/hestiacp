@@ -33,6 +33,21 @@ body {
 	font-size: 0.9rem;
 }
 
+.impersonation-banner {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	background: #7c2d12;
+	color: #ffedd5;
+	padding: 0.4rem 1rem;
+	font-size: 0.9rem;
+}
+
+.impersonation-banner .link-button {
+	color: #ffedd5;
+	text-decoration: underline;
+}
+
 .spacer {
 	flex: 1;
 }

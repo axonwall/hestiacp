@@ -25,8 +25,12 @@ export async function editUserAction(formData: FormData): Promise<void> {
 	if (!csrfValid(session, formData) || !user) {
 		redirect(`${back}?error=csrf`);
 	}
-	const isAdmin = session.data.userContext === "admin";
-	if (!isAdmin && session.data.user !== user) {
+	// While impersonating, the admin acts AS the looked user: admin-only
+	// fields are gated off, and only the looked account is editable.
+	const look = String(session.data.look ?? "");
+	const isAdmin = session.data.userContext === "admin" && !look;
+	const selfTarget = session.data.user === user || look === user;
+	if (!isAdmin && !selfTarget) {
 		redirect("/users");
 	}
 
@@ -97,6 +101,53 @@ export async function editUserAction(formData: FormData): Promise<void> {
 		for (const step of steps) {
 			await step();
 		}
+	} catch (error) {
+		redirect(`${back}?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect(`${back}?saved=1`);
+}
+
+/** Who may manage an account's 2FA: an un-impersonating admin, or the
+ *  account owner (directly, or as the impersonation target). */
+function canManage2fa(
+	session: { data: { userContext?: unknown; user?: unknown; look?: unknown } },
+	user: string,
+): boolean {
+	const look = String(session.data.look ?? "");
+	return (
+		(session.data.userContext === "admin" && !look) ||
+		session.data.user === user ||
+		look === user
+	);
+}
+
+/** Enable 2FA (v-add-user-2fa generates + stores the secret server-side;
+ *  it appears in the account record — and in the section below — after). */
+export async function enable2faAction(formData: FormData): Promise<void> {
+	const session = await requireSession();
+	const user = String(formData.get("user") ?? "");
+	const back = `/users/${encodeURIComponent(user)}`;
+	if (!csrfValid(session, formData) || !user || !canManage2fa(session, user)) {
+		redirect(`${back}?error=csrf`);
+	}
+	try {
+		await hestia.addUser2fa(user);
+	} catch (error) {
+		redirect(`${back}?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect(`${back}?saved=1`);
+}
+
+/** Disable 2FA (v-delete-user-2fa). */
+export async function disable2faAction(formData: FormData): Promise<void> {
+	const session = await requireSession();
+	const user = String(formData.get("user") ?? "");
+	const back = `/users/${encodeURIComponent(user)}`;
+	if (!csrfValid(session, formData) || !user || !canManage2fa(session, user)) {
+		redirect(`${back}?error=csrf`);
+	}
+	try {
+		await hestia.deleteUser2fa(user);
 	} catch (error) {
 		redirect(`${back}?error=${encodeURIComponent(errorMessage(error))}`);
 	}

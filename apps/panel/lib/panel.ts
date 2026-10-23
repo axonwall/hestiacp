@@ -2,10 +2,11 @@ import {
 	HestiaClient,
 	loadConfig,
 	PhpSessionStore,
+	type HestiaUser,
 	type PhpSessionData,
 } from "@hestiacp/lib";
 import { randomBytes } from "node:crypto";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 /**
@@ -39,6 +40,44 @@ export async function getSession(): Promise<ShellSession | null> {
 	} catch {
 		return null;
 	}
+}
+
+/**
+ * The client IP for session binding. PHP's get_real_user_ip() reads
+ * REMOTE_ADDR, which Hestia's nginx sets to the real client when it
+ * proxies to the panel; the Next standalone server sees nginx as its
+ * peer, so the equivalent carrier is the first X-Forwarded-For entry
+ * nginx set. Falls back to 127.0.0.1 for direct/local access.
+ */
+export function clientIp(h: Headers): string {
+	return h.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
+}
+
+/**
+ * Build a full session record for a freshly authenticated user, exactly
+ * as the login flow in web/login + load_hestia_config assemble it: every
+ * sys-config key merged in, userContext from the account's ROLE, a fresh
+ * CSRF token, language, the combined login IP, LAST_ACTIVITY, shell/role.
+ */
+export async function buildFullSessionData(
+	user: string,
+	ip: string,
+): Promise<{ data: PhpSessionData; record: HestiaUser }> {
+	const record = await hestia.listUser(user);
+	const sys = await hestia.listSysConfig();
+	const data: PhpSessionData = {
+		...(sys.config ?? {}),
+		user,
+		userContext: record.ROLE === "admin" ? "admin" : "user",
+		look: "",
+		token: newCsrfToken(),
+		language: record.LANGUAGE ?? "en",
+		user_combined_ip: ip,
+		LAST_ACTIVITY: Math.floor(Date.now() / 1000),
+		login_shell: record.SHELL ?? "",
+		role: record.ROLE ?? "",
+	};
+	return { data, record };
 }
 
 /**
@@ -76,12 +115,44 @@ export async function requireSession(): Promise<ShellSession> {
 		redirect("/login");
 	}
 
+	// IP binding (main.php): the session is tied to the IP it was created
+	// from. A mismatch destroys the session and logs the logout — unless
+	// the sys config disables the check. A missing value is adopted, as
+	// main.php adopts it.
+	const ip = clientIp(await headers());
+	if (!session.data.user_combined_ip) {
+		session.data.user_combined_ip = ip;
+	} else if (
+		session.data.DISABLE_IP_CHECK !== "yes" &&
+		session.data.user_combined_ip !== ip
+	) {
+		await hestia.logUserLogout(
+			String(session.data.user),
+			String(session.data.token ?? ""),
+		);
+		await sessions.destroy(session.id);
+		redirect("/login");
+	}
+
 	const sys = await hestia.listSysConfig().catch(() => null);
 	if (sys?.config) {
 		Object.assign(session.data, sys.config);
 	}
 	session.data.login_shell = userRecord.SHELL ?? "";
 	session.data.role = userRecord.ROLE ?? "";
+
+	// Impersonation: while `look` is set, the shell/role presented are the
+	// looked user's (main.php). A deleted look target clears the look.
+	const look = String(session.data.look ?? "");
+	if (look) {
+		const lookRecord = await hestia.listUser(look).catch(() => null);
+		if (!lookRecord) {
+			session.data.look = "";
+		} else {
+			session.data.login_shell = lookRecord.SHELL ?? "";
+			session.data.role = lookRecord.ROLE ?? "";
+		}
+	}
 	await sessions.set(session.id, session.data);
 	return session;
 }

@@ -69,12 +69,27 @@ On top of the spike slice, the production shell pieces are in:
 - **Packages**: list, add (prefilled from `default`), edit (force-save via
   the staged definition file), delete behind a confirm page.
 
+## Phase 1 auth completion (2026-10-23)
+
+- **2FA (TOTP)**: accounts with TWOFA set get a two-step login — the
+  password step parks a *pending* session (no credentials in it; PHP
+  parks the password itself, we don't), the code step verifies via
+  `v-check-user-2fa` and promotes the session in place. Enable/disable
+  lives on the user page (`v-add-user-2fa` / `v-delete-user-2fa`); the
+  secret + QR show there from the account record, as in PHP.
+- **Login-as**: admins impersonate via the users list; `look` is set on
+  the session, both `v-log-action` audit lines are written with PHP's
+  messages, a banner offers Return, and while looking, the panel scopes
+  to the looked account (their page, their shell/role, self-edit rules).
+- **IP binding**: `requireSession` enforces main.php's rule — a session
+  used from a different IP than `user_combined_ip` is destroyed and the
+  logout logged (`v-log-user-logout`), unless `DISABLE_IP_CHECK=yes`.
+  Login attempts are logged via `v-log-user-login`.
+
 ## Remaining limitations (deliberate, later phases)
 
-- No 2FA, no login-as impersonation yet (Phase 1 follow-ups).
-- IP binding recorded (`user_combined_ip`) but not yet enforced like
-  main.php's check.
 - Package template fields are text inputs, not the PHP form's
   template-select dropdowns.
 - Visuals are placeholder-minimal: D6 is parity-first, and the theme port
   is Phase 2 work.
+- Still Phase 1: the i18n pipeline and CI (D7).
