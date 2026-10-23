@@ -261,6 +261,73 @@ export class HestiaClient {
 		await this.runChecked("v-delete-user", user);
 	}
 
+	// ---- Two-factor authentication ----
+
+	/**
+	 * Verify a TOTP code via v-check-user-2fa. The TOTP secret never leaves
+	 * the bash layer (it lives in user.conf; the command shells to Hestia's
+	 * own 2fa checker), so the lib needs no TOTP implementation of its own.
+	 */
+	async checkUser2fa(user: string, code: string): Promise<boolean> {
+		assertUsername(user);
+		const result = await this.raw("v-check-user-2fa", user, code);
+		return result.code === 0;
+	}
+
+	/** Enable 2FA: v-add-user-2fa generates and stores the secret server-side. */
+	async addUser2fa(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-add-user-2fa", user);
+	}
+
+	async deleteUser2fa(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-delete-user-2fa", user);
+	}
+
+	// ---- Audit logging (best-effort: logging must never break the action) ----
+
+	/** v-log-action USER TYPE CATEGORY MESSAGE (the panel's history log). */
+	async logAction(
+		user: string,
+		type: "Info" | "Warning" | "Error",
+		category: string,
+		message: string,
+	): Promise<void> {
+		try {
+			await this.raw("v-log-action", user, type, category, message);
+		} catch {
+			// best-effort by design
+		}
+	}
+
+	/** v-log-user-login — login attempts, success and failure. */
+	async logUserLogin(
+		user: string,
+		ip: string,
+		result: "success" | "failed",
+		sessionId: string,
+		userAgent: string,
+		reason?: string,
+	): Promise<void> {
+		try {
+			const args = [user, ip, result, sessionId, userAgent];
+			if (reason) args.push("yes", reason);
+			await this.raw("v-log-user-login", ...args);
+		} catch {
+			// best-effort by design
+		}
+	}
+
+	/** v-log-user-logout — recorded when a session ends or is killed. */
+	async logUserLogout(user: string, sessionId: string): Promise<void> {
+		try {
+			await this.raw("v-log-user-logout", user, sessionId);
+		} catch {
+			// best-effort by design
+		}
+	}
+
 	// ---- Packages (Phase 1) ----
 
 	async listUserPackages(): Promise<Record<string, HestiaPackage>> {

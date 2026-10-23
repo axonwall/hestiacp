@@ -1,0 +1,6 @@
+#!/bin/bash
+# Fixture: v-check-user-2fa USER CODE — the fixture code is 123456.
+echo "$(basename "$0") $*" >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
+[ "$2" = "123456" ] && exit 0
+echo "Error: 2fa token mismatch" >&2
+exit 9
