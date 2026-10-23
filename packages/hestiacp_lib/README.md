@@ -7,10 +7,15 @@ panel knows about talking to a HestiaCP install lives here, so the app in
 ## What's here
 
 - **`HestiaClient`** (`src/client.ts`) — typed wrappers over the `v-*`
-  command layer: `listUsers`, `listUser`, `listSysConfig`,
-  `verifyUserPassword`, `changeUserName`. The client never reads or writes
-  Hestia's `.conf` files; the bash layer owns state, exactly as with the PHP
-  panel.
+  command layer: user reads (`listUsers`, `listUser`, `listSysConfig`),
+  auth (`verifyUserPassword`, `checkUserHash`), user administration
+  (`addUser`, `changeUserPassword/Contact/Package/Language/Shell/Role/
+  Theme/Ns/ConfigValue`, `suspendUser`, `unsuspendUser`, `deleteUser`),
+  packages (`listUserPackages`, `listUserPackage`, `addUserPackage`,
+  `deleteUserPackage`, `serializeUserPackage`), and the sys enumerations
+  the admin forms need (`listSysLanguages/Shells/Themes`). The client
+  never reads or writes Hestia's `.conf` files; the bash layer owns
+  state, exactly as with the PHP panel.
 - **`runHestiaCommand`** (`src/exec.ts`) — the single choke point for command
   execution: `execFile` with an argv array (no shell, ever), the command name
   validated against the `v-*` pattern, and optional `sudo` prefix matching

@@ -146,11 +146,265 @@ export class HestiaClient {
 	): Promise<void> {
 		assertUsername(user);
 		const args = [user, firstName, ...(lastName ? [lastName] : [])];
-		const result = await this.raw("v-change-user-name", ...args);
+		await this.runChecked("v-change-user-name", ...args);
+	}
+
+	/** Run a command and throw a descriptive error on a non-zero exit. */
+	private async runChecked(command: string, ...args: string[]): Promise<void> {
+		const result = await this.raw(command, ...args);
 		if (result.code !== 0) {
 			throw new Error(
-				`v-change-user-name exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
+				`${command} exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
 			);
 		}
 	}
+
+	// ---- User administration (Phase 1) ----
+
+	/**
+	 * Create a user, mirroring web/add/user: v-add-user with the secret
+	 * staged to a file (never in argv), then language / role /
+	 * login-disabled applied via their own commands when requested.
+	 */
+	async addUser(opts: AddUserOptions): Promise<void> {
+		assertUsername(opts.user);
+		await this.withStagedFile(`${opts.secret}\n`, (path) =>
+			this.runChecked(
+				"v-add-user",
+				opts.user,
+				path,
+				opts.email,
+				opts.package,
+				opts.name,
+			),
+		);
+		if (opts.language) {
+			await this.changeUserLanguage(opts.user, opts.language);
+		}
+		if (opts.role) {
+			await this.changeUserRole(opts.user, opts.role);
+		}
+		if (opts.loginDisabled) {
+			await this.changeUserConfigValue(opts.user, "LOGIN_DISABLED", "yes");
+		}
+	}
+
+	/** Change a user's password; the secret is staged, never in argv. */
+	async changeUserPassword(user: string, secret: string): Promise<void> {
+		assertUsername(user);
+		await this.withStagedFile(`${secret}\n`, (path) =>
+			this.runChecked("v-change-user-password", user, path),
+		);
+	}
+
+	async changeUserContact(user: string, email: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-contact", user, email);
+	}
+
+	async changeUserPackage(user: string, pkg: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-package", user, pkg);
+	}
+
+	async changeUserLanguage(user: string, language: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-language", user, language);
+	}
+
+	async changeUserShell(user: string, shell: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-shell", user, shell);
+	}
+
+	async changeUserRole(user: string, role: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-role", user, role);
+	}
+
+	async changeUserTheme(user: string, theme: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-theme", user, theme);
+	}
+
+	/** v-change-user-ns takes each nameserver as its own argument. */
+	async changeUserNs(user: string, ns: string[]): Promise<void> {
+		assertUsername(user);
+		const servers = ns.map((s) => s.trim()).filter(Boolean);
+		if (servers.length === 0) {
+			throw new Error("changeUserNs requires at least one nameserver");
+		}
+		await this.runChecked("v-change-user-ns", user, ...servers);
+	}
+
+	async changeUserConfigValue(
+		user: string,
+		key: string,
+		value: string,
+	): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-config-value", user, key, value);
+	}
+
+	async suspendUser(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-suspend-user", user, "yes");
+	}
+
+	async unsuspendUser(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-unsuspend-user", user, "yes");
+	}
+
+	async deleteUser(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-delete-user", user);
+	}
+
+	// ---- Packages (Phase 1) ----
+
+	async listUserPackages(): Promise<Record<string, HestiaPackage>> {
+		return this.json<Record<string, HestiaPackage>>(
+			"v-list-user-packages",
+			"json",
+		);
+	}
+
+	async listUserPackage(name: string): Promise<HestiaPackage> {
+		const data = await this.json<Record<string, HestiaPackage>>(
+			"v-list-user-package",
+			name,
+			"json",
+		);
+		return data[name] ?? (data as unknown as HestiaPackage);
+	}
+
+	/**
+	 * Create (or, with force, overwrite) a user package: the definition is
+	 * serialized to the KEY='value' file format the bash layer reads,
+	 * staged, and handed to v-add-user-package by path.
+	 */
+	async addUserPackage(
+		name: string,
+		fields: Record<string, string>,
+		force = false,
+	): Promise<void> {
+		const contents = serializeUserPackage(fields);
+		await this.withStagedFile(contents, (path) =>
+			this.runChecked(
+				"v-add-user-package",
+				...[path, name, ...(force ? ["yes"] : [])],
+			),
+		);
+	}
+
+	async deleteUserPackage(name: string): Promise<void> {
+		await this.runChecked("v-delete-user-package", name);
+	}
+
+	// ---- System enumerations used by admin forms ----
+
+	async listSysLanguages(): Promise<string[]> {
+		return normalizeStringList(await this.json("v-list-sys-languages", "json"));
+	}
+
+	async listSysShells(): Promise<string[]> {
+		return normalizeStringList(await this.json("v-list-sys-shells", "json"));
+	}
+
+	async listSysThemes(): Promise<string[]> {
+		return normalizeStringList(await this.json("v-list-sys-themes", "json"));
+	}
+}
+
+export interface AddUserOptions {
+	user: string;
+	secret: string;
+	email: string;
+	package: string;
+	/** Full name as one string, as v-add-user's $5 (it appends $6 if given). */
+	name: string;
+	language?: string;
+	role?: string;
+	loginDisabled?: boolean;
+}
+
+/** One user package (v-list-user-package[s]); values are strings. */
+export interface HestiaPackage {
+	WEB_TEMPLATE: string;
+	DNS_TEMPLATE: string;
+	WEB_DOMAINS: string;
+	WEB_ALIASES: string;
+	DNS_DOMAINS: string;
+	DNS_RECORDS: string;
+	MAIL_DOMAINS: string;
+	MAIL_ACCOUNTS: string;
+	DATABASES: string;
+	CRON_JOBS: string;
+	DISK_QUOTA: string;
+	BANDWIDTH: string;
+	NS: string;
+	SHELL: string;
+	BACKUPS: string;
+	[key: string]: string;
+}
+
+/** Field order of a serialized package file, mirroring web/add/package. */
+export const USER_PACKAGE_FIELDS = [
+	"WEB_TEMPLATE",
+	"BACKEND_TEMPLATE",
+	"PROXY_TEMPLATE",
+	"DNS_TEMPLATE",
+	"WEB_DOMAINS",
+	"WEB_ALIASES",
+	"DNS_DOMAINS",
+	"DNS_RECORDS",
+	"MAIL_DOMAINS",
+	"MAIL_ACCOUNTS",
+	"DATABASES",
+	"CRON_JOBS",
+	"DISK_QUOTA",
+	"CPU_QUOTA",
+	"CPU_QUOTA_PERIOD",
+	"MEMORY_LIMIT",
+	"SWAP_LIMIT",
+	"BANDWIDTH",
+	"RATE_LIMIT",
+	"NS",
+	"SHELL",
+	"BACKUPS",
+	"BACKUPS_INCREMENTAL",
+] as const;
+
+/**
+ * Serialize package fields to the KEY='value' line format v-add-user-package
+ * consumes. TIME/DATE are stamped here, as the PHP page stamps them.
+ * Values containing a single quote or newline are rejected — they cannot
+ * be represented safely in this format (and never occur in real fields).
+ */
+export function serializeUserPackage(fields: Record<string, string>): string {
+	const now = new Date();
+	const pad = (n: number) => String(n).padStart(2, "0");
+	const stamped: Record<string, string> = {
+		...fields,
+		TIME: `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`,
+		DATE: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+	};
+	const lines: string[] = [];
+	for (const key of [...USER_PACKAGE_FIELDS, "TIME", "DATE"]) {
+		const value = stamped[key];
+		if (value === undefined) continue;
+		if (/['\n\r]/.test(value)) {
+			throw new Error(`Package field ${key} contains an illegal character`);
+		}
+		lines.push(`${key}='${value}'`);
+	}
+	return `${lines.join("\n")}\n`;
+}
+
+/** v-list-sys-* enumerations come as either a JSON array or a code→label map. */
+function normalizeStringList(data: unknown): string[] {
+	if (Array.isArray(data)) return data.map((v) => String(v));
+	if (data && typeof data === "object") return Object.keys(data);
+	return [];
 }

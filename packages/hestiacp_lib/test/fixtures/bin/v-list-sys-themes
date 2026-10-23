@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-list-sys-themes json (code -> label map)
+echo '{"default": "Default", "dark": "Dark", "vestia": "Vestia"}'

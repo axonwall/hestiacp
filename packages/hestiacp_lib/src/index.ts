@@ -6,6 +6,10 @@ export {
 export {
 	HestiaClient,
 	assertUsername,
+	serializeUserPackage,
+	USER_PACKAGE_FIELDS,
+	type AddUserOptions,
+	type HestiaPackage,
 	type HestiaUser,
 } from "./client";
 export { SessionStore, type PanelSession } from "./session";
