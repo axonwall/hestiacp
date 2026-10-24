@@ -235,6 +235,20 @@ candidates for a later settings tranche.
   schema (plus install directory, PHP version from v-list-sys-php ∩
   the app's supported list, and the database block) and queues the
   job; /list/jobs shows records.
+- **All 22 installers ported** (second Phase 4 tranche): the context
+  gained createFile (0644 staging + v-copy-fs-file), readFile,
+  copy/delete directory, permission changes, a glob-first-match via
+  v-run-cli-cmd's shell-expanded ls, and per-domain resolve IPs for
+  installer POSTs (curl --resolve semantics; the target URL scheme
+  follows the domain's SSL state). Every setupApplication is ported
+  with its .env rewrites, CLI installers, and POST wizards — including
+  Nextcloud's occ flow, the composer apps (Laravel/Symfony/Drupal/
+  Flarum/Shopware), the PrestaShop family, and Grav, whose account
+  file needs a PHP password_hash (computed by the host's php CLI,
+  HESTIA_PHP_BIN overridable). The static .htaccess payloads ship
+  byte-identical in the lib (webapp-assets.ts). Two PHP quirks are
+  ported bug-compatibly and commented: Nextcloud's literal \r\n
+  append and PrestaShop's boolean --ssl flag rendering.
 - **Search**: /search (topbar form) — v-search-object for admins,
   v-search-user-object otherwise or with ?u=; results link to the
   matching edit pages.
@@ -243,9 +257,8 @@ candidates for a later settings tranche.
   shapes (cron passes the type alone), confirm-page delete, and
   scheduling new incremental backups.
 
-Not ported: the remaining 20 setupApplication implementations,
-the restic file browser (v-list-user-files-restic), and the
-terminal page (the bundled terminal service already shares the
+Not ported: the restic file browser (v-list-user-files-restic) and
+the terminal page (the bundled terminal service already shares the
 panel's PHP-format sessions; the page remains a hand-off).
 
 ## Remaining limitations (deliberate, later phases)

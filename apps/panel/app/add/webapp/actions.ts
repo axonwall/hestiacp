@@ -47,10 +47,13 @@ export async function installWebAppAction(formData: FormData) {
 	options.__webBackend = String(session.data.WEB_BACKEND ?? "php-fpm");
 	const docrootBase = `/home/${user}/web/${domain}/public_html`;
 	const dbSecret = formData.get("database_secret")?.toString() ?? "";
+	const record = await hestia.listWebDomain(user, domain).catch(() => undefined);
+	const ssl = record?.SSL === "yes";
 	const target: WebAppTarget = {
 		domain,
 		docroot: installDir ? `${docrootBase}/${installDir}` : docrootBase,
-		url: `https://${domain}`,
+		url: `${ssl ? "https" : "http"}://${domain}`,
+		ssl,
 		database: {
 			create: def.database && formData.get("database_create") !== "no",
 			name: formData.get("database_name")?.toString() ?? "",
@@ -62,7 +65,12 @@ export async function installWebAppAction(formData: FormData) {
 	// (assigned via a fragment-built key: the literal assignment trips
 	// the workspace file tooling's secret-redaction filter)
 	target.database["pass" + "word" as "password"] = dbSecret;
-	const ctx = new HestiaAppContext(hestia, user);
+	const ctx = new HestiaAppContext(
+		hestia,
+		user,
+		undefined,
+		record?.IP || "127.0.0.1",
+	);
 	const job = await startJob(
 		jobStore(),
 		`Install ${app} on ${domain}`,
