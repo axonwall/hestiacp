@@ -122,6 +122,19 @@ export async function handleApiRequest(
 			.includes(ip);
 	};
 
+	// PHP compatibility: an access key may arrive embedded in the
+	// `hash` field as "<20-char id>:<40-char secret>" (exactly one
+	// colon) — api/index.php splits it into the access-key flow
+	// before dispatch. Legacy API hashes never match this shape.
+	if (data.access_key === undefined && data.hash) {
+		const parts = data.hash.split(":");
+		if (parts.length === 2 && parts[0].length === 20 && parts[1].length === 40) {
+			data.access_key = parts[0];
+			data.secret_key = parts[1];
+			delete data.hash;
+		}
+	}
+
 	if (data.access_key !== undefined || data.secret_key !== undefined) {
 		// ---- Access-key flow (api_connection) ----
 		const apiStatus = Number(config.API_SYSTEM ?? 0) || 0;

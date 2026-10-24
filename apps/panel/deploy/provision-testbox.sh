@@ -31,13 +31,21 @@ case "$ID:$VERSION_ID" in
 esac
 
 echo "==> [1/6] Installing stock HestiaCP (this takes a while)"
-export DEBIAN_FRONTEND=noninteractive
-apt-get update -qq && apt-get install -y -qq curl wget git jq > /dev/null
+if [ -d /usr/local/hestia/data/users/admin ] && [ "${FORCE_INSTALL:-0}" != "1" ]; then
+	echo "    Hestia already installed — skipping to stage 2 (the installer reboots the host, which kills this script; just re-run it)"
+	SKIP_INSTALL=1
+fi
+export HESTIA=/usr/local/hestia
+export PATH="$PATH:/usr/local/hestia/bin"
+if [ "${SKIP_INSTALL:-0}" != "1" ]; then
+export DEBIAN_FRONTEND=noninteractiveapt-get update -qq && apt-get install -y -qq curl wget git jq > /dev/null
 cd "$WORK"
 [ -f hst-install.sh ] || wget -q https://raw.githubusercontent.com/hestiacp/hestiacp/main/install/hst-install.sh
 # Lean profile: no multiphp / clamav / spamassassin / quota; DNS, mail
-# and the web terminal stay on so every panel surface exists.
-bash hst-install.sh \
+# and the web terminal stay on so every panel surface exists. `yes`
+# feeds the installer's continue prompt — --force alone does not skip
+# it, and with stdin closed it aborts after the component list.
+yes | bash hst-install.sh \
 	--hostname "$HOSTNAME_FQDN" \
 	--email "$ADMIN_EMAIL" \
 	--username admin \
@@ -51,21 +59,28 @@ bash hst-install.sh \
 	--webterminal yes \
 	--force
 
-export HESTIA=/usr/local/hestia
-export PATH="$PATH:/usr/local/hestia/bin"
+
+fi
 
 echo "==> [2/6] Preparing the api.bats environment"
+if [ "${SKIP_INSTALL:-0}" = "1" ]; then
+	v-change-user-password admin "$ADMIN_PASSWORD" > /dev/null 2>&1 || true
+fi
 API_HASH="$(v-generate-api-key admin 2> /dev/null | tail -1)"
-[ -n "$API_HASH" ] || API_HASH="$(cat /usr/local/hestia/data/users/admin/api.key)"
-ACCESS_OUT="$(v-add-access-key admin 'v-list-users,v-list-user' api-test 2> /dev/null)"
-ACCESS_ID="$(echo "$ACCESS_OUT" | grep -oE 'Access Key Id: [^ ]+' | awk '{print $4}')"
-ACCESS_SECRET="$(echo "$ACCESS_OUT" | grep -oE 'Secret Key: [^ ]+' | awk '{print $3}')"
-[ -n "$ACCESS_ID" ] || ACCESS_ID="$(v-list-access-keys admin plain | head -1 | awk '{print $1}')"
+[ -n "$API_HASH" ] || { echo "could not generate the admin API hash" >&2; exit 1; }
+# Access-key permissions are named profiles in $HESTIA/data/api, not
+# raw commands. sync-dns-cluster matches what api.bats exercises: the
+# key may list users (the DNS sync flow) but must NOT hold v-add-user
+# (one test asserts the permission denial).
+ACCESS_OUT="$(v-add-access-key admin sync-dns-cluster api-test 2> /dev/null)"
+ACCESS_ID="$(echo "$ACCESS_OUT" | sed -n 's/^ACCESS_KEY_ID:[[:space:]]*//p')"
+ACCESS_SECRET="$(echo "$ACCESS_OUT" | sed -n 's/^SECRET_ACCESS_KEY:[[:space:]]*//p')"
+[ -n "$ACCESS_ID" ] && [ -n "$ACCESS_SECRET" ] || { echo "could not create the test access key" >&2; exit 1; }
 cat > /tmp/hestia-api-env.sh <<EOF
 server="$HOSTNAME_FQDN"
 port="8083"
 apikey="$API_HASH"
-accesskey="$ACCESS_ID"
+accesskey="$ACCESS_ID:$ACCESS_SECRET"
 accesssecret="$ACCESS_SECRET"
 password="$ADMIN_PASSWORD"
 EOF

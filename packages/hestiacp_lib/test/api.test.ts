@@ -168,6 +168,30 @@ describe("access-key API flow", () => {
 		expect(mismatch.httpStatus).toBe(401);
 	});
 
+	it("accepts an access key embedded in the hash field (PHP form)", async () => {
+		const res = await handleApiRequest(
+			client,
+			{
+				hash: `${"A".repeat(20)}:${"B".repeat(40)}`,
+				cmd: "v-list-users",
+				arg1: "json",
+			},
+			IP,
+		);
+		expect(res.exitCode).toBe(0);
+		expect(res.body).toContain('"admin"');
+
+		const bad = await handleApiRequest(
+			client,
+			{
+				hash: `${"A".repeat(20)}:${"C".repeat(40)}`,
+				cmd: "v-list-users",
+			},
+			IP,
+		);
+		expect(bad.exitCode).toBe(9);
+	});
+
 	it("rejects a bad secret", async () => {
 		const res = await handleApiRequest(
 			client,
