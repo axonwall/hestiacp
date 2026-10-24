@@ -1,6 +1,11 @@
 import { effectiveUser, getT, hestia, requireSession } from "@/lib/panel";
 import type { HestiaRow } from "@hestiacp/lib";
 import { editWebDomainAction } from "./actions";
+import { editWebDomainSslAction } from "./ssl-actions";
+import {
+	addWebDomainFtpAction,
+	updateWebDomainFtpAction,
+} from "./ftp-actions";
 
 export default async function Page({
 	searchParams,
@@ -32,6 +37,12 @@ export default async function Page({
 		hestia.listWebTemplatesProxy().catch(() => []),
 		hestia.listWebStatsSystems().catch(() => []),
 	]);
+	const sslRecord =
+		record.SSL === "yes"
+			? await hestia.listWebDomainSsl(user, domain).catch(() => null)
+			: null;
+	const ftpUsers = (record.FTP_USER ?? "").split(",").filter(Boolean);
+	const ftpPaths = (record.FTP_PATH ?? "").split(",");
 	const token = String(session.data.token ?? "");
 	return (
 		<div className="card">
@@ -120,6 +131,58 @@ export default async function Page({
 				<a href="/list/web">{t("Back")}</a> ·{" "}
 				<a href={`/delete/web?domain=${encodeURIComponent(domain)}`}>{t("Delete")}</a>
 			</p>
+			<h2>SSL {t("Certificate")}</h2>
+			{sslRecord ? (
+				<p>
+					{sslRecord.SUBJECT} · {sslRecord.ISSUER} · {sslRecord.NOT_BEFORE} →{" "}
+					{sslRecord.NOT_AFTER}
+				</p>
+			) : null}
+			<form action={editWebDomainSslAction}>
+				<input type="hidden" name="token" value={token} />
+				<input type="hidden" name="domain" value={domain} />
+				<label htmlFor="sslCrt">{t("Certificate")}</label>
+				<textarea id="sslCrt" name="crt" rows={4} defaultValue={sslRecord?.CRT ?? ""} />
+				<label htmlFor="sslKey">{t("Key")}</label>
+				<textarea id="sslKey" name="key" rows={4} defaultValue={sslRecord?.KEY ?? ""} />
+				<label htmlFor="sslCa">{t("CA chain")}</label>
+				<textarea id="sslCa" name="ca" rows={3} defaultValue={sslRecord?.CA ?? ""} />
+				<button type="submit" className="primary">{t("Save")}</button>
+			</form>
+			<h2>{t("FTP Accounts")}</h2>
+			{ftpUsers.map((ftpUser, i) => (
+				<form key={ftpUser} action={updateWebDomainFtpAction}>
+					<input type="hidden" name="token" value={token} />
+					<input type="hidden" name="domain" value={domain} />
+					<input type="hidden" name="ftpUser" value={ftpUser} />
+					<input type="hidden" name="prevPath" value={ftpPaths[i] ?? ""} />
+					<label htmlFor={`ftpPath-${i}`}>
+						{ftpUser} — {t("Path")}
+					</label>
+					<input id={`ftpPath-${i}`} name="path" defaultValue={ftpPaths[i] ?? ""} />
+					<label htmlFor={`ftpPass-${i}`}>
+						{t("New password")} ({t("leave empty to keep")})
+					</label>
+					<input id={`ftpPass-${i}`} name="secret" type="password" autoComplete="new-password" />
+					<label>
+						<input type="checkbox" name="delete" value="yes" /> {t("Delete")}
+					</label>
+					<button type="submit">{t("Save")}</button>
+				</form>
+			))}
+			<form action={addWebDomainFtpAction}>
+				<input type="hidden" name="token" value={token} />
+				<input type="hidden" name="domain" value={domain} />
+				<label htmlFor="newFtpUser">
+					{t("Add FTP account")} ({user}_…)
+				</label>
+				<input id="newFtpUser" name="ftpUser" />
+				<label htmlFor="newFtpPass">{t("Password")}</label>
+				<input id="newFtpPass" name="secret" type="password" autoComplete="new-password" />
+				<label htmlFor="newFtpPath">{t("Path")}</label>
+				<input id="newFtpPath" name="path" />
+				<button type="submit" className="primary">{t("Add")}</button>
+			</form>
 		</div>
 	);
 }

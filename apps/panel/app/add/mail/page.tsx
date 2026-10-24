@@ -35,6 +35,19 @@ export default async function Page({
 					<input type="checkbox" name="reject" value="yes" />{" "}
 					{t("Reject spam")}
 				</label>
+				<label htmlFor="webmail">{t("Webmail alias")}</label>
+				<input id="webmail" name="webmail" placeholder="webmail" />
+				<label>
+					<input type="checkbox" name="relay" value="yes" /> {t("SMTP Relay")}
+				</label>
+				<label htmlFor="relayHost">{t("Relay host")}</label>
+				<input id="relayHost" name="relayHost" />
+				<label htmlFor="relayPort">{t("Relay port")}</label>
+				<input id="relayPort" name="relayPort" placeholder="587" />
+				<label htmlFor="relayUser">{t("Relay user")}</label>
+				<input id="relayUser" name="relayUser" />
+				<label htmlFor="relayPass">{t("Relay password")}</label>
+				<input id="relayPass" name="relayPass" type="password" autoComplete="new-password" />
 				<button type="submit" className="primary">{t("Add")}</button>
 			</form>
 		</div>

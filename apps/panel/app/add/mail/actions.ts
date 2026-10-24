@@ -28,6 +28,25 @@ export async function addMailDomainAction(formData: FormData): Promise<void> {
 		if (antispam && formData.get("reject") === "yes") {
 			await hestia.setMailDomainReject(user, domain, true);
 		}
+		const webmail = String(formData.get("webmail") ?? "").trim();
+		if (webmail) {
+			await hestia.addMailDomainWebmail(user, domain, webmail);
+		}
+		if (formData.get("relay") === "yes") {
+			const host = String(formData.get("relayHost") ?? "").trim();
+			const relayUser = String(formData.get("relayUser") ?? "").trim();
+			const secret = String(formData.get("relayPass") ?? "");
+			if (host && relayUser && secret) {
+				await hestia.addMailDomainSmtpRelay(
+					user,
+					domain,
+					host,
+					relayUser,
+					secret,
+					String(formData.get("relayPort") ?? "").trim(),
+				);
+			}
+		}
 	} catch (error) {
 		redirect(`/add/mail?error=${encodeURIComponent(errorMessage(error))}`);
 	}

@@ -156,10 +156,31 @@ the PHP pages' command sequences and changed-only discipline:
 - **Cron** (/add/cron, /edit/cron, /delete/cron): whole-schedule
   replace, as PHP does.
 
-Deferred within these domains (later tranches): custom SSL certificate
-upload, FTP accounts, stats users, webmail alias + SMTP relay on mail
-domains, mail-domain SSL/LE. Still ahead in Phase 3: backups/files,
-firewall & IPs, server settings.
+## Phase 3 extras — cert upload, FTP, mail webmail/relay/SSL (2026-10-23)
+
+The deferred sections of the five domains, in their own forms on the
+edit pages (each submits independently, changed-only):
+
+- **Web SSL certificate**: current cert metadata + crt/key/ca textareas
+  prefilled from v-list-web-domain-ssl; changes stage <domain>.crt/.key
+  /.ca in a temp dir for v-change-web-domain-sslcert, then restart
+  web + proxy.
+- **FTP accounts**: per-account path + password forms and an add form.
+  PHP's asymmetry is preserved — add takes the username suffix (the
+  command prefixes <user>_ itself), changes take the full username.
+  Secrets are staged; the credentials email PHP sends is not
+  reproduced.
+- **Mail webmail + SMTP relay**: alias add/delete by change; relay
+  (re)add stages the password. One deliberate deviation: changing relay
+  settings without re-entering the password is refused, where PHP
+  would stage the empty field and clobber the stored credential.
+- **Mail SSL**: Let's Encrypt via the mail variant (blank-space alias
+  arg, trailing 'yes'), custom certs staged for v-add-mail-domain-ssl
+  / v-change-mail-domain-sslcert, removal, v-restart-mail on change.
+  The add-mail form can also set webmail + relay at creation.
+
+Still deferred: web stats users. Still ahead in Phase 3:
+backups/files, firewall & IPs, server settings.
 
 ## Remaining limitations (deliberate, later phases)
 
