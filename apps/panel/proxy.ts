@@ -9,10 +9,15 @@ import { type NextRequest, NextResponse } from "next/server";
 export function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	// /api does its own authentication (legacy API semantics) — no session gate.
+	// The theme assets (Phase 6) are static files the login page itself
+	// needs, so they bypass the gate like /_next does.
 	const isPublic =
 		pathname === "/login" ||
 		pathname.startsWith("/api") ||
-		pathname.startsWith("/_next");
+		pathname.startsWith("/_next") ||
+		pathname.startsWith("/hestia/") ||
+		pathname.startsWith("/webfonts/") ||
+		pathname.startsWith("/images/");
 	if (isPublic) {
 		return NextResponse.next();
 	}

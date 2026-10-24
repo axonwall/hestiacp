@@ -58,6 +58,10 @@ jobs:
         run: |
           pnpm --filter @hestiacp/panel webapps:extract
           git diff --exit-code -- apps/panel/data
+      - name: Theme assets are fresh
+        run: |
+          pnpm --filter @hestiacp/panel theme:build
+          git diff --exit-code -- apps/panel/public
       - name: Production build (the gate)
         run: pnpm --filter @hestiacp/panel build
       - name: Deploy bundle builds and boots

@@ -142,6 +142,9 @@ export async function requireSession(): Promise<ShellSession> {
 	}
 	session.data.login_shell = userRecord.SHELL ?? "";
 	session.data.role = userRecord.ROLE ?? "";
+	// The account's theme (main.php's userTheme) drives the theme
+	// stylesheet selection in the root layout.
+	session.data.userTheme = userRecord.THEME ?? "";
 	// The panel language tracks the account record (a language change in
 	// the edit form takes effect on the next request, as in PHP).
 	session.data.language = userRecord.LANGUAGE ?? "en";

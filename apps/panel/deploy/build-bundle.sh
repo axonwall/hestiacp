@@ -30,9 +30,10 @@ echo "==> Installing (frozen, pinned toolchain)"
 # run) even though the lockfile is frozen and unchanged.
 "$PNPM" install --frozen-lockfile --config.minimum-release-age=0
 
-echo "==> Regenerating extracted data (locales, WebApp catalog)"
+echo "==> Regenerating extracted data (locales, WebApp catalog, theme assets)"
 "$PNPM" --filter @hestiacp/panel i18n:extract
 "$PNPM" --filter @hestiacp/panel webapps:extract
+"$PNPM" --filter @hestiacp/panel theme:build
 
 echo "==> Typechecking and testing the lib"
 "$PNPM" --filter @hestiacp/lib typecheck
@@ -54,11 +55,17 @@ cp -r "$STANDALONE/." "$OUT/"
 mkdir -p "$OUT/apps/panel/.next"
 cp -r "$PANEL_DIR/.next/static" "$OUT/apps/panel/.next/static"
 if [ -d "$PANEL_DIR/public" ]; then
-	cp -r "$PANEL_DIR/public" "$OUT/apps/panel/public"
+	# Copy the CONTENTS: the standalone tree may already carry a public/
+	# dir, and `cp -r src dst` would nest it as public/public.
+	mkdir -p "$OUT/apps/panel/public"
+	cp -r "$PANEL_DIR/public/." "$OUT/apps/panel/public/"
 fi
 cp "$DEPLOY_DIR/hestiang-panel.service" "$OUT/"
 cp "$DEPLOY_DIR/hestiang-panel.env" "$OUT/"
 cp "$DEPLOY_DIR/nginx-vhost.conf" "$OUT/"
+# The standalone trace can sweep this script's own earlier output
+# (apps/panel/dist) into the bundle — recursively. Never ship it.
+rm -rf "$OUT/apps/panel/dist"
 echo "$VERSION" > "$OUT/VERSION"
 
 tar -czf "$TARBALL" -C "$PANEL_DIR/dist" "hestiang-panel-$VERSION"

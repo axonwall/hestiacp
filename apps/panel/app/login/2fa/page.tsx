@@ -16,25 +16,34 @@ export default async function TwofaPage({
 	const query = await searchParams;
 	const t = await getT();
 	return (
-		<div className="card login-card">
-			<h1>{t("Two-factor authentication")}</h1>
-			<p>
-				Enter the 6-digit code from your authenticator app for{" "}
-				{String(session.data.pending_user)}.
-			</p>
-			{query.error ? (
-				<p className="error">{t("Invalid or missing 2FA token")}</p>
-			) : null}
+		<div className="login">
+			<a href="/" className="u-block u-mb40">
+				<img src="/images/logo.svg" alt="HestiaCP" width="100" height="120" />
+			</a>
 			<form action={twofaAction}>
-				<label htmlFor="twofa">{t("Authentication code")}</label>
-				<input
-					id="twofa"
-					name="twofa"
-					inputMode="numeric"
-					autoComplete="one-time-code"
-					required
-				/>
-				<button type="submit" className="primary">
+				<h1 className="login-title">{t("Two-factor authentication")}</h1>
+				<p>
+					Enter the 6-digit code from your authenticator app for{" "}
+					{String(session.data.pending_user)}.
+				</p>
+				{query.error ? (
+					<p className="error">{t("Invalid or missing 2FA token")}</p>
+				) : null}
+				<div className="u-mb20">
+					<label htmlFor="twofa" className="form-label">
+						{t("Authentication code")}
+					</label>
+					<input
+						id="twofa"
+						name="twofa"
+						className="form-control"
+						inputMode="numeric"
+						autoComplete="one-time-code"
+						required
+					/>
+				</div>
+				<button type="submit" className="button">
+					<i className="fas fa-key"></i>
 					{t("Verify")}
 				</button>
 			</form>

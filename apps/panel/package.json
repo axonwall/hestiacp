@@ -18,6 +18,8 @@
     "dev": "next dev",
     "start": "next start",
     "i18n:extract": "node scripts/extract-locales.mjs",
+    "theme:build": "node scripts/build-theme.mjs",
+    "theme:check": "node scripts/build-theme.mjs --check",
     "typecheck": "tsc --noEmit",
     "webapps:extract": "node scripts/extract-webapps.mjs"
   },

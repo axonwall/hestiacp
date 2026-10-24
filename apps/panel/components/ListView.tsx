@@ -50,41 +50,52 @@ export function ListView({
 	const entries = Object.entries(result.rows);
 	return (
 		<div>
-			<h1>{title}</h1>
-			{children}
+			<div className="toolbar">
+				<div className="toolbar-inner">
+					<h1 className="list-title">{title}</h1>
+					<div className="toolbar-buttons">{children}</div>
+				</div>
+			</div>
 			{entries.length === 0 ? (
-				<p>{emptyText}</p>
+				<div className="container">
+					<p>{emptyText}</p>
+				</div>
 			) : (
-				<table className="grid">
-					<thead>
-						<tr>
-							{columns.map((col) => (
-								<th key={col.key}>{col.label}</th>
-							))}
-							{rowActions ? <th>Actions</th> : null}
-						</tr>
-					</thead>
-					<tbody>
-						{entries.map(([key, row]) => (
-							<tr key={key}>
-								{columns.map((col, i) => {
-									const raw = row[col.key] ?? "";
-									const text = col.format ? col.format(raw, row) : raw;
-									return (
-										<td key={col.key}>
-											{i === 0 && rowHref ? (
-												<Link href={rowHref(key, row)}>{text}</Link>
-											) : (
-												text
-											)}
-										</td>
-									);
-								})}
-								{rowActions ? <td>{rowActions(key, row)}</td> : null}
-							</tr>
+				<div className="units-table">
+					<div className="units-table-header">
+						{columns.map((col) => (
+							<div className="units-table-cell" key={col.key}>
+								{col.label}
+							</div>
 						))}
-					</tbody>
-				</table>
+						{rowActions ? <div className="units-table-cell">Actions</div> : null}
+					</div>
+					{entries.map(([key, row]) => (
+						<div
+							className={`units-table-row${row.SUSPENDED === "yes" ? " disabled" : ""}`}
+							key={key}
+						>
+							{columns.map((col, i) => {
+								const raw = row[col.key] ?? "";
+								const text = col.format ? col.format(raw, row) : raw;
+								return (
+									<div className="units-table-cell" key={col.key}>
+										{i === 0 && rowHref ? (
+											<Link href={rowHref(key, row)}>{text}</Link>
+										) : (
+											text
+										)}
+									</div>
+								);
+							})}
+							{rowActions ? (
+								<div className="units-table-cell">
+									<div className="units-table-row-actions">{rowActions(key, row)}</div>
+								</div>
+							) : null}
+						</div>
+					))}
+				</div>
 			)}
 		</div>
 	);

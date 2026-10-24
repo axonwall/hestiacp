@@ -1,195 +1,246 @@
-:root {
-	color-scheme: light;
-	font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
+/*
+ * HestiaNG compatibility layer.
+ *
+ * The panel's look comes from HestiaCP's own theme stylesheets
+ * (public/hestia/themes/*.min.css, bundled from web/css/src by
+ * scripts/build-theme.mjs — D6 visual parity). This file holds ONLY
+ * the bridges between that CSS and this panel's markup conventions:
+ * the <details>-based top-bar menu, the chrome additions (search,
+ * impersonation banner), and the shared page classes the React
+ * components use (.card, .primary, bare form elements, dashboard
+ * gauges). Everything visual references the theme's CSS variables
+ * so the default and dark themes both hold.
+ */
 
-body {
-	margin: 0;
-	background: #f3f4f6;
-	color: #1f2430;
+/* --- Top-bar menu: <details> instead of Alpine x-data --- */
+.top-bar-menu {
+	position: relative;
 }
-
-.topbar {
+.top-bar-menu summary {
+	list-style: none;
+	cursor: pointer;
+}
+.top-bar-menu summary::-webkit-details-marker {
+	display: none;
+}
+.top-bar-menu .top-bar-menu-panel {
+	display: none;
+	position: absolute;
+	right: 0;
+	top: 100%;
+	z-index: 60;
+}
+.top-bar-menu[open ] .top-bar-menu-panel {
+	display: block;
+}
+.top-bar-menu .top-bar-menu-link {
 	display: flex;
 	align-items: center;
-	gap: 0.75rem;
-	padding: 0.6rem 1rem;
-	background: #20242e;
-	color: #e5e7eb;
+	gap: 0.5rem;
+}
+.top-bar-logout-form {
+	margin: 0;
+}
+.top-bar-logout-form button.top-bar-menu-link {
+	background: none;
+	border: 0;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+	width: 100%;
+	text-align: left;
+}
+.top-bar-search input {
+	max-width: 180px;
 }
 
-.brand {
-	font-weight: 700;
-	letter-spacing: 0.02em;
-}
-
-.codename {
-	color: #9aa3b2;
-	font-size: 0.85rem;
-}
-
-.top-link {
-	color: #c7cede;
-	font-size: 0.9rem;
-}
-
+/* --- Impersonation banner (our addition; PHP has none) --- */
 .impersonation-banner {
 	display: flex;
 	gap: 1rem;
 	align-items: center;
-	background: #7c2d12;
-	color: #ffedd5;
+	justify-content: center;
+	background: var(--alert-danger-color);
+	color: #fff;
 	padding: 0.4rem 1rem;
 	font-size: 0.9rem;
 }
-
 .impersonation-banner .link-button {
-	color: #ffedd5;
-	text-decoration: underline;
-}
-
-.spacer {
-	flex: 1;
-}
-
-.who {
-	font-size: 0.9rem;
-}
-
-.link-button {
-	background: none;
-	border: none;
-	color: #c7cede;
-	cursor: pointer;
-	font: inherit;
-	text-decoration: underline;
-}
-
-.content {
-	max-width: 960px;
-	margin: 2rem auto;
-	padding: 0 1rem;
-}
-
-.card {
-	background: #fff;
-	border: 1px solid #e2e5ea;
-	border-radius: 8px;
-	padding: 1.25rem;
-}
-
-table.grid {
-	width: 100%;
-	border-collapse: collapse;
-	background: #fff;
-}
-
-table.grid th,
-table.grid td {
-	border-bottom: 1px solid #e5e7eb;
-	padding: 0.5rem 0.75rem;
-	text-align: left;
-}
-
-label {
-	display: block;
-	margin: 0.75rem 0 0.25rem;
-	font-size: 0.9rem;
-	font-weight: 600;
-}
-
-input {
-	width: 100%;
-	box-sizing: border-box;
-	padding: 0.5rem;
-	border: 1px solid #c9ced6;
-	border-radius: 6px;
-	font: inherit;
-}
-
-button.primary {
-	margin-top: 1rem;
-	padding: 0.55rem 1.1rem;
-	border: none;
-	border-radius: 6px;
-	background: #2563eb;
 	color: #fff;
-	font: inherit;
-	cursor: pointer;
+	text-decoration: underline;
 }
 
-.error {
-	background: #fdecec;
-	border: 1px solid #f3b6b6;
-	border-radius: 6px;
-	padding: 0.6rem 0.8rem;
-	color: #8a1f1f;
+/* --- Page scaffolding --- */
+.list-title {
+	font-size: 1.05rem;
+	margin: 0;
+	color: var(--color-text-heading);
 }
-
-dl.fields {
+.card {
+	padding: 1rem 20px;
+}
+.cards {
 	display: grid;
-	grid-template-columns: 180px 1fr;
-	row-gap: 0.4rem;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 1rem;
+	padding: 0 20px;
 }
-
-dl.fields dt {
+.card .card,
+.cards .card {
+	padding: 0;
+}
+.card-title {
 	font-weight: 600;
-	color: #4b5563;
+	color: var(--color-text-heading);
+	margin-bottom: 0.35rem;
 }
-
-dl.fields dd {
+.muted {
+	color: var(--color-text);
+	opacity: 0.75;
+	font-size: 0.85rem;
+}
+.notice {
+	border-left: 4px solid var(--alert-info-color);
+	padding: 0.5rem 0.75rem;
+	margin: 0.75rem 0;
+}
+.ok {
+	color: var(--alert-success-color);
+}
+.danger {
+	color: var(--alert-danger-color);
+}
+.kv {
+	display: grid;
+	grid-template-columns: minmax(140px, 220px) 1fr;
+	gap: 0.25rem 1rem;
+}
+.kv dt {
+	font-weight: 600;
+	color: var(--color-text-heading);
+}
+.kv dd {
 	margin: 0;
 }
 
-.sections {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.25rem 1rem;
-	background: #1f2937;
-	padding: 0.4rem 1rem;
-}
-
-.sections a {
-	color: #c7cede;
-	font-size: 0.88rem;
-	text-decoration: none;
-}
-
-.sections a:hover {
-	color: #fff;
-}
-
-.gauges {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 1rem;
-	margin-bottom: 1.5rem;
-}
-
-.gauge {
-	min-width: 180px;
-	flex: 1;
-}
-
-.gauge-label {
+/* --- Buttons: our .primary submit buttons take the theme's
+   .button look; .link-button stays a text button. --- */
+button.primary,
+input[type="submit"].primary {
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 21px;
 	font-size: 0.85rem;
-	color: #6b7280;
+	font-weight: 500;
+	font-family: inherit;
+	padding: 3px 25px;
+	min-width: 100px;
+	color: var(--color-text-link);
+	border: 1px solid #0083db;
+	border-radius: 3px;
+	background:
+		linear-gradient(
+			to bottom,
+			rgb(235 243 249 / 100%) 0%,
+			rgb(196 218 235 / 100%) 50%,
+			rgb(175 201 224 / 100%) 51%,
+			rgb(208 226 240 / 100%) 100%
+		),
+		#d0e2f0;
+}
+.link-button {
+	background: none;
+	border: 0;
+	padding: 0;
+	font: inherit;
+	color: var(--color-text-link);
+	cursor: pointer;
+}
+.link-button:hover {
+	color: var(--color-text-link-hover);
+}
+.inline-form {
+	display: inline;
 }
 
-.gauge-value {
-	font-size: 1.25rem;
+/* --- Forms: our pages use bare elements inside <label>/<div>;
+   give them the theme's .form-control treatment. --- */
+main form label,
+.app-content form label {
+	display: block;
+	font-size: 0.8rem;
 	font-weight: 600;
-	margin: 0.25rem 0;
+	margin: 0.6rem 0 0.25rem;
+	color: var(--color-text-heading);
+}
+main form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]),
+main form select,
+main form textarea,
+.app-content form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]),
+.app-content form select,
+.app-content form textarea {
+	display: block;
+	width: 100%;
+	max-width: 560px;
+	padding: 6px 8px;
+	font: inherit;
+	font-size: 0.9rem;
+	color: var(--color-text);
+	background: var(--color-background);
+	border: 1px solid #b8b8b8;
+	border-radius: var(--border-radius-base);
+}
+main form input[type="checkbox"],
+main form input[type="radio"] {
+	margin-right: 0.4rem;
+}
+.fields {
+	max-width: 640px;
 }
 
+/* --- Data tables that are not ListView (sublists, stats) --- */
+table.grid {
+	width: calc(100% - 40px);
+	margin: 0 20px;
+	border-collapse: collapse;
+	font-size: 0.85rem;
+}
+table.grid th,
+table.grid td {
+	text-align: left;
+	padding: 8px 10px;
+	border-bottom: 1px solid #d0d0d0;
+}
+table.grid th {
+	color: var(--color-text-heading);
+}
+
+/* --- Dashboard gauges --- */
+.gauges {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 1rem;
+	padding: 0 20px;
+}
+.gauge-label {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--color-text-heading);
+}
+.gauge-value {
+	font-size: 0.95rem;
+	margin: 0.15rem 0;
+}
 .gauge-bar {
-	background: #e5e7eb;
-	border-radius: 4px;
 	height: 8px;
+	border-radius: 4px;
+	background: rgb(140 140 140 / 30%);
 	overflow: hidden;
 }
-
-.gauge-bar > div {
-	background: #2563eb;
+.gauge-bar > span {
+	display: block;
 	height: 100%;
+	background: var(--alert-info-color);
 }
