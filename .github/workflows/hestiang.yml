@@ -1,0 +1,53 @@
+# HestiaNG (Next.js panel) CI — additive to upstream HestiaCP's workflows.
+# Gates: frozen install with the pinned pnpm, lib tests, typecheck,
+# production build, and i18n dictionary freshness (the extracted
+# locales must match the shipped .mo catalogs).
+name: hestiang
+
+on:
+  push:
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/hestiang.yml"
+  pull_request:
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/hestiang.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  panel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.9.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+      - name: Library tests
+        run: pnpm --filter @hestiacp/lib test
+      - name: Typecheck (lib + panel)
+        run: |
+          pnpm --filter @hestiacp/lib typecheck
+          pnpm --filter @hestiacp/panel typecheck
+      - name: i18n dictionaries are fresh
+        run: |
+          pnpm --filter @hestiacp/panel i18n:extract
+          git diff --exit-code -- apps/panel/locales
+      - name: Production build (the gate)
+        run: pnpm --filter @hestiacp/panel build
