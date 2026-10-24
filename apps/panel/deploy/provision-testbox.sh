@@ -115,8 +115,11 @@ echo "==> [5/6] Building + installing the Next panel bundle"
 corepack enable > /dev/null 2>&1 || npm install -g pnpm@12.9.1 > /dev/null
 corepack prepare pnpm@12.9.1 --activate > /dev/null 2>&1 || true
 PNPM="$(command -v pnpm)" ./apps/panel/deploy/build-bundle.sh
-BUNDLE="$(ls -d apps/panel/dist/hestiang-panel-*/ | head -1)"
-tar -xzf "$(ls apps/panel/dist/hestiang-panel-*.tar.gz | head -1)" -C /usr/local/hestia/
+# Newest by mtime: dist/ accumulates one bundle per commit, and
+# an alphabetical ls picks the OLDEST (the first live flip was
+# silently reinstalled three times this way).
+BUNDLE="$(ls -dt apps/panel/dist/hestiang-panel-*/ | head -1)"
+tar -xzf "$(ls -t apps/panel/dist/hestiang-panel-*.tar.gz | head -1)" -C /usr/local/hestia/
 rm -rf /usr/local/hestia/web-next
 mv "/usr/local/hestia/$(basename "$BUNDLE")" /usr/local/hestia/web-next
 install -d -o hestiaweb -g hestiaweb /usr/local/hestia/data/jobs
