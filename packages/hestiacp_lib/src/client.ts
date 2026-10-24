@@ -1,6 +1,6 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import type { HestiaConfig } from "./config";
 import { loadConfig } from "./config";
 import { runHestiaCommand, type CommandResult } from "./exec";
@@ -1686,6 +1686,26 @@ export class HestiaClient {
 		const result = await this.withStagedFile(`${hash}\n`, (path) =>
 			this.raw("v-check-user-hash", user, path, ip),
 		);
+		return result.code === 0;
+	}
+
+	/**
+	 * The legacy API's hash-alone authentication: the supplied hash is
+	 * the NAME of a key file under <hestia>/data/keys/, verified by
+	 * v-check-api-key (PHP's api_legacy else-branch — it never runs
+	 * v-check-user-hash for this flow). PHP applies basename() to the
+	 * hash before building the path.
+	 */
+	async checkApiKey(hash: string, ip = "127.0.0.1"): Promise<boolean> {
+		const name = hash.split("/").pop() ?? "";
+		if (!name) return false;
+		const keyPath = join(
+			dirname(this.config.binDir),
+			"data",
+			"keys",
+			name,
+		);
+		const result = await this.raw("v-check-api-key", keyPath, ip);
 		return result.code === 0;
 	}
 

@@ -194,7 +194,11 @@ export async function handleApiRequest(
 		return fail(E_FORBIDDEN, "IP is not allowed to connect with API");
 	}
 	if (data.hash) {
-		const ok = await client.checkUserHash(rootUser, data.hash, ip);
+		// Hash-alone flow: the hash names a key file in data/keys/
+		// and is checked by v-check-api-key — NOT against the user's
+		// password hash (that conflation passed every fixture test
+		// and failed the first real api.bats run).
+		const ok = await client.checkApiKey(data.hash, ip);
 		if (!ok) return fail(E_PASSWORD, "authentication failed");
 	} else {
 		if (data.user !== rootUser) {

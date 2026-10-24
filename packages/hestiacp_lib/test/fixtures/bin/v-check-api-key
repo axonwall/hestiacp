@@ -1,0 +1,10 @@
+#!/bin/bash
+# Fixture: v-check-api-key KEYFILE IP — the legacy API's hash-alone
+# flow treats the hash as the NAME of a key file under data/keys/.
+# Succeeds iff the basename is the fixture key name.
+key_file="$1"
+if [ "$(basename "$key_file")" = "fixture-hash-value" ]; then
+	exit 0
+fi
+echo "Error: authentication failed" >&2
+exit 9
