@@ -20,7 +20,7 @@ admin)
         "WEB_DOMAINS": "1",
         "DNS_DOMAINS": "1",
         "MAIL_DOMAINS": "0",
-        "DATABASES": "0",
+        "DATABASES": "unlimited",
         "CRON_JOBS": "2",
         "DISK_QUOTA": "unlimited",
         "SUSPENDED": "no"
@@ -52,7 +52,7 @@ demo)
         "WEB_DOMAINS": "0",
         "DNS_DOMAINS": "0",
         "MAIL_DOMAINS": "0",
-        "DATABASES": "1",
+        "DATABASES": "10",
         "CRON_JOBS": "0",
         "DISK_QUOTA": "1024",
         "SUSPENDED": "no"

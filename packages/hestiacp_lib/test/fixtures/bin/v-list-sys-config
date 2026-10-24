@@ -11,6 +11,7 @@ cat <<'JSON'
         "VERSION": "1.10.5",
         "RELEASE_BRANCH": "release",
         "WEB_SYSTEM": "nginx",
+        "WEB_BACKEND": "php-fpm",
         "ROOT_USER": "admin",
         "API": "yes",
         "API_SYSTEM": "2",

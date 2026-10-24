@@ -1,0 +1,12 @@
+#!/bin/bash
+# Fixture: v-search-user-object (record double)
+cat <<'JSON'
+[
+    {
+        "TYPE": "mail",
+        "KEY": "example.com",
+        "RESULT": "info@example.com",
+        "USER": "demo"
+    }
+]
+JSON

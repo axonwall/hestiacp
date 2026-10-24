@@ -1,0 +1,8 @@
+#!/bin/bash
+# Fixture: v-list-sys-php (record double)
+cat <<'JSON'
+[
+    "8.3",
+    "8.4"
+]
+JSON

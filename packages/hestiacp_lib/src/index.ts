@@ -28,3 +28,15 @@ export {
 	type ApiRequestData,
 	type ApiResult,
 } from "./api";
+export { JobStore, startJob, type JobRecord } from "./jobs";
+export {
+	APP_SETUP_PORTS,
+	WEBAPP_DEFINITIONS,
+	HestiaAppContext,
+	defaultPostRequest,
+	installWebApp,
+	type PostRequestFn,
+	type WebAppDefinition,
+	type WebAppOptions,
+	type WebAppTarget,
+} from "./webapp";

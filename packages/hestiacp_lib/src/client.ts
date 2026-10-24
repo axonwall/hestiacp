@@ -1531,6 +1531,71 @@ export class HestiaClient {
 		await this.runChecked("v-delete-backup-host-restic");
 	}
 
+	/* ---- Phase 4: search + restic (incremental) backups ---- */
+
+	/** Global object search (admin): v-search-object. */
+	async searchObjects(query: string): Promise<HestiaRow[]> {
+		return this.json<HestiaRow[]>("v-search-object", query, "json");
+	}
+	/** Per-user object search: v-search-user-object. */
+	async searchUserObjects(user: string, query: string): Promise<HestiaRow[]> {
+		assertUsername(user);
+		return this.json<HestiaRow[]>("v-search-user-object", user, query, "json");
+	}
+	/** Restic snapshots for a user (a JSON array, newest last upstream). */
+	async listUserBackupsRestic(user: string): Promise<HestiaRow[]> {
+		assertUsername(user);
+		const data = await this.json<unknown>(
+			"v-list-user-backups-restic",
+			user,
+			"json",
+		);
+		return Array.isArray(data) ? (data as HestiaRow[]) : [];
+	}
+	async listUserBackupRestic(user: string, snapshot: string) {
+		assertUsername(user);
+		const rows = await this.listRows(
+			"v-list-user-backup-restic",
+			user,
+			snapshot,
+		);
+		return rows[snapshot];
+	}
+	async scheduleUserBackupRestic(user: string) {
+		assertUsername(user);
+		await this.runChecked("v-schedule-user-backup-restic", user);
+	}
+	/**
+	 * Schedule a restic restore: full snapshot, or one typed object
+	 * (web/schedule/restore/incremental's two shapes).
+	 */
+	async scheduleUserRestoreRestic(
+		user: string,
+		snapshot: string,
+		type?: string,
+		object?: string,
+	) {
+		assertUsername(user);
+		if (type && object) {
+			await this.runChecked(
+				"v-schedule-user-restore-restic",
+				user,
+				snapshot,
+				type,
+				object,
+			);
+		} else if (type) {
+			// e.g. cron restores pass the type with no object argument
+			await this.runChecked("v-schedule-user-restore-restic", user, snapshot, type);
+		} else {
+			await this.runChecked("v-schedule-user-restore-restic", user, snapshot);
+		}
+	}
+	async deleteUserBackupRestic(user: string, snapshot: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-user-backup-restic", user, snapshot);
+	}
+
 	/**
 	 * Stage contents in a 0600 temp file under /tmp, run fn with its path,
 	 * and always remove the file afterwards. This is the panel's one staging

@@ -1,0 +1,18 @@
+#!/bin/bash
+# Fixture: v-list-user-backup-restic (record double)
+cat <<'JSON'
+{
+    "snap001": {
+        "SNAPSHOT": "snap001",
+        "WEB": "example.com",
+        "DNS": "example.com",
+        "MAIL": "",
+        "DB": "demo_main",
+        "CRON": "yes",
+        "USER_DIRS": "Documents",
+        "SIZE": "128",
+        "DATE": "2026-10-20",
+        "TIME": "03:00:00"
+    }
+}
+JSON
