@@ -91,7 +91,7 @@ export async function handleApiRequest(
 	const cmd = (data.cmd ?? "").trim();
 	const args = collectArgs(data);
 
-	const dispatch = async (): Promise<ApiResult> => {
+	const dispatch = async (flow: "legacy" | "accesskey"): Promise<ApiResult> => {
 		if (!cmd) return fail(E_INVALID, "Command not provided");
 		if (!COMMAND_PATTERN.test(cmd)) {
 			return fail(E_INVALID, `${cmd} command invalid`);
@@ -103,13 +103,41 @@ export async function handleApiRequest(
 			const name = basename(args[1] ?? "");
 			if (!name) return fail(E_INVALID, "v-make-tmp-file: missing file name");
 			await writeFile(join("/tmp", name), `${args[0] ?? ""}\n`);
-			return { httpStatus: 200, exitCode: 0, body: returnCode ? "0" : "" };
+			if (returnCode) return { httpStatus: 200, exitCode: 0, body: "0" };
+			// Silent success: legacy answers "OK", the access-key flow
+			// answers 204 with an empty body (see below).
+			return flow === "legacy"
+				? { httpStatus: 200, exitCode: 0, body: "OK" }
+				: { httpStatus: 204, exitCode: 0, body: "" };
 		}
 		const result = await client.raw(cmd, ...args);
+		if (returnCode) {
+			return { httpStatus: 200, exitCode: result.code, body: String(result.code) };
+		}
+		if (flow === "legacy") {
+			// api_legacy's tail: HTTP is always 200 for a dispatched
+			// command; a silent success answers "OK"; anything else is
+			// the command's stdout with a trailing newline.
+			const body =
+				result.code === 0 && result.stdout === ""
+					? "OK"
+					: result.stdout === "" || result.stdout.endsWith("\n")
+						? result.stdout
+						: `${result.stdout}\n`;
+			return { httpStatus: 200, exitCode: result.code, body };
+		}
+		// api_connection's tail: body is the TRIMMED output; a silent
+		// success is 204 No Content; failures take the mapped HTTP code.
+		const body = result.stdout.trim();
 		return {
-			httpStatus: exitCodeToHttpCode(result.code),
+			httpStatus:
+				result.code > 0
+					? exitCodeToHttpCode(result.code)
+					: body === ""
+						? 204
+						: 200,
 			exitCode: result.code,
-			body: returnCode ? String(result.code) : result.stdout,
+			body,
 		};
 	};
 
@@ -185,7 +213,7 @@ export async function handleApiRequest(
 				);
 			}
 		}
-		return dispatch();
+		return dispatch("accesskey");
 	}
 
 	// ---- Legacy flow (api_legacy): hash, or user+password for root ----
@@ -211,5 +239,5 @@ export async function handleApiRequest(
 		);
 		if (!ok) return fail(E_PASSWORD, "authentication failed");
 	}
-	return dispatch();
+	return dispatch("legacy");
 }

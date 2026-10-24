@@ -206,6 +206,43 @@ describe("access-key API flow", () => {
 	});
 });
 
+describe("dispatch body semantics (PHP tails)", () => {
+	it("legacy: a silent success answers OK", async () => {
+		const res = await handleApiRequest(
+			client,
+			{
+				hash: "fixture-hash-value",
+				cmd: "v-change-user-name",
+				arg1: "demo",
+				arg2: "Renamed",
+				arg3: "Person",
+			},
+			IP,
+		);
+		expect(res.exitCode).toBe(0);
+		expect(res.httpStatus).toBe(200);
+		expect(res.body).toBe("OK");
+	});
+
+	it("access-key: a silent success is 204 with an empty body", async () => {
+		const res = await handleApiRequest(
+			client,
+			{
+				access_key: "AKROOT",
+				secret_key: "root-secret",
+				cmd: "v-change-user-name",
+				arg1: "demo",
+				arg2: "Renamed",
+				arg3: "Person",
+			},
+			IP,
+		);
+		expect(res.exitCode).toBe(0);
+		expect(res.httpStatus).toBe(204);
+		expect(res.body).toBe("");
+	});
+});
+
 describe("API config gates", () => {
 	it("refuses everything when the API is disabled in sys config", async () => {
 		const alt = "/tmp/hestiang-fixture-config-off.json";
