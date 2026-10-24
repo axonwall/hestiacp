@@ -178,6 +178,821 @@ export class HestiaClient {
 		return this.listRows("v-list-sys-rrd");
 	}
 
+	/* ==================================================================
+	 * Phase 3 — CRUD by domain. Argument orders mirror the PHP pages
+	 * (web/add|edit|delete| suspend/<domain>) exactly; multi-step flows
+	 * follow the pages' sequencing. Secrets are staged, never argv.
+	 * ================================================================== */
+
+	/** Fetch one record from a singular v-list-* command. */
+	private async listOne(
+		command: string,
+		key: string,
+		...args: string[]
+	): Promise<HestiaRow> {
+		const data = await this.json<Record<string, HestiaRow>>(
+			command,
+			...args,
+			"json",
+		);
+		const record = data[key];
+		if (!record) throw new Error(`${command} returned no record for ${key}`);
+		return record;
+	}
+
+	listWebDomain(user: string, domain: string) {
+		assertUsername(user);
+		return this.listOne("v-list-web-domain", domain, user, domain);
+	}
+	listDnsDomain(user: string, domain: string) {
+		assertUsername(user);
+		return this.listOne("v-list-dns-domain", domain, user, domain);
+	}
+	listMailDomain(user: string, domain: string) {
+		assertUsername(user);
+		return this.listOne("v-list-mail-domain", domain, user, domain);
+	}
+	listMailAccount(user: string, domain: string, account: string) {
+		assertUsername(user);
+		return this.listOne(
+			"v-list-mail-account",
+			account,
+			user,
+			domain,
+			account,
+		);
+	}
+	listDatabase(user: string, database: string) {
+		assertUsername(user);
+		return this.listOne("v-list-database", database, user, database);
+	}
+	listCronJob(user: string, job: string) {
+		assertUsername(user);
+		return this.listOne("v-list-cron-job", job, user, job);
+	}
+	/** User IPs as a map keyed by IP ({ NAT, ... }) — web/add's source. */
+	listUserIps(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-user-ips", user);
+	}
+	/** The public (NAT) address for an IP, or the IP itself — as web/add. */
+	async publicIpFor(user: string, ip: string): Promise<string> {
+		const ips = await this.listUserIps(user).catch(() => null);
+		const nat = ips?.[ip]?.NAT?.trim();
+		return nat ? nat : ip;
+	}
+	async listWebTemplates(): Promise<string[]> {
+		return normalizeStringList(await this.json("v-list-web-templates", "json"));
+	}
+	async listWebTemplatesBackend(): Promise<string[]> {
+		return normalizeStringList(
+			await this.json("v-list-web-templates-backend", "json"),
+		);
+	}
+	async listWebTemplatesProxy(): Promise<string[]> {
+		return normalizeStringList(
+			await this.json("v-list-web-templates-proxy", "json"),
+		);
+	}
+	async listDnsTemplates(): Promise<string[]> {
+		return normalizeStringList(await this.json("v-list-dns-templates", "json"));
+	}
+	async listWebStatsSystems(): Promise<string[]> {
+		return normalizeStringList(await this.json("v-list-web-stats", "json"));
+	}
+	/** Database hosts as a map keyed by hostname ({ TYPE, CHARSETS, ... }). */
+	listDatabaseHosts() {
+		return this.listRows("v-list-database-hosts");
+	}
+	/** Autoreply text is a plain-text command, not JSON. */
+	async listMailAccountAutoreply(
+		user: string,
+		domain: string,
+		account: string,
+	): Promise<string> {
+		assertUsername(user);
+		const result = await this.raw(
+			"v-list-mail-account-autoreply",
+			user,
+			domain,
+			account,
+		);
+		return result.code === 0 ? result.stdout.replace(/\n$/, "") : "";
+	}
+
+	/* ---- Web domains ---- */
+
+	/**
+	 * v-add-web-domain (+ the add page's optional DNS and mail domains).
+	 * The DNS domain is created with the IP's public/NAT address, exactly
+	 * as web/add/web resolves it.
+	 */
+	async addWebDomain(
+		user: string,
+		domain: string,
+		ip: string,
+		opts: { dns?: boolean; mail?: boolean } = {},
+	): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-add-web-domain", user, domain, ip, "yes");
+		if (opts.dns) {
+			const publicIp = await this.publicIpFor(user, ip);
+			await this.runChecked(
+				"v-add-dns-domain",
+				user,
+				domain,
+				publicIp,
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"",
+				"no",
+			);
+		}
+		if (opts.mail) {
+			await this.runChecked("v-add-mail-domain", user, domain);
+		}
+	}
+	/** IP change; also moves the DNS zone when one exists (edit/web). */
+	async changeWebDomainIp(
+		user: string,
+		domain: string,
+		ip: string,
+	): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-web-domain-ip", user, domain, ip, "no");
+		const dns = await this.listDnsDomain(user, domain).catch(() => null);
+		if (dns) {
+			const publicIp = await this.publicIpFor(user, ip);
+			await this.runChecked(
+				"v-change-dns-domain-ip",
+				user,
+				domain,
+				publicIp,
+				"no",
+			);
+		}
+	}
+	async changeWebDomainTpl(user: string, domain: string, tpl: string) {
+		assertUsername(user);
+		await this.runChecked("v-change-web-domain-tpl", user, domain, tpl, "no");
+	}
+	async changeWebDomainBackendTpl(user: string, domain: string, tpl: string) {
+		assertUsername(user);
+		await this.runChecked("v-change-web-domain-backend-tpl", user, domain, tpl);
+	}
+	/** Proxy enable (add) / template+ext change, per edit/web. */
+	async addWebDomainProxy(
+		user: string,
+		domain: string,
+		tpl: string,
+		ext: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-add-web-domain-proxy",
+			user,
+			domain,
+			tpl,
+			ext,
+			"no",
+		);
+	}
+	async changeWebDomainProxyTpl(
+		user: string,
+		domain: string,
+		tpl: string,
+		ext: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-change-web-domain-proxy-tpl",
+			user,
+			domain,
+			tpl,
+			ext,
+			"no",
+		);
+	}
+	async deleteWebDomainProxy(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-web-domain-proxy", user, domain, "no");
+	}
+	async addWebDomainAlias(user: string, domain: string, alias: string) {
+		assertUsername(user);
+		await this.runChecked("v-add-web-domain-alias", user, domain, alias, "no");
+	}
+	async deleteWebDomainAlias(user: string, domain: string, alias: string) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-delete-web-domain-alias",
+			user,
+			domain,
+			alias,
+			"no",
+		);
+	}
+	async addLetsEncryptDomain(
+		user: string,
+		domain: string,
+		aliasesCsv: string,
+		keyAlgo = "",
+		mailDomain = false,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-add-letsencrypt-domain",
+			user,
+			domain,
+			aliasesCsv,
+			mailDomain ? "yes" : "",
+			keyAlgo,
+		);
+	}
+	async deleteLetsEncryptDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-letsencrypt-domain", user, domain, "");
+	}
+	async deleteWebDomainSsl(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-web-domain-ssl", user, domain, "no");
+	}
+	async setWebDomainSslForce(user: string, domain: string, on: boolean) {
+		assertUsername(user);
+		await this.runChecked(
+			on ? "v-add-web-domain-ssl-force" : "v-delete-web-domain-ssl-force",
+			user,
+			domain,
+		);
+	}
+	async setWebDomainSslHsts(user: string, domain: string, on: boolean) {
+		assertUsername(user);
+		await this.runChecked(
+			on ? "v-add-web-domain-ssl-hsts" : "v-delete-web-domain-ssl-hsts",
+			user,
+			domain,
+		);
+	}
+	async addFastcgiCache(user: string, domain: string, duration: string) {
+		assertUsername(user);
+		await this.runChecked("v-add-fastcgi-cache", user, domain, duration);
+	}
+	async deleteFastcgiCache(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-fastcgi-cache", user, domain);
+	}
+	/** The add/change/delete branch of edit/web's stats select. */
+	async setWebDomainStats(
+		user: string,
+		domain: string,
+		current: string,
+		next: string,
+	) {
+		assertUsername(user);
+		if (!next) {
+			if (current) {
+				await this.runChecked("v-delete-web-domain-stats", user, domain);
+			}
+		} else if (!current) {
+			await this.runChecked("v-add-web-domain-stats", user, domain, next);
+		} else {
+			await this.runChecked("v-change-web-domain-stats", user, domain, next);
+		}
+	}
+	async suspendWebDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-suspend-web-domain", user, domain);
+	}
+	async unsuspendWebDomain(user: string, domain: string) {
+		assertUsername(user);
+		// NB: the command really is v-unsuspend-domain (no "-web-").
+		await this.runChecked("v-unsuspend-domain", user, domain);
+	}
+	async deleteWebDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-web-domain", user, domain, "yes");
+	}
+	async restartWeb() {
+		await this.runChecked("v-restart-web");
+	}
+	async restartProxy() {
+		await this.runChecked("v-restart-proxy");
+	}
+
+	/* ---- DNS domains + records ---- */
+
+	async addDnsDomain(
+		user: string,
+		domain: string,
+		ip: string,
+		ns: string[],
+		dnssec: boolean,
+	): Promise<void> {
+		assertUsername(user);
+		const servers = [...ns.slice(0, 8)];
+		while (servers.length < 8) servers.push("");
+		await this.runChecked(
+			"v-add-dns-domain",
+			user,
+			domain,
+			ip,
+			...servers,
+			"no",
+			dnssec ? "yes" : "no",
+		);
+	}
+	async changeDnsDomainIp(user: string, domain: string, ip: string) {
+		assertUsername(user);
+		await this.runChecked("v-change-dns-domain-ip", user, domain, ip, "no");
+	}
+	async changeDnsDomainTpl(user: string, domain: string, tpl: string) {
+		assertUsername(user);
+		await this.runChecked("v-change-dns-domain-tpl", user, domain, tpl, "no");
+	}
+	async changeDnsDomainSoa(user: string, domain: string, soa: string) {
+		assertUsername(user);
+		await this.runChecked("v-change-dns-domain-soa", user, domain, soa, "no");
+	}
+	async changeDnsDomainExp(user: string, domain: string, exp: string) {
+		assertUsername(user);
+		await this.runChecked("v-change-dns-domain-exp", user, domain, exp, "no");
+	}
+	async changeDnsDomainTtl(user: string, domain: string, ttl: string) {
+		assertUsername(user);
+		await this.runChecked("v-change-dns-domain-ttl", user, domain, ttl, "no");
+	}
+	async setDnsDomainDnssec(user: string, domain: string, on: boolean) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-change-dns-domain-dnssec",
+			user,
+			domain,
+			on ? "yes" : "no",
+		);
+	}
+	async restartDns() {
+		await this.runChecked("v-restart-dns");
+	}
+	async suspendDnsDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-suspend-dns-domain", user, domain);
+	}
+	async unsuspendDnsDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-unsuspend-dns-domain", user, domain);
+	}
+	async deleteDnsDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-dns-domain", user, domain);
+	}
+	async addDnsRecord(
+		user: string,
+		domain: string,
+		rec: string,
+		type: string,
+		value: string,
+		priority: string,
+		ttl: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-add-dns-record",
+			user,
+			domain,
+			rec,
+			type,
+			value,
+			priority,
+			"",
+			"yes",
+			ttl,
+		);
+	}
+	async changeDnsRecord(
+		user: string,
+		domain: string,
+		id: string,
+		rec: string,
+		type: string,
+		value: string,
+		priority: string,
+		ttl: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-change-dns-record",
+			user,
+			domain,
+			id,
+			rec,
+			type,
+			value,
+			priority,
+			"yes",
+			ttl,
+		);
+	}
+	async changeDnsRecordId(
+		user: string,
+		domain: string,
+		oldId: string,
+		newId: string,
+	) {
+		assertUsername(user);
+		await this.runChecked("v-change-dns-record-id", user, domain, oldId, newId);
+	}
+	async suspendDnsRecord(user: string, domain: string, id: string) {
+		assertUsername(user);
+		await this.runChecked("v-suspend-dns-record", user, domain, id);
+	}
+	async unsuspendDnsRecord(user: string, domain: string, id: string) {
+		assertUsername(user);
+		await this.runChecked("v-unsuspend-dns-record", user, domain, id);
+	}
+	async deleteDnsRecord(user: string, domain: string, id: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-dns-record", user, domain, id);
+	}
+
+	/* ---- Mail domains + accounts ---- */
+
+	async addMailDomain(
+		user: string,
+		domain: string,
+		opts: {
+			antispam?: boolean;
+			antivirus?: boolean;
+			dkim?: boolean;
+			dkimSelector?: string;
+		} = {},
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-add-mail-domain",
+			user,
+			domain,
+			opts.antispam ? "yes" : "no",
+			opts.antivirus ? "yes" : "no",
+			opts.dkim ? "yes" : "no",
+			"2048",
+			"",
+			"",
+			opts.dkimSelector ?? "mail",
+		);
+	}
+	async setMailDomainAntispam(user: string, domain: string, on: boolean) {
+		assertUsername(user);
+		await this.runChecked(
+			on ? "v-add-mail-domain-antispam" : "v-delete-mail-domain-antispam",
+			user,
+			domain,
+		);
+	}
+	async setMailDomainAntivirus(user: string, domain: string, on: boolean) {
+		assertUsername(user);
+		await this.runChecked(
+			on ? "v-add-mail-domain-antivirus" : "v-delete-mail-domain-antivirus",
+			user,
+			domain,
+		);
+	}
+	async addMailDomainDkim(user: string, domain: string, selector: string) {
+		assertUsername(user);
+		await this.runChecked("v-add-mail-domain-dkim", user, domain, "", selector);
+	}
+	async deleteMailDomainDkim(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-mail-domain-dkim", user, domain);
+	}
+	async setMailDomainReject(user: string, domain: string, on: boolean) {
+		assertUsername(user);
+		await this.runChecked(
+			on ? "v-add-mail-domain-reject" : "v-delete-mail-domain-reject",
+			user,
+			domain,
+			"yes",
+		);
+	}
+	async addMailDomainCatchall(user: string, domain: string, email: string) {
+		assertUsername(user);
+		await this.runChecked("v-add-mail-domain-catchall", user, domain, email);
+	}
+	async changeMailDomainCatchall(user: string, domain: string, email: string) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-change-mail-domain-catchall",
+			user,
+			domain,
+			email,
+		);
+	}
+	async deleteMailDomainCatchall(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-mail-domain-catchall", user, domain);
+	}
+	async changeMailDomainRateLimit(user: string, domain: string, rate: string) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-change-mail-domain-rate-limit",
+			user,
+			domain,
+			rate || "system",
+		);
+	}
+	async suspendMailDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-suspend-mail-domain", user, domain);
+	}
+	async unsuspendMailDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-unsuspend-mail-domain", user, domain);
+	}
+	async deleteMailDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-mail-domain", user, domain);
+	}
+	async addMailAccount(
+		user: string,
+		domain: string,
+		account: string,
+		secret: string,
+		quota: string,
+	) {
+		assertUsername(user);
+		await this.withStagedFile(`${secret}\n`, (path) =>
+			this.runChecked(
+				"v-add-mail-account",
+				user,
+				domain,
+				account,
+				path,
+				quota || "0",
+			),
+		);
+	}
+	async changeMailAccountPassword(
+		user: string,
+		domain: string,
+		account: string,
+		secret: string,
+	) {
+		assertUsername(user);
+		await this.withStagedFile(`${secret}\n`, (path) =>
+			this.runChecked(
+				"v-change-mail-account-password",
+				user,
+				domain,
+				account,
+				path,
+			),
+		);
+	}
+	async changeMailAccountQuota(
+		user: string,
+		domain: string,
+		account: string,
+		quota: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-change-mail-account-quota",
+			user,
+			domain,
+			account,
+			quota || "0",
+		);
+	}
+	async changeMailAccountRateLimit(
+		user: string,
+		domain: string,
+		account: string,
+		rate: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-change-mail-account-rate-limit",
+			user,
+			domain,
+			account,
+			rate || "system",
+		);
+	}
+	async addMailAccountAlias(
+		user: string,
+		domain: string,
+		account: string,
+		alias: string,
+	) {
+		assertUsername(user);
+		await this.runChecked("v-add-mail-account-alias", user, domain, account, alias);
+	}
+	async deleteMailAccountAlias(
+		user: string,
+		domain: string,
+		account: string,
+		alias: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-delete-mail-account-alias",
+			user,
+			domain,
+			account,
+			alias,
+		);
+	}
+	async addMailAccountForward(
+		user: string,
+		domain: string,
+		account: string,
+		forward: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-add-mail-account-forward",
+			user,
+			domain,
+			account,
+			forward,
+		);
+	}
+	async deleteMailAccountForward(
+		user: string,
+		domain: string,
+		account: string,
+		forward: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-delete-mail-account-forward",
+			user,
+			domain,
+			account,
+			forward,
+		);
+	}
+	async setMailAccountFwdOnly(
+		user: string,
+		domain: string,
+		account: string,
+		on: boolean,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			on ? "v-add-mail-account-fwd-only" : "v-delete-mail-account-fwd-only",
+			user,
+			domain,
+			account,
+		);
+	}
+	async addMailAccountAutoreply(
+		user: string,
+		domain: string,
+		account: string,
+		message: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-add-mail-account-autoreply",
+			user,
+			domain,
+			account,
+			message,
+		);
+	}
+	async deleteMailAccountAutoreply(user: string, domain: string, account: string) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-delete-mail-account-autoreply",
+			user,
+			domain,
+			account,
+		);
+	}
+	async suspendMailAccount(user: string, domain: string, account: string) {
+		assertUsername(user);
+		await this.runChecked("v-suspend-mail-account", user, domain, account);
+	}
+	async unsuspendMailAccount(user: string, domain: string, account: string) {
+		assertUsername(user);
+		await this.runChecked("v-unsuspend-mail-account", user, domain, account);
+	}
+	async deleteMailAccount(user: string, domain: string, account: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-mail-account", user, domain, account);
+	}
+
+	/* ---- Databases ---- */
+
+	async addDatabase(
+		user: string,
+		database: string,
+		dbuser: string,
+		secret: string,
+		type: string,
+		host: string,
+		charset: string,
+	) {
+		assertUsername(user);
+		await this.withStagedFile(`${secret}\n`, (path) =>
+			this.runChecked(
+				"v-add-database",
+				user,
+				database,
+				dbuser,
+				path,
+				type,
+				host,
+				charset,
+			),
+		);
+	}
+	async changeDatabaseUser(user: string, database: string, dbuser: string) {
+		assertUsername(user);
+		await this.runChecked("v-change-database-user", user, database, dbuser);
+	}
+	async changeDatabasePassword(user: string, database: string, secret: string) {
+		assertUsername(user);
+		await this.withStagedFile(`${secret}\n`, (path) =>
+			this.runChecked("v-change-database-password", user, database, path),
+		);
+	}
+	async suspendDatabase(user: string, database: string) {
+		assertUsername(user);
+		await this.runChecked("v-suspend-database", user, database);
+	}
+	async unsuspendDatabase(user: string, database: string) {
+		assertUsername(user);
+		await this.runChecked("v-unsuspend-database", user, database);
+	}
+	async deleteDatabase(user: string, database: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-database", user, database);
+	}
+
+	/* ---- Cron jobs ---- */
+
+	async addCronJob(
+		user: string,
+		min: string,
+		hour: string,
+		day: string,
+		month: string,
+		wday: string,
+		cmd: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-add-cron-job",
+			user,
+			min,
+			hour,
+			day,
+			month,
+			wday,
+			cmd,
+		);
+	}
+	async changeCronJob(
+		user: string,
+		job: string,
+		min: string,
+		hour: string,
+		day: string,
+		month: string,
+		wday: string,
+		cmd: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-change-cron-job",
+			user,
+			job,
+			min,
+			hour,
+			day,
+			month,
+			wday,
+			cmd,
+		);
+	}
+	async suspendCronJob(user: string, job: string) {
+		assertUsername(user);
+		await this.runChecked("v-suspend-cron-job", user, job);
+	}
+	async unsuspendCronJob(user: string, job: string) {
+		assertUsername(user);
+		await this.runChecked("v-unsuspend-cron-job", user, job);
+	}
+	async deleteCronJob(user: string, job: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-cron-job", user, job);
+	}
+
 	/**
 	 * Stage contents in a 0600 temp file under /tmp, run fn with its path,
 	 * and always remove the file afterwards. This is the panel's one staging

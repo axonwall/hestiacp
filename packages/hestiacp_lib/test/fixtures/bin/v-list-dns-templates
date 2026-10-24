@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-list-dns-templates (enumeration double)
+echo '["default", "child-ns"]'

@@ -1,0 +1,18 @@
+#!/bin/bash
+# Fixture: v-list-dns-domain (singular/enumeration double)
+cat <<'JSON'
+{
+    "example.com": {
+        "IP": "203.0.113.10",
+        "TPL": "default",
+        "TTL": "14400",
+        "EXP": "2027-10-01",
+        "SOA": "ns1.example.com",
+        "SERIAL": "2026100101",
+        "DNSSEC": "no",
+        "RECORDS": "3",
+        "SUSPENDED": "no",
+        "DATE": "2026-10-01"
+    }
+}
+JSON

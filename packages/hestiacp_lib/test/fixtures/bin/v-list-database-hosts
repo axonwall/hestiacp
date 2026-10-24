@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fixture: v-list-database-hosts (singular/enumeration double)
+cat <<'JSON'
+{
+    "localhost": {
+        "HOST": "localhost",
+        "TYPE": "mysql",
+        "CHARSETS": "utf8mb4,utf8,latin1",
+        "MAX_DB": "unlimited",
+        "SUSPENDED": "no"
+    }
+}
+JSON

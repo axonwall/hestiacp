@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-list-web-stats (enumeration double)
+echo '["awstats", "webalizer"]'

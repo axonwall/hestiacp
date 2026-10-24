@@ -1,0 +1,17 @@
+#!/bin/bash
+# Fixture: v-list-cron-job (singular/enumeration double)
+cat <<'JSON'
+{
+    "1": {
+        "MIN": "0",
+        "HOUR": "3",
+        "DAY": "*",
+        "MONTH": "*",
+        "WDAY": "*",
+        "CMD": "/usr/bin/backup.sh",
+        "JOB": "1",
+        "SUSPENDED": "no",
+        "DATE": "2026-10-03"
+    }
+}
+JSON

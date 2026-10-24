@@ -1,0 +1,21 @@
+#!/bin/bash
+# Fixture: v-list-mail-domain (singular/enumeration double)
+cat <<'JSON'
+{
+    "example.com": {
+        "ANTISPAM": "yes",
+        "ANTIVIRUS": "yes",
+        "DKIM": "yes",
+        "DKIM_SELECTOR": "mail",
+        "CATCHALL": "",
+        "ACCOUNTS": "2",
+        "RATE_LIMIT": "",
+        "REJECT": "",
+        "SSL": "no",
+        "LETSENCRYPT": "no",
+        "SUSPENDED": "no",
+        "WEBMAIL": "",
+        "DATE": "2026-10-02"
+    }
+}
+JSON
