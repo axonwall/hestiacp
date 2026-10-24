@@ -1182,6 +1182,355 @@ export class HestiaClient {
 		await this.runChecked("v-delete-mail-domain-smtp-relay", user, domain);
 	}
 
+	/* ---- Phase 3 remainder: stats users, backups, firewall/IPs, server ---- */
+
+	/* Web stats authorization: a single auth user per domain in 1.10.5.
+	 * The same add command sets the user and (re)sets its password. */
+	async addWebDomainStatsUser(
+		user: string,
+		domain: string,
+		statsUser: string,
+		secret: string,
+	) {
+		assertUsername(user);
+		await this.withStagedFile(`${secret}\n`, (file) =>
+			this.runChecked(
+				"v-add-web-domain-stats-user",
+				user,
+				domain,
+				statsUser,
+				file,
+			),
+		);
+	}
+	async deleteWebDomainStatsUser(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-web-domain-stats-user", user, domain);
+	}
+
+	/* Backups. */
+	async listUserBackup(user: string, backup: string) {
+		assertUsername(user);
+		const rows = await this.listRows("v-list-user-backup", user, backup);
+		return rows[backup];
+	}
+	async scheduleUserBackup(user: string) {
+		assertUsername(user);
+		await this.runChecked("v-schedule-user-backup", user);
+	}
+	/**
+	 * Schedule a restore: full (no sections) or per-section, where each
+	 * section is the object name to restore or "no" (cron takes yes/no),
+	 * exactly as web/schedule/restore builds the command.
+	 */
+	async scheduleUserRestore(
+		user: string,
+		backup: string,
+		sections?: {
+			web: string;
+			dns: string;
+			mail: string;
+			db: string;
+			cron: string;
+			udir: string;
+		},
+	) {
+		assertUsername(user);
+		if (!sections) {
+			await this.runChecked("v-schedule-user-restore", user, backup);
+		} else {
+			await this.runChecked(
+				"v-schedule-user-restore",
+				user,
+				backup,
+				sections.web,
+				sections.dns,
+				sections.mail,
+				sections.db,
+				sections.cron,
+				sections.udir,
+			);
+		}
+	}
+	async deleteUserBackup(user: string, backup: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-user-backup", user, backup);
+	}
+	async scheduleUserBackupDownload(user: string, backup: string) {
+		assertUsername(user);
+		await this.runChecked("v-schedule-user-backup-download", user, backup);
+	}
+	/** Exclusion lists as a flat {WEB: "a,b", DNS: "", ...} record. */
+	async listUserBackupExclusions(
+		user: string,
+	): Promise<Record<string, string>> {
+		assertUsername(user);
+		const parsed = await this.json<Record<string, string>>(
+			"v-list-user-backup-exclusions",
+			user,
+			"json",
+		);
+		return parsed;
+	}
+	/** Stage the five KEY='csv' lines, as web/edit/backup/exclusions does. */
+	async updateUserBackupExclusions(
+		user: string,
+		exclusions: Record<string, string>,
+	) {
+		assertUsername(user);
+		const body =
+			["WEB", "DNS", "MAIL", "DB", "USER"]
+				.map((k) => `${k}='${(exclusions[k] ?? "").replace(/'/g, "")}'`)
+				.join("\n") + "\n";
+		await this.withStagedFile(body, (file) =>
+			this.runChecked("v-update-user-backup-exclusions", user, file),
+		);
+	}
+	async deleteUserBackupExclusions(user: string, system: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-user-backup-exclusions", user, system);
+	}
+
+	/* Firewall (admin surface; the commands take no user argument). */
+	async addFirewallRule(
+		action: string,
+		ip: string,
+		port: string,
+		protocol: string,
+		comment: string,
+	) {
+		await this.runChecked(
+			"v-add-firewall-rule",
+			action,
+			ip,
+			port,
+			protocol,
+			comment,
+		);
+	}
+	async changeFirewallRule(
+		rule: string,
+		action: string,
+		ip: string,
+		port: string,
+		protocol: string,
+		comment: string,
+	) {
+		await this.runChecked(
+			"v-change-firewall-rule",
+			rule,
+			action,
+			ip,
+			port,
+			protocol,
+			comment,
+		);
+	}
+	async deleteFirewallRule(rule: string) {
+		await this.runChecked("v-delete-firewall-rule", rule);
+	}
+	async listFirewallRule(rule: string) {
+		const rows = await this.listRows("v-list-firewall-rule", rule);
+		return rows[rule];
+	}
+	async addFirewallBan(ip: string, chain: string) {
+		await this.runChecked("v-add-firewall-ban", ip, chain);
+	}
+	async deleteFirewallBan(ip: string, chain: string) {
+		await this.runChecked("v-delete-firewall-ban", ip, chain);
+	}
+	async addFirewallIpset(
+		name: string,
+		source: string,
+		ipVersion: string,
+		autoupdate: string,
+	) {
+		await this.runChecked(
+			"v-add-firewall-ipset",
+			name,
+			source,
+			ipVersion,
+			autoupdate,
+		);
+	}
+	async deleteFirewallIpset(name: string) {
+		await this.runChecked("v-delete-firewall-ipset", name);
+	}
+
+	/* System IPs (admin). */
+	async listSysIp(ip: string) {
+		const rows = await this.listRows("v-list-sys-ip", ip);
+		return rows[ip];
+	}
+	async addSysIp(
+		ip: string,
+		netmask: string,
+		iface: string,
+		owner: string,
+		status: string,
+		name: string,
+		nat: string,
+	) {
+		await this.runChecked(
+			"v-add-sys-ip",
+			ip,
+			netmask,
+			iface,
+			owner,
+			status,
+			name,
+			nat,
+		);
+	}
+	async changeSysIpStatus(ip: string, status: string) {
+		await this.runChecked("v-change-sys-ip-status", ip, status);
+	}
+	async changeSysIpOwner(ip: string, owner: string) {
+		await this.runChecked("v-change-sys-ip-owner", ip, owner);
+	}
+	async changeSysIpName(ip: string, name: string) {
+		await this.runChecked("v-change-sys-ip-name", ip, name);
+	}
+	async changeSysIpNat(ip: string, nat: string) {
+		await this.runChecked("v-change-sys-ip-nat", ip, nat);
+	}
+	async deleteSysIp(ip: string) {
+		await this.runChecked("v-delete-sys-ip", ip);
+	}
+
+	/* System feature toggles (edit/server): each is an add/delete pair. */
+	async addSysFirewall() {
+		await this.runChecked("v-add-sys-firewall");
+	}
+	async deleteSysFirewall() {
+		await this.runChecked("v-delete-sys-firewall");
+	}
+	async addSysFilemanager() {
+		await this.runChecked("v-add-sys-filemanager");
+	}
+	async deleteSysFilemanager() {
+		await this.runChecked("v-delete-sys-filemanager");
+	}
+	async addSysWebTerminal() {
+		await this.runChecked("v-add-sys-web-terminal");
+	}
+	async deleteSysWebTerminal() {
+		await this.runChecked("v-delete-sys-web-terminal");
+	}
+	async addSysQuota() {
+		await this.runChecked("v-add-sys-quota");
+	}
+	async deleteSysQuota() {
+		await this.runChecked("v-delete-sys-quota");
+	}
+
+	/* Server settings (admin). */
+	async changeSysHostname(hostname: string) {
+		await this.runChecked("v-change-sys-hostname", hostname);
+	}
+	async changeSysTimezone(timezone: string) {
+		await this.runChecked("v-change-sys-timezone", timezone);
+	}
+	async changeSysLanguage(language: string, updateUsers = false) {
+		await this.runChecked(
+			"v-change-sys-language",
+			language,
+			...(updateUsers ? ["yes"] : []),
+		);
+	}
+	async changeSysConfigValue(key: string, value: string) {
+		await this.runChecked("v-change-sys-config-value", key, value);
+	}
+	async getSysTimezones(): Promise<string[]> {
+		const result = await this.raw("v-get-sys-timezones");
+		return result.stdout.split("\n").map((s) => s.trim()).filter(Boolean);
+	}
+	/** Read a service config file through the engine (plain text). */
+	async openFsConfig(path: string): Promise<string> {
+		const result = await this.raw("v-open-fs-config", path);
+		if (result.code !== 0) {
+			throw new Error(
+				`v-open-fs-config exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
+			);
+		}
+		return result.stdout;
+	}
+	/**
+	 * Save a service config: stage the contents and hand the file to
+	 * v-change-sys-service-config — the archetype behind all ~22
+	 * web/edit/server/<service> pages.
+	 */
+	async changeSysServiceConfig(
+		service: string,
+		contents: string,
+		restart: boolean,
+	) {
+		await this.withStagedFile(contents, (file) =>
+			this.runChecked(
+				"v-change-sys-service-config",
+				file,
+				service,
+				restart ? "yes" : "no",
+			),
+		);
+	}
+	async startService(service: string) {
+		await this.runChecked("v-start-service", service);
+	}
+	async stopService(service: string) {
+		await this.runChecked("v-stop-service", service);
+	}
+	async restartService(service: string) {
+		await this.runChecked("v-restart-service", service, "yes");
+	}
+	async listBackupHosts() {
+		return this.listRows("v-list-backup-host");
+	}
+	async addBackupHost(
+		type: string,
+		host: string,
+		username: string,
+		secret: string,
+		path: string,
+		port: string,
+	) {
+		await this.withStagedFile(`${secret}\n`, (file) =>
+			this.runChecked(
+				"v-add-backup-host",
+				type,
+				host,
+				username,
+				file,
+				path,
+				port,
+			),
+		);
+	}
+	async deleteBackupHost(type: string) {
+		await this.runChecked("v-delete-backup-host", type);
+	}
+	async addBackupHostRestic(
+		repo: string,
+		snapshots: string,
+		keepDaily: string,
+		keepWeekly: string,
+		keepMonthly: string,
+		keepYearly: string,
+	) {
+		await this.runChecked(
+			"v-add-backup-host-restic",
+			repo,
+			snapshots,
+			keepDaily,
+			keepWeekly,
+			keepMonthly,
+			keepYearly,
+		);
+	}
+	async deleteBackupHostRestic() {
+		await this.runChecked("v-delete-backup-host-restic");
+	}
+
 	/**
 	 * Stage contents in a 0600 temp file under /tmp, run fn with its path,
 	 * and always remove the file afterwards. This is the panel's one staging

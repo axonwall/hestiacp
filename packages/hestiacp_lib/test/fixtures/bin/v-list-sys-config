@@ -17,7 +17,18 @@ cat <<'JSON'
         "API_ALLOWED_IP": "allow-all",
         "FILE_MANAGER": "true",
         "WEB_TERMINAL": "true",
-        "INACTIVE_SESSION_TIMEOUT": "1800"
+        "HOSTNAME": "panel.fixture.local",
+    "TIMEZONE": "UTC",
+    "LANGUAGE": "en",
+    "THEME": "default",
+    "BACKUP": "/backup",
+    "BACKUP_MODE": "gzip",
+    "BACKUP_GZIP": "4",
+    "BACKUP_SYSTEM": "local",
+    "FIREWALL_SYSTEM": "",
+    "QUOTA_SYSTEM": "",
+    "DEBUG_MODE": "",
+    "INACTIVE_SESSION_TIMEOUT": "1800"
     }
 }
 JSON

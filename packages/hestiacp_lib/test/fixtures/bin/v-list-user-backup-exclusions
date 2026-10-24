@@ -1,0 +1,5 @@
+#!/bin/bash
+# Fixture: v-list-user-backup-exclusions — flat system-to-csv JSON.
+cat <<'JSON'
+{"WEB": "public_html/cache,logs", "DNS": "", "MAIL": "", "DB": "", "USER": ""}
+JSON
