@@ -24,7 +24,11 @@ OUT="$PANEL_DIR/dist/hestiang-panel-$VERSION"
 TARBALL="$PANEL_DIR/dist/hestiang-panel-$VERSION.tar.gz"
 
 echo "==> Installing (frozen, pinned toolchain)"
-"$PNPM" install --frozen-lockfile
+# The lockfile is the vetted artifact (CI installs it first); a fresh
+# pnpm's default minimum-release-age policy would refuse day-old
+# packages (Next 16.4.3 was published the day before the first box
+# run) even though the lockfile is frozen and unchanged.
+"$PNPM" install --frozen-lockfile --config.minimum-release-age=0
 
 echo "==> Regenerating extracted data (locales, WebApp catalog)"
 "$PNPM" --filter @hestiacp/panel i18n:extract

@@ -66,6 +66,11 @@ echo "==> [2/6] Preparing the api.bats environment"
 if [ "${SKIP_INSTALL:-0}" = "1" ]; then
 	v-change-user-password admin "$ADMIN_PASSWORD" > /dev/null 2>&1 || true
 fi
+# Test-box API posture: api.bats curls the panel's public hostname
+# (the box's own public IP is the client IP, which the stock
+# API_ALLOWED_IP rejects) and its cluster tests need DNS_CLUSTER on.
+v-change-sys-config-value API_ALLOWED_IP 'allow-all' > /dev/null
+v-change-sys-config-value DNS_CLUSTER 'yes' > /dev/null
 API_HASH="$(v-generate-api-key admin 2> /dev/null | tail -1)"
 [ -n "$API_HASH" ] || { echo "could not generate the admin API hash" >&2; exit 1; }
 # Access-key permissions are named profiles in $HESTIA/data/api, not
@@ -88,7 +93,11 @@ echo "    env written to /tmp/hestia-api-env.sh (admin password: $ADMIN_PASSWORD
 
 echo "==> [3/6] Cloning the fork and the bats helpers"
 cd "$WORK"
-[ -d hestiacp ] || git clone -q --branch "$BRANCH" "$FORK_REPO" hestiacp
+if [ -d hestiacp ]; then
+	git -C hestiacp pull -q --ff-only origin "$BRANCH" || true
+else
+	git clone -q --branch "$BRANCH" "$FORK_REPO" hestiacp
+fi
 cd hestiacp
 git submodule update --init test/test_helper > /dev/null 2>&1 || true
 export BATS="$WORK/hestiacp/test/test_helper/bats-core/bin/bats"

@@ -161,7 +161,10 @@ export async function handleApiRequest(
 			"json",
 		);
 		if (check.code !== 0) {
-			return fail(check.code, "authentication failed");
+			// PHP passes v-check-access-key's stdout through as the
+			// error message (its errors proper go to stderr, so this
+			// is usually empty — the body is then just "Error:").
+			return fail(check.code, check.stdout.trim());
 		}
 		let keyData: { USER?: string; USER_ARG_POSITION?: string };
 		try {
