@@ -1,4 +1,10 @@
 #!/bin/bash
 # Fixture: v-run-cli-cmd — log the call, succeed.
 echo "$(basename "$0") $*" >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
+# Answer `ls -d <pattern>` glob queries the way the shell-expanded
+# real command would: the pattern with * expanded to a version.
+if [ "$2" = "ls" ]; then
+	p="$4"
+	echo "${p/\*/1.0}"
+fi
 exit 0

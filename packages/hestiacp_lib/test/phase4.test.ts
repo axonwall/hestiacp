@@ -93,6 +93,7 @@ describe("WebApp framework port", () => {
 				domain: "example.com",
 				docroot: "/home/demo/web/example.com/public_html",
 				url: "https://example.com",
+				ssl: true,
 				database: {
 					create: true,
 					name: "demo_wp",
@@ -134,7 +135,7 @@ describe("WebApp framework port", () => {
 		);
 		expect(lines[7]).toBe("v-add-user-wp-cli demo yes");
 		expect(lines[8]).toMatch(
-			/^v-run-cli-cmd demo \/usr\/bin\/php8\.4 \/home\/demo\/\.wp-cli\/wp config create --dbname=demo_wp --dbuser=demo_wp --dbpass=db-secret --dbhost=localhost --dbprefix=wp_[a-z0-9]{5}_ --dbcharset=utf8mb4 --locale=en_US --path=\/home\/demo\/web\/example\.com\/public_html$/,
+			/^v-run-cli-cmd demo \/usr\/bin\/php8\.4 \/home\/demo\/\.wp-cli\/wp config create --dbname=demo_wp --dbuser=demo_wp --dbpass=db-secret --dbhost=localhost --dbprefix=wp_[A-Za-z0-9]{5}_ --dbcharset=utf8mb4 --locale=en_US --path=\/home\/demo\/web\/example\.com\/public_html$/,
 		);
 		expect(posts).toHaveLength(1);
 		expect(posts[0].url).toBe("https://example.com/wp-admin/install.php?step=2");
@@ -154,6 +155,7 @@ describe("WebApp framework port", () => {
 				domain: "example.com",
 				docroot: "/home/demo/web/example.com/public_html",
 				url: "https://example.com",
+				ssl: true,
 				database: { create: false, name: "", user: "", password: "", host: "" },
 			},
 			{
@@ -195,13 +197,13 @@ describe("WebApp framework port", () => {
 	});
 
 	it("refuses apps without a ported setupApplication", async () => {
-		expect(APP_SETUP_PORTS.Laravel).toBeUndefined();
+		expect(APP_SETUP_PORTS.NotAnApp).toBeUndefined();
 		const ctx = new HestiaAppContext(client, "demo", async () => {});
 		await expect(
 			installWebApp(
 				ctx,
 				{
-					name: "Laravel",
+					name: "NotAnApp",
 					version: "latest",
 					database: true,
 					resources: {},
@@ -210,6 +212,7 @@ describe("WebApp framework port", () => {
 					domain: "example.com",
 					docroot: "/home/demo/web/example.com/public_html",
 					url: "https://example.com",
+				ssl: true,
 					database: { create: false, name: "", user: "", password: "", host: "" },
 				},
 				{ php_version: "8.4" },
