@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { getT, hestia, loadRows, requireAdmin } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
+
 export default async function Page() {
-	await requireAdmin();
+	const session = await requireAdmin();
 	const t = await getT();
 	const result = await loadRows(() => hestia.listFirewallRules());
+	const token = String(session.data.token ?? "");
 	return (
 		<ListView
 			title={t("Firewall")}
@@ -15,8 +18,25 @@ export default async function Page() {
 				{ key: "PORT", label: t("Port") },
 				{ key: "IP", label: t("IP") },
 				{ key: "COMMENT", label: t("Comment") },
-				{ key: "SUSPENDED", label: t("Suspended") }
+				{ key: "SUSPENDED", label: t("Suspended") },
 			]}
-		><p><a href="/list/firewall/banlist">{t("Banlist")}</a>{" · "}<a href="/list/firewall/ipset">{t("IP Sets")}</a></p></ListView>
+			rowActions={(key) => (
+				<>
+					<Link href={`/edit/firewall?rule=${encodeURIComponent(key)}`}>
+						{t("Edit")}
+					</Link>{" "}
+					<Link href={`/delete/firewall?rule=${encodeURIComponent(key)}`}>
+						{t("Delete")}
+					</Link>
+				</>
+			)}
+		>
+			<Link href="/add/firewall">{t("Add rule")}</Link>
+			{" · "}
+			<Link href="/list/firewall/banlist">{t("Banlist")}</Link>
+			{" · "}
+			<Link href="/list/firewall/ipset">{t("IP Sets")}</Link>
+			<span data-token={token} hidden />
+		</ListView>
 	);
 }

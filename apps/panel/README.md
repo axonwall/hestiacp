@@ -179,8 +179,41 @@ edit pages (each submits independently, changed-only):
   / v-change-mail-domain-sslcert, removal, v-restart-mail on change.
   The add-mail form can also set webmail + relay at creation.
 
-Still deferred: web stats users. Still ahead in Phase 3:
-backups/files, firewall & IPs, server settings.
+## Phase 3 remainder — stats users, backups, firewall/IPs, server (2026-10-23)
+
+Phase 3 is complete:
+
+- **Stats users** (edit/web): the single per-domain stats auth user —
+  add/reset via v-add-web-domain-stats-user (staged password), removal
+  via v-delete-web-domain-stats-user.
+- **Backups**: schedule from the list; detail page (v-list-user-backup);
+  restore page — full or per-section (web/DNS/mail/db/user-dirs by
+  object, cron as a whole) via v-schedule-user-restore in PHP's exact
+  argument shape; confirm-page delete; exclusions editor (five
+  KEY='csv' lines staged for v-update-user-backup-exclusions, per-
+  system clear). Download: PHP delegates bytes to nginx via
+  X-Accel-Redirect — the standalone panel streams the file itself
+  under the same access rule (admin any, users only their own
+  prefix), and schedules v-schedule-user-backup-download when the
+  archive is not local yet. /list/files redirects to FileGator (/fm/),
+  which authenticates off the same session files.
+- **Firewall & IPs** (admin): rule add/edit/delete (port input
+  normalized spaces→commas as PHP), ban add/remove, ipset add/remove;
+  IP add/edit (status/owner/name/NAT, changed-only)/delete.
+- **Server settings** (admin): basic form (hostname, timezone,
+  language + apply-to-users, theme, release branch, backup mode/level
+  /dir, debug mode — changed-only); feature toggles with add/delete
+  command pairs (firewall, file manager, web terminal, quota); remote
+  backup hosts (staged credentials) + restic host with retention
+  keeps; service start/stop/restart on /list/server; and ONE service
+  config editor for every web/edit/server/<service> archetype (fixed
+  paths for the well-known services, v-list-sys-<service>-config
+  CONFIG.config_path for the rest, read via v-open-fs-config, saved
+  staged via v-change-sys-service-config).
+
+Not covered from the PHP mega-form: the long tail of one-off policy
+config values, DNS-cluster remote hosts, and the whitelabel editor —
+candidates for a later settings tranche.
 
 ## Remaining limitations (deliberate, later phases)
 

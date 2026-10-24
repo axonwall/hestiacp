@@ -2,6 +2,7 @@ import { effectiveUser, getT, hestia, requireSession } from "@/lib/panel";
 import type { HestiaRow } from "@hestiacp/lib";
 import { editWebDomainAction } from "./actions";
 import { editWebDomainSslAction } from "./ssl-actions";
+import { editWebDomainStatsAuthAction } from "./stats-actions";
 import {
 	addWebDomainFtpAction,
 	updateWebDomainFtpAction,
@@ -182,6 +183,22 @@ export default async function Page({
 				<label htmlFor="newFtpPath">{t("Path")}</label>
 				<input id="newFtpPath" name="path" />
 				<button type="submit" className="primary">{t("Add")}</button>
+			</form>
+			<h2>{t("Stats Authorization")}</h2>
+			<form action={editWebDomainStatsAuthAction}>
+				<input type="hidden" name="token" value={token} />
+				<input type="hidden" name="domain" value={domain} />
+				<label>
+					<input type="checkbox" name="statsAuth" value="yes" defaultChecked={!!record.AUTH_USER} />{" "}
+					{t("Protect stats with a password")}
+				</label>
+				<label htmlFor="statsUser">{t("Stats user")}</label>
+				<input id="statsUser" name="statsUser" defaultValue={record.AUTH_USER ?? ""} />
+				<label htmlFor="statsPass">
+					{t("Stats password")} ({t("leave empty to keep")})
+				</label>
+				<input id="statsPass" name="secret" type="password" autoComplete="new-password" />
+				<button type="submit" className="primary">{t("Save")}</button>
 			</form>
 		</div>
 	);
