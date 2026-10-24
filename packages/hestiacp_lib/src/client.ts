@@ -42,8 +42,8 @@ export function assertUsername(user: string): void {
 export class HestiaClient {
 	readonly config: HestiaConfig;
 
-	constructor(config: HestiaConfig = loadConfig()) {
-		this.config = config;
+	constructor(config: Partial<HestiaConfig> = {}) {
+		this.config = { ...loadConfig(), ...config };
 	}
 
 	raw(command: string, ...args: string[]): Promise<CommandResult> {
