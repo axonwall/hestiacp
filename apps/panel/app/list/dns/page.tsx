@@ -35,7 +35,7 @@ export default async function Page() {
 				<Link href={`/delete/dns?domain=${encodeURIComponent(key)}`}>{t("Delete")}</Link>
 			</>)}
 		>
-			<p><Link className="button" href="/add/dns">{t("Add DNS Zone")}</Link></p>
+			<Link className="button button-secondary" href="/add/dns"><i className="fas fa-circle-plus icon-green"></i>{t("Add DNS Zone")}</Link>
 		</ListView>
 	);
 }

@@ -20,31 +20,31 @@ export default async function Page({
 			<form action={addMailAccountAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="domain">{t("Domain")}</label>
-				<select id="domain" name="domain" defaultValue={query.domain ?? ""}>
+				<select className="form-select" id="domain" name="domain" defaultValue={query.domain ?? ""}>
 					{Object.keys(domains).map((d) => (
 						<option key={d} value={d}>{d}</option>
 					))}
 				</select>
 				<label htmlFor="account">{t("Account")}</label>
-				<input id="account" name="account" required />
+				<input className="form-control" id="account" name="account" required />
 				<label htmlFor="secret">{t("Password")}</label>
-				<input id="secret" name="secret" type="password" required autoComplete="new-password" />
+				<input className="form-control" id="secret" name="secret" type="password" required autoComplete="new-password" />
 				<label htmlFor="quota">{t("Quota")} (MB, {t("empty for unlimited")})</label>
-				<input id="quota" name="quota" />
+				<input className="form-control" id="quota" name="quota" />
 				<label htmlFor="aliases">{t("Aliases")}</label>
-				<textarea id="aliases" name="aliases" rows={2} />
+				<textarea className="form-control" id="aliases" name="aliases" rows={2} />
 				<label htmlFor="forwards">{t("Forwarders")}</label>
-				<textarea id="forwards" name="forwards" rows={2} />
+				<textarea className="form-control" id="forwards" name="forwards" rows={2} />
 				<label>
 					<input type="checkbox" name="fwdOnly" value="yes" /> {t("Forward only")}
 				</label>
 				{isAdmin ? (
 					<>
 						<label htmlFor="rate">{t("Rate limit")}</label>
-						<input id="rate" name="rate" />
+						<input className="form-control" id="rate" name="rate" />
 					</>
 				) : null}
-				<button type="submit" className="primary">{t("Add")}</button>
+				<button type="submit" className="button">{t("Add")}</button>
 			</form>
 		</div>
 	);

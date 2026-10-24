@@ -42,7 +42,7 @@ export default async function DeleteUserPage({
 						<input type="checkbox" name="confirm" value="yes" /> I understand
 						this deletes {username} permanently
 					</label>
-					<button type="submit" className="primary">
+					<button type="submit" className="button">
 						Delete user
 					</button>
 				</form>

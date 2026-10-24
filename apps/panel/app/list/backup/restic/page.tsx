@@ -54,7 +54,7 @@ export default async function ResticBackupsPage() {
 			</p>
 			<form action={scheduleResticBackupAction} style={{ display: "inline" }}>
 				<input type="hidden" name="token" value={token} />
-				<button type="submit" className="primary">
+				<button type="submit" className="button">
 					Create incremental backup
 				</button>
 			</form>

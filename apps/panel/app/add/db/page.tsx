@@ -24,33 +24,33 @@ export default async function Page({
 				<label htmlFor="database">
 					{t("Database")} ({user}_…)
 				</label>
-				<input id="database" name="database" required />
+				<input className="form-control" id="database" name="database" required />
 				<label htmlFor="dbuser">
 					{t("User")} ({user}_…)
 				</label>
-				<input id="dbuser" name="dbuser" required />
+				<input className="form-control" id="dbuser" name="dbuser" required />
 				<label htmlFor="secret">{t("Password")}</label>
-				<input id="secret" name="secret" type="password" required autoComplete="new-password" />
+				<input className="form-control" id="secret" name="secret" type="password" required autoComplete="new-password" />
 				<label htmlFor="host">{t("Host")}</label>
-				<select id="host" name="host">
+				<select className="form-select" id="host" name="host">
 					{hostNames.map((h) => (
 						<option key={h} value={h}>{h}</option>
 					))}
 				</select>
 				<label htmlFor="type">{t("Type")}</label>
-				<select id="type" name="type">
+				<select className="form-select" id="type" name="type">
 					{[...new Set(Object.values(hosts).map((h) => h.TYPE))].map((ty) => (
 						<option key={ty} value={ty}>{ty}</option>
 					))}
 					{hostNames.length === 0 ? <option value="mysql">mysql</option> : null}
 				</select>
 				<label htmlFor="charset">{t("Charset")}</label>
-				<select id="charset" name="charset">
+				<select className="form-select" id="charset" name="charset">
 					{charsets.map((cs) => (
 						<option key={cs} value={cs}>{cs}</option>
 					))}
 				</select>
-				<button type="submit" className="primary">{t("Add")}</button>
+				<button type="submit" className="button">{t("Add")}</button>
 			</form>
 		</div>
 	);

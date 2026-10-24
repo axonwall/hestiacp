@@ -20,9 +20,9 @@ export default async function Page({
 			<form action={addWebDomainAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="domain">{t("Domain")}</label>
-				<input id="domain" name="domain" required placeholder="example.com" />
+				<input className="form-control" id="domain" name="domain" required placeholder="example.com" />
 				<label htmlFor="ip">{t("IP Address")}</label>
-				<select id="ip" name="ip">
+				<select className="form-select" id="ip" name="ip">
 					{Object.keys(ips).map((ip) => (
 						<option key={ip} value={ip}>
 							{ip}
@@ -37,7 +37,7 @@ export default async function Page({
 				<label>
 					<input type="checkbox" name="mail" value="yes" /> {t("Create mail domain")}
 				</label>
-				<button type="submit" className="primary">
+				<button type="submit" className="button">
 					{t("Add")}
 				</button>
 			</form>

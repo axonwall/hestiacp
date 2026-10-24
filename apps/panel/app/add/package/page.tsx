@@ -29,7 +29,7 @@ export default async function AddPackagePage({
 			<div className="card">
 				<form action={addPackageAction}>
 					<label htmlFor="name">Package name</label>
-					<input id="name" name="name" required autoComplete="off" />
+					<input className="form-control" id="name" name="name" required autoComplete="off" />
 					<PackageFormFields
 						values={defaults}
 						token={token}

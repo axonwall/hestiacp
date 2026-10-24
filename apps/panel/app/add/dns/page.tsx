@@ -32,15 +32,15 @@ export default async function Page({
 				<form action={addDnsDomainAction}>
 					<input type="hidden" name="token" value={token} />
 					<label htmlFor="domain">{t("Domain")}</label>
-					<input id="domain" name="domain" required placeholder="example.com" />
+					<input className="form-control" id="domain" name="domain" required placeholder="example.com" />
 					<label htmlFor="ip">{t("IP Address")}</label>
-					<select id="ip" name="ip">
+					<select className="form-select" id="ip" name="ip">
 						{Object.keys(ips).map((ip) => (
 							<option key={ip} value={ip}>{ip}</option>
 						))}
 					</select>
 					<label htmlFor="template">{t("Template")}</label>
-					<select id="template" name="template">
+					<select className="form-select" id="template" name="template">
 						{templates.map((tpl) => (
 							<option key={tpl} value={tpl}>{tpl}</option>
 						))}
@@ -48,7 +48,7 @@ export default async function Page({
 					{[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
 						<span key={i}>
 							<label htmlFor={`ns${i}`}>NS {i}</label>
-							<input
+							<input className="form-control"
 								id={`ns${i}`}
 								name={`ns${i}`}
 								defaultValue={userNs[i - 1] ?? ""}
@@ -56,13 +56,13 @@ export default async function Page({
 						</span>
 					))}
 					<label htmlFor="exp">{t("Expiration")}</label>
-					<input id="exp" name="exp" type="date" defaultValue={defaultExp} />
+					<input className="form-control" id="exp" name="exp" type="date" defaultValue={defaultExp} />
 					<label htmlFor="ttl">TTL</label>
-					<input id="ttl" name="ttl" defaultValue="14400" />
+					<input className="form-control" id="ttl" name="ttl" defaultValue="14400" />
 					<label>
 						<input type="checkbox" name="dnssec" value="yes" /> DNSSEC
 					</label>
-					<button type="submit" className="primary">{t("Add")}</button>
+					<button type="submit" className="button">{t("Add")}</button>
 				</form>
 			</div>
 			<div className="card" style={{ marginTop: "1rem" }}>
@@ -71,26 +71,26 @@ export default async function Page({
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="back" value="/add/dns" />
 					<label htmlFor="rdomain">{t("Domain")}</label>
-					<select id="rdomain" name="domain">
+					<select className="form-select" id="rdomain" name="domain">
 						{Object.keys(zones).map((zone) => (
 							<option key={zone} value={zone}>{zone}</option>
 						))}
 					</select>
 					<label htmlFor="rec">{t("Record")}</label>
-					<input id="rec" name="rec" placeholder="www" />
+					<input className="form-control" id="rec" name="rec" placeholder="www" />
 					<label htmlFor="type">{t("Type")}</label>
-					<select id="type" name="type">
+					<select className="form-select" id="type" name="type">
 						{RECORD_TYPES.map((rt) => (
 							<option key={rt} value={rt}>{rt}</option>
 						))}
 					</select>
 					<label htmlFor="value">{t("Value")}</label>
-					<input id="value" name="value" required />
+					<input className="form-control" id="value" name="value" required />
 					<label htmlFor="priority">{t("Priority")}</label>
-					<input id="priority" name="priority" />
+					<input className="form-control" id="priority" name="priority" />
 					<label htmlFor="rttl">TTL</label>
-					<input id="rttl" name="ttl" />
-					<button type="submit" className="primary">{t("Add")}</button>
+					<input className="form-control" id="rttl" name="ttl" />
+					<button type="submit" className="button">{t("Add")}</button>
 				</form>
 			</div>
 		</div>

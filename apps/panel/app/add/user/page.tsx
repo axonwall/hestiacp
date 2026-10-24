@@ -29,9 +29,9 @@ export default async function AddUserPage({
 				<form action={addUserAction}>
 					<input type="hidden" name="token" value={token} />
 					<label htmlFor="user">Username</label>
-					<input id="user" name="user" required autoComplete="off" />
+					<input className="form-control" id="user" name="user" required autoComplete="off" />
 					<label htmlFor="secret">Password</label>
-					<input
+					<input className="form-control"
 						id="secret"
 						name="secret"
 						type="password"
@@ -39,11 +39,11 @@ export default async function AddUserPage({
 						autoComplete="new-password"
 					/>
 					<label htmlFor="email">Email</label>
-					<input id="email" name="email" type="email" required />
+					<input className="form-control" id="email" name="email" type="email" required />
 					<label htmlFor="name">Full name</label>
-					<input id="name" name="name" required />
+					<input className="form-control" id="name" name="name" required />
 					<label htmlFor="package">Package</label>
-					<select id="package" name="package" defaultValue="default">
+					<select className="form-select" id="package" name="package" defaultValue="default">
 						{packageNames.map((name) => (
 							<option key={name} value={name}>
 								{name}
@@ -51,7 +51,7 @@ export default async function AddUserPage({
 						))}
 					</select>
 					<label htmlFor="language">Language</label>
-					<select id="language" name="language" defaultValue="en">
+					<select className="form-select" id="language" name="language" defaultValue="en">
 						{languages.map((lang) => (
 							<option key={lang} value={lang}>
 								{lang}
@@ -59,7 +59,7 @@ export default async function AddUserPage({
 						))}
 					</select>
 					<label htmlFor="role">Role</label>
-					<select id="role" name="role" defaultValue="user">
+					<select className="form-select" id="role" name="role" defaultValue="user">
 						<option value="user">User</option>
 						<option value="admin">Administrator</option>
 					</select>
@@ -67,7 +67,7 @@ export default async function AddUserPage({
 						<input type="checkbox" name="loginDisabled" value="yes" /> Disable
 						login
 					</label>
-					<button type="submit" className="primary">
+					<button type="submit" className="button">
 						Create user
 					</button>
 				</form>

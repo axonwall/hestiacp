@@ -40,22 +40,22 @@ export default async function Page({
 				<input type="hidden" name="domain" value={domain} />
 				<input type="hidden" name="id" value={id} />
 				<label htmlFor="rec">{t("Record")}</label>
-				<input id="rec" name="rec" defaultValue={current.RECORD} />
+				<input className="form-control" id="rec" name="rec" defaultValue={current.RECORD} />
 				<label htmlFor="type">{t("Type")}</label>
-				<select id="type" name="type" defaultValue={current.TYPE}>
+				<select className="form-select" id="type" name="type" defaultValue={current.TYPE}>
 					{RECORD_TYPES.map((rt) => (
 						<option key={rt} value={rt}>{rt}</option>
 					))}
 				</select>
 				<label htmlFor="value">{t("Value")}</label>
-				<input id="value" name="value" defaultValue={current.VALUE} />
+				<input className="form-control" id="value" name="value" defaultValue={current.VALUE} />
 				<label htmlFor="priority">{t("Priority")}</label>
-				<input id="priority" name="priority" defaultValue={current.PRIORITY ?? ""} />
+				<input className="form-control" id="priority" name="priority" defaultValue={current.PRIORITY ?? ""} />
 				<label htmlFor="ttl">TTL</label>
-				<input id="ttl" name="ttl" defaultValue={current.TTL ?? ""} />
+				<input className="form-control" id="ttl" name="ttl" defaultValue={current.TTL ?? ""} />
 				<label htmlFor="newId">{t("Record ID")}</label>
-				<input id="newId" name="newId" defaultValue={id} />
-				<button type="submit" className="primary">{t("Save")}</button>
+				<input className="form-control" id="newId" name="newId" defaultValue={id} />
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 			<p>
 				<a href={`/edit/dns?domain=${encodeURIComponent(domain)}`}>{t("Back")}</a>

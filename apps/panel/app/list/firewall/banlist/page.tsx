@@ -34,10 +34,10 @@ export default async function Page() {
 			<form action={addFirewallBanAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="banIp">{t("Ban an IP")}</label>
-				<input id="banIp" name="ip" required placeholder="198.51.100.9" />
+				<input className="form-control" id="banIp" name="ip" required placeholder="198.51.100.9" />
 				<label htmlFor="banChain">{t("Chain")}</label>
-				<input id="banChain" name="chain" defaultValue="INPUT" />
-				<button type="submit" className="primary">
+				<input className="form-control" id="banChain" name="chain" defaultValue="INPUT" />
+				<button type="submit" className="button">
 					{t("Ban")}
 				</button>
 			</form>

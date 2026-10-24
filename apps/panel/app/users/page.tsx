@@ -40,7 +40,7 @@ export default async function UsersPage({
 			{query.error ? <p className="error">{query.error}</p> : null}
 			{isAdmin ? (
 				<p>
-					<Link className="button" href="/add/user">
+					<Link className="button button-secondary" href="/add/user"><i className="fas fa-circle-plus icon-green"></i>
 						{t("Add User")}
 					</Link>
 				</p>

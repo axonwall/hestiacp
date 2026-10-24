@@ -71,12 +71,12 @@ export default async function Page({
 					<form action={saveServiceConfigAction}>
 						<input type="hidden" name="token" value={token} />
 						<input type="hidden" name="service" value={service} />
-						<textarea name="contents" rows={24} defaultValue={contents} />
+						<textarea className="form-control" name="contents" rows={24} defaultValue={contents} />
 						<label>
 							<input type="checkbox" name="restart" value="yes" defaultChecked />{" "}
 							{t("Restart the service after saving")}
 						</label>
-						<button type="submit" className="primary">
+						<button type="submit" className="button">
 							{t("Save")}
 						</button>
 					</form>

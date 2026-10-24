@@ -21,14 +21,14 @@ export function PackageFormFields({
 			{USER_PACKAGE_FIELDS.map((field) => (
 				<div key={field}>
 					<label htmlFor={`f-${field}`}>{field}</label>
-					<input
+					<input className="form-control"
 						id={`f-${field}`}
 						name={field}
 						defaultValue={values[field] ?? ""}
 					/>
 				</div>
 			))}
-			<button type="submit" className="primary">
+			<button type="submit" className="button">
 				{submitLabel}
 			</button>
 		</>

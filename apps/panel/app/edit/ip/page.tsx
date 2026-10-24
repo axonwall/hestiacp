@@ -50,7 +50,7 @@ export default async function Page({
 					{t("Shared")}
 				</label>
 				<label htmlFor="ipOwner">{t("Owner")}</label>
-				<select id="ipOwner" name="owner" defaultValue={record.OWNER ?? ""}>
+				<select className="form-select" id="ipOwner" name="owner" defaultValue={record.OWNER ?? ""}>
 					{Object.keys(users).map((u) => (
 						<option key={u} value={u}>
 							{u}
@@ -58,10 +58,10 @@ export default async function Page({
 					))}
 				</select>
 				<label htmlFor="ipName">{t("Name")}</label>
-				<input id="ipName" name="name" defaultValue={record.NAME ?? ""} />
+				<input className="form-control" id="ipName" name="name" defaultValue={record.NAME ?? ""} />
 				<label htmlFor="ipNat">{t("NAT")}</label>
-				<input id="ipNat" name="nat" defaultValue={record.NAT ?? ""} />
-				<button type="submit" className="primary">
+				<input className="form-control" id="ipNat" name="nat" defaultValue={record.NAT ?? ""} />
+				<button type="submit" className="button">
 					{t("Save")}
 				</button>
 			</form>

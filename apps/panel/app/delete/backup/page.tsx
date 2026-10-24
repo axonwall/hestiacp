@@ -29,7 +29,7 @@ export default async function Page({
 				<label>
 					<input type="checkbox" name="confirm" value="yes" /> {t("Yes, delete it")}
 				</label>
-				<button type="submit" className="danger">
+				<button type="submit" className="button button-danger">
 					{t("Delete")}
 				</button>
 			</form>

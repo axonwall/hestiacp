@@ -61,7 +61,7 @@ export default async function ResticDetailPage({
 			<form action={restoreResticFullAction}>
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="snapshot" value={snapshot} />
-				<button type="submit" className="primary">
+				<button type="submit" className="button">
 					Restore everything
 				</button>
 			</form>
@@ -86,7 +86,7 @@ export default async function ResticDetailPage({
 						<input type="hidden" name="type" value={type} />
 						<label>
 							{label}{" "}
-							<select name="object">
+							<select className="form-select" name="object">
 								{objects.map((o) => (
 									<option key={o} value={o}>
 										{o}

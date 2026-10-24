@@ -43,9 +43,9 @@ export default async function Page({
 				<input type="hidden" name="domain" value={domain} />
 				<input type="hidden" name="account" value={account} />
 				<label htmlFor="secret">{t("New password")} ({t("leave empty to keep")})</label>
-				<input id="secret" name="secret" type="password" autoComplete="new-password" />
+				<input className="form-control" id="secret" name="secret" type="password" autoComplete="new-password" />
 				<label htmlFor="quota">{t("Quota")} (MB, {t("empty for unlimited")})</label>
-				<input
+				<input className="form-control"
 					id="quota"
 					name="quota"
 					defaultValue={record.QUOTA === "unlimited" ? "" : record.QUOTA}
@@ -53,18 +53,18 @@ export default async function Page({
 				{isAdmin ? (
 					<>
 						<label htmlFor="rate">{t("Rate limit")}</label>
-						<input id="rate" name="rate" defaultValue={record.RATE_LIMIT ?? ""} />
+						<input className="form-control" id="rate" name="rate" defaultValue={record.RATE_LIMIT ?? ""} />
 					</>
 				) : null}
 				<label htmlFor="aliases">{t("Aliases")}</label>
-				<textarea
+				<textarea className="form-control"
 					id="aliases"
 					name="aliases"
 					rows={2}
 					defaultValue={(record.ALIAS ?? "").split(",").filter(Boolean).join("\n")}
 				/>
 				<label htmlFor="forwards">{t("Forwarders")}</label>
-				<textarea
+				<textarea className="form-control"
 					id="forwards"
 					name="forwards"
 					rows={2}
@@ -79,8 +79,8 @@ export default async function Page({
 					{t("Autoreply")}
 				</label>
 				<label htmlFor="autoreplyMessage">{t("Autoreply message")}</label>
-				<textarea id="autoreplyMessage" name="autoreplyMessage" rows={3} defaultValue={autoreplyMessage} />
-				<button type="submit" className="primary">{t("Save")}</button>
+				<textarea className="form-control" id="autoreplyMessage" name="autoreplyMessage" rows={3} defaultValue={autoreplyMessage} />
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 			<p>
 				<a href={`/list/mail/accounts?domain=${encodeURIComponent(domain)}`}>{t("Back")}</a> ·{" "}

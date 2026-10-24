@@ -31,7 +31,7 @@ export default async function Page({
 				{SYSTEMS.map((system) => (
 					<div key={system}>
 						<label htmlFor={`ex-${system}`}>{system}</label>
-						<textarea
+						<textarea className="form-control"
 							id={`ex-${system}`}
 							name={system}
 							rows={3}
@@ -39,7 +39,7 @@ export default async function Page({
 						/>
 					</div>
 				))}
-				<button type="submit" className="primary">
+				<button type="submit" className="button">
 					{t("Save")}
 				</button>
 			</form>

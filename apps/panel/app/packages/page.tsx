@@ -28,7 +28,7 @@ export default async function PackagesPage({
 			<h1>Packages</h1>
 			{query.error ? <p className="error">{query.error}</p> : null}
 			<p>
-				<Link className="button" href="/add/package">
+				<Link className="button button-secondary" href="/add/package"><i className="fas fa-circle-plus icon-green"></i>
 					Add package
 				</Link>
 			</p>

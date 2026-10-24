@@ -34,9 +34,9 @@ export default async function Page({
 			<form action={editServerSettingsAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="srvHostname">{t("Hostname")}</label>
-				<input id="srvHostname" name="hostname" defaultValue={sys.HOSTNAME ?? ""} />
+				<input className="form-control" id="srvHostname" name="hostname" defaultValue={sys.HOSTNAME ?? ""} />
 				<label htmlFor="srvTimezone">{t("Timezone")}</label>
-				<select id="srvTimezone" name="timezone" defaultValue={sys.TIMEZONE ?? "UTC"}>
+				<select className="form-select" id="srvTimezone" name="timezone" defaultValue={sys.TIMEZONE ?? "UTC"}>
 					{timezones.map((tz) => (
 						<option key={tz} value={tz}>
 							{tz}
@@ -44,7 +44,7 @@ export default async function Page({
 					))}
 				</select>
 				<label htmlFor="srvLanguage">{t("Default language")}</label>
-				<select id="srvLanguage" name="language" defaultValue={sys.LANGUAGE ?? "en"}>
+				<select className="form-select" id="srvLanguage" name="language" defaultValue={sys.LANGUAGE ?? "en"}>
 					{languages.map((lang) => (
 						<option key={lang} value={lang}>
 							{lang}
@@ -56,7 +56,7 @@ export default async function Page({
 					{t("Apply the language to all users")}
 				</label>
 				<label htmlFor="srvTheme">{t("Theme")}</label>
-				<select id="srvTheme" name="theme" defaultValue={sys.THEME ?? "default"}>
+				<select className="form-select" id="srvTheme" name="theme" defaultValue={sys.THEME ?? "default"}>
 					{themes.map((theme) => (
 						<option key={theme} value={theme}>
 							{theme}
@@ -64,16 +64,16 @@ export default async function Page({
 					))}
 				</select>
 				<label htmlFor="srvBranch">{t("Release branch")}</label>
-				<input id="srvBranch" name="releaseBranch" defaultValue={sys.RELEASE_BRANCH ?? ""} />
+				<input className="form-control" id="srvBranch" name="releaseBranch" defaultValue={sys.RELEASE_BRANCH ?? ""} />
 				<label htmlFor="srvBackupMode">{t("Backup mode")}</label>
-				<select id="srvBackupMode" name="backupMode" defaultValue={sys.BACKUP_MODE ?? "gzip"}>
+				<select className="form-select" id="srvBackupMode" name="backupMode" defaultValue={sys.BACKUP_MODE ?? "gzip"}>
 					<option value="gzip">gzip</option>
 					<option value="zstd">zstd</option>
 				</select>
 				<label htmlFor="srvBackupGzip">{t("Backup compression level")}</label>
-				<input id="srvBackupGzip" name="backupGzip" defaultValue={sys.BACKUP_GZIP ?? ""} />
+				<input className="form-control" id="srvBackupGzip" name="backupGzip" defaultValue={sys.BACKUP_GZIP ?? ""} />
 				<label htmlFor="srvBackupDir">{t("Backup directory")}</label>
-				<input id="srvBackupDir" name="backupDir" defaultValue={sys.BACKUP ?? ""} />
+				<input className="form-control" id="srvBackupDir" name="backupDir" defaultValue={sys.BACKUP ?? ""} />
 				<label>
 					<input
 						type="checkbox"
@@ -83,7 +83,7 @@ export default async function Page({
 					/>{" "}
 					{t("Debug mode")}
 				</label>
-				<button type="submit" className="primary">
+				<button type="submit" className="button">
 					{t("Save")}
 				</button>
 			</form>
@@ -107,7 +107,7 @@ export default async function Page({
 					<input type="checkbox" name="quota" value="yes" defaultChecked={!!sys.QUOTA_SYSTEM} />{" "}
 					{t("Disk quota")}
 				</label>
-				<button type="submit" className="primary">
+				<button type="submit" className="button">
 					{t("Save")}
 				</button>
 			</form>
@@ -130,21 +130,21 @@ export default async function Page({
 			<form action={addBackupHostAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="bhType">{t("Type")}</label>
-				<select id="bhType" name="type" defaultValue="sftp">
+				<select className="form-select" id="bhType" name="type" defaultValue="sftp">
 					<option value="ftp">FTP</option>
 					<option value="sftp">SFTP</option>
 				</select>
 				<label htmlFor="bhHost">{t("Host")}</label>
-				<input id="bhHost" name="host" />
+				<input className="form-control" id="bhHost" name="host" />
 				<label htmlFor="bhUser">{t("Username")}</label>
-				<input id="bhUser" name="username" />
+				<input className="form-control" id="bhUser" name="username" />
 				<label htmlFor="bhPass">{t("Password / key")}</label>
-				<input id="bhPass" name="secret" type="password" autoComplete="new-password" />
+				<input className="form-control" id="bhPass" name="secret" type="password" autoComplete="new-password" />
 				<label htmlFor="bhPath">{t("Path")}</label>
-				<input id="bhPath" name="path" />
+				<input className="form-control" id="bhPath" name="path" />
 				<label htmlFor="bhPort">{t("Port")}</label>
-				<input id="bhPort" name="port" />
-				<button type="submit" className="primary">
+				<input className="form-control" id="bhPort" name="port" />
+				<button type="submit" className="button">
 					{t("Add")}
 				</button>
 			</form>
@@ -153,22 +153,22 @@ export default async function Page({
 			<form action={saveBackupHostResticAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="rsRepo">{t("Repository")}</label>
-				<input id="rsRepo" name="repo" placeholder="sftp:user@host:/repo" />
+				<input className="form-control" id="rsRepo" name="repo" placeholder="sftp:user@host:/repo" />
 				<label htmlFor="rsSnapshots">{t("Snapshots")}</label>
-				<input id="rsSnapshots" name="snapshots" defaultValue="10" />
+				<input className="form-control" id="rsSnapshots" name="snapshots" defaultValue="10" />
 				<label htmlFor="rsDaily">{t("Keep daily")}</label>
-				<input id="rsDaily" name="keepDaily" defaultValue="7" />
+				<input className="form-control" id="rsDaily" name="keepDaily" defaultValue="7" />
 				<label htmlFor="rsWeekly">{t("Keep weekly")}</label>
-				<input id="rsWeekly" name="keepWeekly" defaultValue="4" />
+				<input className="form-control" id="rsWeekly" name="keepWeekly" defaultValue="4" />
 				<label htmlFor="rsMonthly">{t("Keep monthly")}</label>
-				<input id="rsMonthly" name="keepMonthly" defaultValue="6" />
+				<input className="form-control" id="rsMonthly" name="keepMonthly" defaultValue="6" />
 				<label htmlFor="rsYearly">{t("Keep yearly")}</label>
-				<input id="rsYearly" name="keepYearly" defaultValue="2" />
+				<input className="form-control" id="rsYearly" name="keepYearly" defaultValue="2" />
 				<label>
 					<input type="checkbox" name="remove" value="yes" />{" "}
 					{t("Remove the restic backup host instead")}
 				</label>
-				<button type="submit" className="primary">
+				<button type="submit" className="button">
 					{t("Save")}
 				</button>
 			</form>

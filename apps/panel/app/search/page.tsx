@@ -44,8 +44,8 @@ export default async function SearchPage({
 		<div className="card">
 			<h1>{t("Search")}</h1>
 			<form method="get" className="inline-form">
-				<input name="q" defaultValue={q} placeholder={t("Search")} aria-label={t("Search")} />
-				<button type="submit" className="primary">
+				<input className="form-control" name="q" defaultValue={q} placeholder={t("Search")} aria-label={t("Search")} />
+				<button type="submit" className="button">
 					{t("Search")}
 				</button>
 			</form>

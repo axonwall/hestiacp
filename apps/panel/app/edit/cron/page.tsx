@@ -35,18 +35,18 @@ export default async function Page({
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="job" value={job} />
 				<label htmlFor="min">{t("Minute")}</label>
-				<input id="min" name="min" defaultValue={record.MIN} required />
+				<input className="form-control" id="min" name="min" defaultValue={record.MIN} required />
 				<label htmlFor="hour">{t("Hour")}</label>
-				<input id="hour" name="hour" defaultValue={record.HOUR} required />
+				<input className="form-control" id="hour" name="hour" defaultValue={record.HOUR} required />
 				<label htmlFor="day">{t("Day")}</label>
-				<input id="day" name="day" defaultValue={record.DAY} required />
+				<input className="form-control" id="day" name="day" defaultValue={record.DAY} required />
 				<label htmlFor="month">{t("Month")}</label>
-				<input id="month" name="month" defaultValue={record.MONTH} required />
+				<input className="form-control" id="month" name="month" defaultValue={record.MONTH} required />
 				<label htmlFor="wday">{t("Day of Week")}</label>
-				<input id="wday" name="wday" defaultValue={record.WDAY} required />
+				<input className="form-control" id="wday" name="wday" defaultValue={record.WDAY} required />
 				<label htmlFor="cmd">{t("Command")}</label>
-				<input id="cmd" name="cmd" defaultValue={record.CMD} required />
-				<button type="submit" className="primary">{t("Save")}</button>
+				<input className="form-control" id="cmd" name="cmd" defaultValue={record.CMD} required />
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 			<p>
 				<a href="/list/cron">{t("Back")}</a> ·{" "}

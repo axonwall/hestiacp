@@ -35,7 +35,7 @@ export default async function Page() {
 				<Link href={`/delete/mail?domain=${encodeURIComponent(key)}`}>{t("Delete")}</Link>
 			</>)}
 		>
-			<p><Link className="button" href="/add/mail">{t("Add Mail Domain")}</Link></p>
+			<Link className="button button-secondary" href="/add/mail"><i className="fas fa-circle-plus icon-green"></i>{t("Add Mail Domain")}</Link>
 		</ListView>
 	);
 }

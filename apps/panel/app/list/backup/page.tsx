@@ -45,7 +45,7 @@ export default async function Page() {
 		>
 			<form action={scheduleBackupAction} style={{ display: "inline" }}>
 				<input type="hidden" name="token" value={token} />
-				<button type="submit" className="primary">
+				<button type="submit" className="button">
 					{t("Create backup")}
 				</button>
 			</form>{" "}

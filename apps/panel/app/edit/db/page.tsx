@@ -43,10 +43,10 @@ export default async function Page({
 				<label htmlFor="dbuser">
 					{t("User")} ({user}_…)
 				</label>
-				<input id="dbuser" name="dbuser" defaultValue={suffix} />
+				<input className="form-control" id="dbuser" name="dbuser" defaultValue={suffix} />
 				<label htmlFor="secret">{t("New password")} ({t("leave empty to keep")})</label>
-				<input id="secret" name="secret" type="password" autoComplete="new-password" />
-				<button type="submit" className="primary">{t("Save")}</button>
+				<input className="form-control" id="secret" name="secret" type="password" autoComplete="new-password" />
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 			<p>
 				<a href="/list/db">{t("Back")}</a> ·{" "}

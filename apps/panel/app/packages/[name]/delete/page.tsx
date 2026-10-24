@@ -36,7 +36,7 @@ export default async function DeletePackagePage({
 					<label>
 						<input type="checkbox" name="confirm" value="yes" /> I understand
 					</label>
-					<button type="submit" className="primary">
+					<button type="submit" className="button">
 						Delete package
 					</button>
 				</form>

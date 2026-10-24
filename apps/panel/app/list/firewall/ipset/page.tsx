@@ -33,16 +33,16 @@ export default async function Page() {
 			<form action={addFirewallIpsetAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="setName">{t("Add IP set")}</label>
-				<input id="setName" name="name" required placeholder="blocklist" />
+				<input className="form-control" id="setName" name="name" required placeholder="blocklist" />
 				<label htmlFor="setSource">{t("Source")}</label>
-				<input
+				<input className="form-control"
 					id="setSource"
 					name="source"
 					required
 					placeholder="file:/path or https://…"
 				/>
 				<label htmlFor="setVer">{t("Version")}</label>
-				<select id="setVer" name="ipver" defaultValue="v4">
+				<select className="form-select" id="setVer" name="ipver" defaultValue="v4">
 					<option value="v4">IPv4</option>
 					<option value="v6">IPv6</option>
 				</select>
@@ -50,7 +50,7 @@ export default async function Page() {
 					<input type="checkbox" name="autoupdate" value="yes" />{" "}
 					{t("Autoupdate")}
 				</label>
-				<button type="submit" className="primary">
+				<button type="submit" className="button">
 					{t("Add")}
 				</button>
 			</form>

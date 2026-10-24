@@ -61,7 +61,7 @@ export default async function Page({
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="domain" value={domain} />
 				<label htmlFor="ip">{t("IP Address")}</label>
-				<select id="ip" name="ip" defaultValue={record.IP}>
+				<select className="form-select" id="ip" name="ip" defaultValue={record.IP}>
 					{Object.keys(ips).map((ip) => (
 						<option key={ip} value={ip}>{ip}</option>
 					))}
@@ -70,13 +70,13 @@ export default async function Page({
 				{isAdmin ? (
 					<>
 						<label htmlFor="template">{t("Web Template")}</label>
-						<select id="template" name="template" defaultValue={record.TPL}>
+						<select className="form-select" id="template" name="template" defaultValue={record.TPL}>
 							{templates.map((tpl) => (
 								<option key={tpl} value={tpl}>{tpl}</option>
 							))}
 						</select>
 						<label htmlFor="backendTemplate">{t("Backend Template")}</label>
-						<select id="backendTemplate" name="backendTemplate" defaultValue={record.BACKEND}>
+						<select className="form-select" id="backendTemplate" name="backendTemplate" defaultValue={record.BACKEND}>
 							{backends.map((tpl) => (
 								<option key={tpl} value={tpl}>{tpl}</option>
 							))}
@@ -84,16 +84,16 @@ export default async function Page({
 					</>
 				) : null}
 				<label htmlFor="proxyTemplate">{t("Proxy Template")}</label>
-				<select id="proxyTemplate" name="proxyTemplate" defaultValue={record.PROXY ?? ""}>
+				<select className="form-select" id="proxyTemplate" name="proxyTemplate" defaultValue={record.PROXY ?? ""}>
 					<option value="">{t("Disabled")}</option>
 					{proxies.map((tpl) => (
 						<option key={tpl} value={tpl}>{tpl}</option>
 					))}
 				</select>
 				<label htmlFor="proxyExt">{t("Proxy Extensions")}</label>
-				<input id="proxyExt" name="proxyExt" defaultValue={record.PROXY_EXT ?? ""} />
+				<input className="form-control" id="proxyExt" name="proxyExt" defaultValue={record.PROXY_EXT ?? ""} />
 				<label htmlFor="aliases">{t("Aliases")}</label>
-				<textarea
+				<textarea className="form-control"
 					id="aliases"
 					name="aliases"
 					rows={3}
@@ -104,7 +104,7 @@ export default async function Page({
 					Let&apos;s Encrypt
 				</label>
 				<label htmlFor="sslKeyAlgo">{t("SSL key algorithm")}</label>
-				<input id="sslKeyAlgo" name="sslKeyAlgo" defaultValue={record.SSL_KEY_ALGO ?? ""} placeholder="RSA3072 / EC384" />
+				<input className="form-control" id="sslKeyAlgo" name="sslKeyAlgo" defaultValue={record.SSL_KEY_ALGO ?? ""} placeholder="RSA3072 / EC384" />
 				{record.SSL === "yes" && record.LETSENCRYPT !== "yes" ? (
 					<label>
 						<input type="checkbox" name="removeSsl" value="yes" /> {t("Remove SSL certificate")}
@@ -123,15 +123,15 @@ export default async function Page({
 					{t("FastCGI cache")}
 				</label>
 				<label htmlFor="fastcgiDuration">{t("Cache duration")}</label>
-				<input id="fastcgiDuration" name="fastcgiDuration" defaultValue={record.FASTCGI_DURATION ?? ""} placeholder="5m" />
+				<input className="form-control" id="fastcgiDuration" name="fastcgiDuration" defaultValue={record.FASTCGI_DURATION ?? ""} placeholder="5m" />
 				<label htmlFor="stats">{t("Web Statistics")}</label>
-				<select id="stats" name="stats" defaultValue={record.STATS ?? ""}>
+				<select className="form-select" id="stats" name="stats" defaultValue={record.STATS ?? ""}>
 					<option value="">{t("Disabled")}</option>
 					{statsSystems.map((s) => (
 						<option key={s} value={s}>{s}</option>
 					))}
 				</select>
-				<button type="submit" className="primary">{t("Save")}</button>
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 			<p>
 				<a href="/list/web">{t("Back")}</a> ·{" "}
@@ -148,12 +148,12 @@ export default async function Page({
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="domain" value={domain} />
 				<label htmlFor="sslCrt">{t("Certificate")}</label>
-				<textarea id="sslCrt" name="crt" rows={4} defaultValue={sslRecord?.CRT ?? ""} />
+				<textarea className="form-control" id="sslCrt" name="crt" rows={4} defaultValue={sslRecord?.CRT ?? ""} />
 				<label htmlFor="sslKey">{t("Key")}</label>
-				<textarea id="sslKey" name="key" rows={4} defaultValue={sslRecord?.KEY ?? ""} />
+				<textarea className="form-control" id="sslKey" name="key" rows={4} defaultValue={sslRecord?.KEY ?? ""} />
 				<label htmlFor="sslCa">{t("CA chain")}</label>
-				<textarea id="sslCa" name="ca" rows={3} defaultValue={sslRecord?.CA ?? ""} />
-				<button type="submit" className="primary">{t("Save")}</button>
+				<textarea className="form-control" id="sslCa" name="ca" rows={3} defaultValue={sslRecord?.CA ?? ""} />
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 			<h2>{t("FTP Accounts")}</h2>
 			{ftpUsers.map((ftpUser, i) => (
@@ -165,11 +165,11 @@ export default async function Page({
 					<label htmlFor={`ftpPath-${i}`}>
 						{ftpUser} — {t("Path")}
 					</label>
-					<input id={`ftpPath-${i}`} name="path" defaultValue={ftpPaths[i] ?? ""} />
+					<input className="form-control" id={`ftpPath-${i}`} name="path" defaultValue={ftpPaths[i] ?? ""} />
 					<label htmlFor={`ftpPass-${i}`}>
 						{t("New password")} ({t("leave empty to keep")})
 					</label>
-					<input id={`ftpPass-${i}`} name="secret" type="password" autoComplete="new-password" />
+					<input className="form-control" id={`ftpPass-${i}`} name="secret" type="password" autoComplete="new-password" />
 					<label>
 						<input type="checkbox" name="delete" value="yes" /> {t("Delete")}
 					</label>
@@ -182,12 +182,12 @@ export default async function Page({
 				<label htmlFor="newFtpUser">
 					{t("Add FTP account")} ({user}_…)
 				</label>
-				<input id="newFtpUser" name="ftpUser" />
+				<input className="form-control" id="newFtpUser" name="ftpUser" />
 				<label htmlFor="newFtpPass">{t("Password")}</label>
-				<input id="newFtpPass" name="secret" type="password" autoComplete="new-password" />
+				<input className="form-control" id="newFtpPass" name="secret" type="password" autoComplete="new-password" />
 				<label htmlFor="newFtpPath">{t("Path")}</label>
-				<input id="newFtpPath" name="path" />
-				<button type="submit" className="primary">{t("Add")}</button>
+				<input className="form-control" id="newFtpPath" name="path" />
+				<button type="submit" className="button">{t("Add")}</button>
 			</form>
 			<h2>{t("Stats Authorization")}</h2>
 			<form action={editWebDomainStatsAuthAction}>
@@ -198,12 +198,12 @@ export default async function Page({
 					{t("Protect stats with a password")}
 				</label>
 				<label htmlFor="statsUser">{t("Stats user")}</label>
-				<input id="statsUser" name="statsUser" defaultValue={record.AUTH_USER ?? ""} />
+				<input className="form-control" id="statsUser" name="statsUser" defaultValue={record.AUTH_USER ?? ""} />
 				<label htmlFor="statsPass">
 					{t("Stats password")} ({t("leave empty to keep")})
 				</label>
-				<input id="statsPass" name="secret" type="password" autoComplete="new-password" />
-				<button type="submit" className="primary">{t("Save")}</button>
+				<input className="form-control" id="statsPass" name="secret" type="password" autoComplete="new-password" />
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 		</div>
 	);

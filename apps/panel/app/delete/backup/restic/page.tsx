@@ -27,7 +27,7 @@ export default async function DeleteResticPage({
 					<input type="checkbox" name="confirm" value="yes" /> Yes, delete
 					this snapshot
 				</label>
-				<button type="submit" className="danger">
+				<button type="submit" className="button button-danger">
 					{t("Delete")}
 				</button>{" "}
 				<Link href="/list/backup/restic">Cancel</Link>

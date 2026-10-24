@@ -46,29 +46,29 @@ export default async function Page({
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="domain" value={domain} />
 					<label htmlFor="ip">{t("IP Address")}</label>
-					<select id="ip" name="ip" defaultValue={record.IP}>
+					<select className="form-select" id="ip" name="ip" defaultValue={record.IP}>
 						{Object.keys(ips).map((ip) => (
 							<option key={ip} value={ip}>{ip}</option>
 						))}
 						{!ips[record.IP] ? <option value={record.IP}>{record.IP}</option> : null}
 					</select>
 					<label htmlFor="template">{t("Template")}</label>
-					<select id="template" name="template" defaultValue={record.TPL}>
+					<select className="form-select" id="template" name="template" defaultValue={record.TPL}>
 						{templates.map((tpl) => (
 							<option key={tpl} value={tpl}>{tpl}</option>
 						))}
 					</select>
 					<label htmlFor="soa">SOA</label>
-					<input id="soa" name="soa" defaultValue={record.SOA} />
+					<input className="form-control" id="soa" name="soa" defaultValue={record.SOA} />
 					<label htmlFor="exp">{t("Expiration")}</label>
-					<input id="exp" name="exp" type="date" defaultValue={record.EXP} />
+					<input className="form-control" id="exp" name="exp" type="date" defaultValue={record.EXP} />
 					<label htmlFor="ttl">TTL</label>
-					<input id="ttl" name="ttl" defaultValue={record.TTL} />
+					<input className="form-control" id="ttl" name="ttl" defaultValue={record.TTL} />
 					<label>
 						<input type="checkbox" name="dnssec" value="yes" defaultChecked={record.DNSSEC === "yes"} />{" "}
 						DNSSEC
 					</label>
-					<button type="submit" className="primary">{t("Save")}</button>
+					<button type="submit" className="button">{t("Save")}</button>
 				</form>
 				<p>
 					<a href="/list/dns">{t("Back")}</a> ·{" "}
@@ -133,20 +133,20 @@ export default async function Page({
 						value={`/edit/dns?domain=${encodeURIComponent(domain)}`}
 					/>
 					<label htmlFor="rec">{t("Record")}</label>
-					<input id="rec" name="rec" />
+					<input className="form-control" id="rec" name="rec" />
 					<label htmlFor="rtype">{t("Type")}</label>
-					<select id="rtype" name="type">
+					<select className="form-select" id="rtype" name="type">
 						{RECORD_TYPES.map((rt) => (
 							<option key={rt} value={rt}>{rt}</option>
 						))}
 					</select>
 					<label htmlFor="rvalue">{t("Value")}</label>
-					<input id="rvalue" name="value" required />
+					<input className="form-control" id="rvalue" name="value" required />
 					<label htmlFor="rpriority">{t("Priority")}</label>
-					<input id="rpriority" name="priority" />
+					<input className="form-control" id="rpriority" name="priority" />
 					<label htmlFor="rttl">TTL</label>
-					<input id="rttl" name="ttl" />
-					<button type="submit" className="primary">{t("Add")}</button>
+					<input className="form-control" id="rttl" name="ttl" />
+					<button type="submit" className="button">{t("Add")}</button>
 				</form>
 			</div>
 		</div>

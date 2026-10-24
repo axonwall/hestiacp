@@ -17,18 +17,18 @@ export default async function Page({
 			<form action={addCronJobAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="min">{t("Minute")}</label>
-				<input id="min" name="min" required placeholder="0" />
+				<input className="form-control" id="min" name="min" required placeholder="0" />
 				<label htmlFor="hour">{t("Hour")}</label>
-				<input id="hour" name="hour" required placeholder="3" />
+				<input className="form-control" id="hour" name="hour" required placeholder="3" />
 				<label htmlFor="day">{t("Day")}</label>
-				<input id="day" name="day" required placeholder="*" />
+				<input className="form-control" id="day" name="day" required placeholder="*" />
 				<label htmlFor="month">{t("Month")}</label>
-				<input id="month" name="month" required placeholder="*" />
+				<input className="form-control" id="month" name="month" required placeholder="*" />
 				<label htmlFor="wday">{t("Day of Week")}</label>
-				<input id="wday" name="wday" required placeholder="*" />
+				<input className="form-control" id="wday" name="wday" required placeholder="*" />
 				<label htmlFor="cmd">{t("Command")}</label>
-				<input id="cmd" name="cmd" required />
-				<button type="submit" className="primary">{t("Add")}</button>
+				<input className="form-control" id="cmd" name="cmd" required />
+				<button type="submit" className="button">{t("Add")}</button>
 			</form>
 		</div>
 	);

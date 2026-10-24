@@ -19,13 +19,13 @@ export default async function Page({
 			<form action={addSysIpAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="ipAddr">{t("IP")}</label>
-				<input id="ipAddr" name="ip" required />
+				<input className="form-control" id="ipAddr" name="ip" required />
 				<label htmlFor="ipMask">{t("Netmask")}</label>
-				<input id="ipMask" name="netmask" required defaultValue="255.255.255.0" />
+				<input className="form-control" id="ipMask" name="netmask" required defaultValue="255.255.255.0" />
 				<label htmlFor="ipIface">{t("Interface")}</label>
-				<input id="ipIface" name="iface" required defaultValue="eth0" />
+				<input className="form-control" id="ipIface" name="iface" required defaultValue="eth0" />
 				<label htmlFor="ipOwner">{t("Owner")}</label>
-				<select id="ipOwner" name="owner">
+				<select className="form-select" id="ipOwner" name="owner">
 					{Object.keys(users).map((u) => (
 						<option key={u} value={u}>
 							{u}
@@ -37,10 +37,10 @@ export default async function Page({
 					{t("Shared")}
 				</label>
 				<label htmlFor="ipName">{t("Name")}</label>
-				<input id="ipName" name="name" />
+				<input className="form-control" id="ipName" name="name" />
 				<label htmlFor="ipNat">{t("NAT")}</label>
-				<input id="ipNat" name="nat" />
-				<button type="submit" className="primary">
+				<input className="form-control" id="ipNat" name="nat" />
+				<button type="submit" className="button">
 					{t("Add")}
 				</button>
 			</form>

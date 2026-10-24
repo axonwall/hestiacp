@@ -53,20 +53,20 @@ export default async function Page({
 					<input type="checkbox" name="dkim" value="yes" defaultChecked={record.DKIM === "yes"} /> DKIM
 				</label>
 				<label htmlFor="dkimSelector">{t("DKIM selector")}</label>
-				<input id="dkimSelector" name="dkimSelector" defaultValue={record.DKIM_SELECTOR ?? "mail"} />
+				<input className="form-control" id="dkimSelector" name="dkimSelector" defaultValue={record.DKIM_SELECTOR ?? "mail"} />
 				<label>
 					<input type="checkbox" name="reject" value="yes" defaultChecked={record.REJECT === "yes"} />{" "}
 					{t("Reject spam")}
 				</label>
 				<label htmlFor="catchall">{t("Catchall")}</label>
-				<input id="catchall" name="catchall" defaultValue={record.CATCHALL ?? ""} placeholder="admin@example.com" />
+				<input className="form-control" id="catchall" name="catchall" defaultValue={record.CATCHALL ?? ""} placeholder="admin@example.com" />
 				{isAdmin ? (
 					<>
 						<label htmlFor="rate">{t("Rate limit")}</label>
-						<input id="rate" name="rate" defaultValue={record.RATE_LIMIT ?? ""} />
+						<input className="form-control" id="rate" name="rate" defaultValue={record.RATE_LIMIT ?? ""} />
 					</>
 				) : null}
-				<button type="submit" className="primary">{t("Save")}</button>
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 			<p>
 				<a href="/list/mail">{t("Back")}</a> ·{" "}
@@ -86,20 +86,20 @@ export default async function Page({
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="domain" value={domain} />
 				<label htmlFor="webmail">{t("Webmail alias")}</label>
-				<input id="webmail" name="webmail" defaultValue={record.WEBMAIL ?? ""} placeholder="webmail" />
+				<input className="form-control" id="webmail" name="webmail" defaultValue={record.WEBMAIL ?? ""} placeholder="webmail" />
 				<label>
 					<input type="checkbox" name="relay" value="yes" defaultChecked={record.U_SMTP_RELAY === "yes"} />{" "}
 					{t("SMTP Relay")}
 				</label>
 				<label htmlFor="relayHost">{t("Relay host")}</label>
-				<input id="relayHost" name="relayHost" defaultValue={record.U_SMTP_RELAY_HOST ?? ""} />
+				<input className="form-control" id="relayHost" name="relayHost" defaultValue={record.U_SMTP_RELAY_HOST ?? ""} />
 				<label htmlFor="relayPort">{t("Relay port")}</label>
-				<input id="relayPort" name="relayPort" defaultValue={record.U_SMTP_RELAY_PORT ?? ""} placeholder="587" />
+				<input className="form-control" id="relayPort" name="relayPort" defaultValue={record.U_SMTP_RELAY_PORT ?? ""} placeholder="587" />
 				<label htmlFor="relayUser">{t("Relay user")}</label>
-				<input id="relayUser" name="relayUser" defaultValue={record.U_SMTP_RELAY_USERNAME ?? ""} />
+				<input className="form-control" id="relayUser" name="relayUser" defaultValue={record.U_SMTP_RELAY_USERNAME ?? ""} />
 				<label htmlFor="relayPass">{t("Relay password")}</label>
-				<input id="relayPass" name="relayPass" type="password" autoComplete="new-password" />
-				<button type="submit" className="primary">{t("Save")}</button>
+				<input className="form-control" id="relayPass" name="relayPass" type="password" autoComplete="new-password" />
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 			<h2>SSL {t("Certificate")}</h2>
 			{sslRecord ? (
@@ -116,19 +116,19 @@ export default async function Page({
 					Let&apos;s Encrypt
 				</label>
 				<label htmlFor="mSslKeyAlgo">{t("SSL key algorithm")}</label>
-				<input id="mSslKeyAlgo" name="sslKeyAlgo" defaultValue={record.SSL_KEY_ALGO ?? ""} placeholder="RSA3072 / EC384" />
+				<input className="form-control" id="mSslKeyAlgo" name="sslKeyAlgo" defaultValue={record.SSL_KEY_ALGO ?? ""} placeholder="RSA3072 / EC384" />
 				{record.SSL === "yes" && record.LETSENCRYPT !== "yes" ? (
 					<label>
 						<input type="checkbox" name="removeSsl" value="yes" /> {t("Remove SSL certificate")}
 					</label>
 				) : null}
 				<label htmlFor="mSslCrt">{t("Certificate")}</label>
-				<textarea id="mSslCrt" name="crt" rows={4} defaultValue={sslRecord?.CRT ?? ""} />
+				<textarea className="form-control" id="mSslCrt" name="crt" rows={4} defaultValue={sslRecord?.CRT ?? ""} />
 				<label htmlFor="mSslKey">{t("Key")}</label>
-				<textarea id="mSslKey" name="key" rows={4} defaultValue={sslRecord?.KEY ?? ""} />
+				<textarea className="form-control" id="mSslKey" name="key" rows={4} defaultValue={sslRecord?.KEY ?? ""} />
 				<label htmlFor="mSslCa">{t("CA chain")}</label>
-				<textarea id="mSslCa" name="ca" rows={3} defaultValue={sslRecord?.CA ?? ""} />
-				<button type="submit" className="primary">{t("Save")}</button>
+				<textarea className="form-control" id="mSslCa" name="ca" rows={3} defaultValue={sslRecord?.CA ?? ""} />
+				<button type="submit" className="button">{t("Save")}</button>
 			</form>
 		</div>
 	);

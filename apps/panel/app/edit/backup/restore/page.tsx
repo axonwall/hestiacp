@@ -43,7 +43,7 @@ export default async function Page({
 						<input type="hidden" name="token" value={token} />
 						<input type="hidden" name="backup" value={backup} />
 						<input type="hidden" name="scope" value="full" />
-						<button type="submit" className="primary">
+						<button type="submit" className="button">
 							{t("Restore everything")}
 						</button>
 					</form>
@@ -54,7 +54,7 @@ export default async function Page({
 								<input type="hidden" name="backup" value={backup} />
 								<input type="hidden" name="scope" value={g.scope} />
 								<label htmlFor={`obj-${g.scope}`}>{g.label}</label>
-								<select id={`obj-${g.scope}`} name="object">
+								<select className="form-select" id={`obj-${g.scope}`} name="object">
 									{g.objects.map((o) => (
 										<option key={o} value={o}>
 											{o}

@@ -107,9 +107,6 @@
 .ok {
 	color: var(--alert-success-color);
 }
-.danger {
-	color: var(--alert-danger-color);
-}
 .kv {
 	display: grid;
 	grid-template-columns: minmax(140px, 220px) 1fr;
@@ -123,33 +120,12 @@
 	margin: 0;
 }
 
-/* --- Buttons: our .primary submit buttons take the theme's
-   .button look; .link-button stays a text button. --- */
-button.primary,
-input[type="submit"].primary {
-	cursor: pointer;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	line-height: 21px;
-	font-size: 0.85rem;
-	font-weight: 500;
-	font-family: inherit;
-	padding: 3px 25px;
-	min-width: 100px;
-	color: var(--color-text-link);
-	border: 1px solid #0083db;
-	border-radius: 3px;
-	background:
-		linear-gradient(
-			to bottom,
-			rgb(235 243 249 / 100%) 0%,
-			rgb(196 218 235 / 100%) 50%,
-			rgb(175 201 224 / 100%) 51%,
-			rgb(208 226 240 / 100%) 100%
-		),
-		#d0e2f0;
-}
+/* --- Buttons: pages use the theme's own .button classes now
+   (primary submits, .button-secondary toolbar adds, .button-danger
+   delete confirms), so both themes render them natively. The old
+   compat .primary rule hardcoded the LIGHT theme's gradient and
+   is gone — that was the visible button mismatch on dark pages.
+   .link-button stays a text button. --- */
 .link-button {
 	background: none;
 	border: 0;
@@ -165,8 +141,8 @@ input[type="submit"].primary {
 	display: inline;
 }
 
-/* --- Forms: our pages use bare elements inside <label>/<div>;
-   give them the theme's .form-control treatment. --- */
+/* --- Forms: pages use the theme's .form-control/.form-select
+   classes directly. Labels keep a light structural rule only. --- */
 main form label,
 .app-content form label {
 	display: block;
@@ -175,23 +151,6 @@ main form label,
 	margin: 0.6rem 0 0.25rem;
 	color: var(--color-text-heading);
 }
-main form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]),
-main form select,
-main form textarea,
-.app-content form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]),
-.app-content form select,
-.app-content form textarea {
-	display: block;
-	width: 100%;
-	max-width: 560px;
-	padding: 6px 8px;
-	font: inherit;
-	font-size: 0.9rem;
-	color: var(--color-text);
-	background: var(--color-background);
-	border: 1px solid #b8b8b8;
-	border-radius: var(--border-radius-base);
-}
 main form input[type="checkbox"],
 main form input[type="radio"] {
 	margin-right: 0.4rem;
@@ -199,8 +158,12 @@ main form input[type="radio"] {
 .fields {
 	max-width: 640px;
 }
+.toolbar-buttons p {
+	margin: 0;
+}
 
-/* --- Data tables that are not ListView (sublists, stats) --- */
+/* --- Data tables that are not ListView (sublists, stats).
+   Borders use a translucent gray so they read on both themes. --- */
 table.grid {
 	width: calc(100% - 40px);
 	margin: 0 20px;
@@ -211,7 +174,7 @@ table.grid th,
 table.grid td {
 	text-align: left;
 	padding: 8px 10px;
-	border-bottom: 1px solid #d0d0d0;
+	border-bottom: 1px solid rgb(128 128 128 / 40%);
 }
 table.grid th {
 	color: var(--color-text-heading);

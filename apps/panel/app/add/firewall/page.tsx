@@ -18,23 +18,23 @@ export default async function Page({
 			<form action={addFirewallRuleAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="fwAction">{t("Action")}</label>
-				<select id="fwAction" name="action" defaultValue="ACCEPT">
+				<select className="form-select" id="fwAction" name="action" defaultValue="ACCEPT">
 					<option value="ACCEPT">ACCEPT</option>
 					<option value="DROP">DROP</option>
 				</select>
 				<label htmlFor="fwIp">{t("IP / CIDR")}</label>
-				<input id="fwIp" name="ip" required placeholder="0.0.0.0/0" />
+				<input className="form-control" id="fwIp" name="ip" required placeholder="0.0.0.0/0" />
 				<label htmlFor="fwPort">{t("Port")}</label>
-				<input id="fwPort" name="port" required placeholder="22" />
+				<input className="form-control" id="fwPort" name="port" required placeholder="22" />
 				<label htmlFor="fwProtocol">{t("Protocol")}</label>
-				<select id="fwProtocol" name="protocol" defaultValue="TCP">
+				<select className="form-select" id="fwProtocol" name="protocol" defaultValue="TCP">
 					<option value="TCP">TCP</option>
 					<option value="UDP">UDP</option>
 					<option value="ICMP">ICMP</option>
 				</select>
 				<label htmlFor="fwComment">{t("Comment")}</label>
-				<input id="fwComment" name="comment" />
-				<button type="submit" className="primary">
+				<input className="form-control" id="fwComment" name="comment" />
+				<button type="submit" className="button">
 					{t("Add")}
 				</button>
 			</form>
