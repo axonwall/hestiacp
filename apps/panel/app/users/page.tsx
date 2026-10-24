@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { hestia, requireSession } from "@/lib/panel";
+import { getT, hestia, requireSession } from "@/lib/panel";
 import { loginAsAction } from "@/app/session/actions";
 import { toggleSuspendAction } from "./actions";
 
@@ -16,6 +16,7 @@ export default async function UsersPage({
 		redirect(`/users/${encodeURIComponent(String(session.data.look))}`);
 	}
 	const query = await searchParams;
+	const t = await getT();
 	const isAdmin = session.data.userContext === "admin";
 	const token = String(session.data.token ?? "");
 	let users;
@@ -24,7 +25,7 @@ export default async function UsersPage({
 	} catch (error) {
 		return (
 			<div className="card">
-				<h1>Users</h1>
+				<h1>{t("Users")}</h1>
 				<p className="error">
 					Could not reach the Hestia command layer:{" "}
 					{error instanceof Error ? error.message : String(error)}
@@ -35,28 +36,28 @@ export default async function UsersPage({
 	const names = Object.keys(users).sort();
 	return (
 		<div>
-			<h1>Users</h1>
+			<h1>{t("Users")}</h1>
 			{query.error ? <p className="error">{query.error}</p> : null}
 			{isAdmin ? (
 				<p>
 					<Link className="button" href="/add/user">
-						Add user
+						{t("Add User")}
 					</Link>
 				</p>
 			) : null}
 			<table className="grid">
 				<thead>
 					<tr>
-						<th>User</th>
-						<th>Name</th>
-						<th>Package</th>
-						<th>Web</th>
-						<th>DNS</th>
-						<th>Mail</th>
-						<th>DB</th>
-						<th>Cron</th>
-						<th>Suspended</th>
-						{isAdmin ? <th>Actions</th> : null}
+						<th>{t("User")}</th>
+						<th>{t("Name")}</th>
+						<th>{t("Package")}</th>
+						<th>{t("Web Domains")}</th>
+						<th>{t("DNS")}</th>
+						<th>{t("Mail Domains")}</th>
+						<th>{t("Databases")}</th>
+						<th>{t("Cron Jobs")}</th>
+						<th>{t("Suspended")}</th>
+						{isAdmin ? <th>{t("Actions")}</th> : null}
 					</tr>
 				</thead>
 				<tbody>
@@ -92,7 +93,7 @@ export default async function UsersPage({
 												value={suspended ? "unsuspend" : "suspend"}
 											/>
 											<button type="submit" className="link-button">
-												{suspended ? "Unsuspend" : "Suspend"}
+												{suspended ? t("Unsuspend") : t("Suspend")}
 											</button>
 										</form>{" "}
 										{name !== session.data.user ? (
@@ -103,14 +104,14 @@ export default async function UsersPage({
 												<input type="hidden" name="user" value={name} />
 												<input type="hidden" name="token" value={token} />
 												<button type="submit" className="link-button">
-													Login as
+													{t("Log In As")}
 												</button>
 											</form>
 										) : null}{" "}
 										<Link
 											href={`/users/${encodeURIComponent(name)}/delete`}
 										>
-											Delete
+											{t("Delete")}
 										</Link>
 									</td>
 								) : null}

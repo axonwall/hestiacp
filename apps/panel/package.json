@@ -17,6 +17,7 @@
 		"build": "next build",
 		"dev": "next dev",
 		"start": "next start",
+		"i18n:extract": "node scripts/extract-locales.mjs",
 		"typecheck": "tsc --noEmit"
 	},
 	"type": "module",

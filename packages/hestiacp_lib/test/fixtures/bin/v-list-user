@@ -49,6 +49,30 @@ demo)
 }
 JSON
 	;;
+hans)
+	cat <<'JSON'
+{
+    "hans": {
+        "NAME": "Hans Beispiel",
+        "ROLE": "user",
+        "SHELL": "/bin/bash",
+        "LANGUAGE": "de",
+        "PACKAGE": "default",
+        "CONTACT": "hans@example.com",
+        "NS": "ns1.example.com,ns2.example.com",
+        "LOGIN_DISABLED": "no",
+        "THEME": "default",
+        "WEB_DOMAINS": "0",
+        "DNS_DOMAINS": "0",
+        "MAIL_DOMAINS": "0",
+        "DATABASES": "0",
+        "CRON_JOBS": "0",
+        "DISK_QUOTA": "1024",
+        "SUSPENDED": "no"
+    }
+}
+JSON
+	;;
 secure)
 	cat <<'JSON'
 {

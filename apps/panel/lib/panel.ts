@@ -8,6 +8,7 @@ import {
 import { randomBytes } from "node:crypto";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getTranslator, type Translator } from "./i18n";
 
 /**
  * App-local wiring of @hestiacp/lib singletons. Everything in the panel
@@ -140,6 +141,9 @@ export async function requireSession(): Promise<ShellSession> {
 	}
 	session.data.login_shell = userRecord.SHELL ?? "";
 	session.data.role = userRecord.ROLE ?? "";
+	// The panel language tracks the account record (a language change in
+	// the edit form takes effect on the next request, as in PHP).
+	session.data.language = userRecord.LANGUAGE ?? "en";
 
 	// Impersonation: while `look` is set, the shell/role presented are the
 	// looked user's (main.php). A deleted look target clears the look.
@@ -155,6 +159,12 @@ export async function requireSession(): Promise<ShellSession> {
 	}
 	await sessions.set(session.id, session.data);
 	return session;
+}
+
+/** Translator bound to the current session's language (i18n pipeline). */
+export async function getT(): Promise<Translator> {
+	const session = await getSession();
+	return getTranslator(String(session?.data.language ?? "en"));
 }
 
 /** requireSession + the caller must be an admin (user-admin pages). */

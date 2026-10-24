@@ -1,3 +1,4 @@
+import { getT } from "@/lib/panel";
 import { loginAction } from "./actions";
 
 export default async function LoginPage({
@@ -6,16 +7,17 @@ export default async function LoginPage({
 	searchParams: Promise<{ error?: string }>;
 }) {
 	const params = await searchParams;
+	const t = await getT();
 	return (
 		<div className="card" style={{ maxWidth: 380, margin: "3rem auto" }}>
-			<h1>Log in</h1>
+			<h1>{t("Log in")}</h1>
 			{params.error ? (
-				<p className="error">Invalid username or password.</p>
+				<p className="error">{t("Invalid username or password")}</p>
 			) : null}
 			<form action={loginAction}>
-				<label htmlFor="user">Username</label>
+				<label htmlFor="user">{t("Username")}</label>
 				<input id="user" name="user" autoComplete="username" required />
-				<label htmlFor="secret">Password</label>
+				<label htmlFor="secret">{t("Password")}</label>
 				<input
 					id="secret"
 					name="secret"
@@ -24,7 +26,7 @@ export default async function LoginPage({
 					required
 				/>
 				<button type="submit" className="primary">
-					Log in
+					{t("Log in")}
 				</button>
 			</form>
 		</div>

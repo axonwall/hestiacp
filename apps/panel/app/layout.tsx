@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { getSession } from "@/lib/panel";
+import { getSession, getT } from "@/lib/panel";
 import { returnToAdminAction } from "@/app/session/actions";
 import "./globals.css";
 
@@ -15,6 +15,7 @@ export default async function RootLayout({
 	children: ReactNode;
 }) {
 	const session = await getSession();
+	const t = await getT();
 	const isAdmin = session?.data.userContext === "admin";
 	// Feature gates come from sys config in the session, exactly as the PHP
 	// top bar reads them. (PHP also hides /fm/ while impersonating the
@@ -31,22 +32,22 @@ export default async function RootLayout({
 					<span className="codename">Next.js panel · HestiaNG</span>
 					{session ? (
 						<a className="top-link" href="/users">
-							Users
+							{t("Users")}
 						</a>
 					) : null}
 					{isAdmin ? (
 						<a className="top-link" href="/packages">
-							Packages
+							{t("Packages")}
 						</a>
 					) : null}
 					{showFileManager ? (
 						<a className="top-link" href="/fm/">
-							File manager
+							{t("File Manager")}
 						</a>
 					) : null}
 					{showTerminal ? (
 						<a className="top-link" href="/list/terminal/">
-							Web terminal
+							{t("Web Terminal")}
 						</a>
 					) : null}
 					<span className="spacer" />
@@ -57,7 +58,7 @@ export default async function RootLayout({
 							</span>
 							<form action="/logout" method="post">
 								<button type="submit" className="link-button">
-									Log out
+									{t("Log out")}
 								</button>
 							</form>
 						</>
@@ -66,8 +67,7 @@ export default async function RootLayout({
 				{session?.data.look ? (
 					<div className="impersonation-banner">
 						<span>
-							Viewing as {String(session.data.look)} — impersonating as{" "}
-							{String(session.data.user ?? "")}
+							{t("Viewing as %s", String(session.data.look))}
 						</span>
 						<form action={returnToAdminAction}>
 							<input
@@ -76,7 +76,7 @@ export default async function RootLayout({
 								value={String(session.data.token ?? "")}
 							/>
 							<button type="submit" className="link-button">
-								Return to admin
+								{t("Return to admin")}
 							</button>
 						</form>
 					</div>

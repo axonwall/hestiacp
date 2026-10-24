@@ -86,10 +86,31 @@ On top of the spike slice, the production shell pieces are in:
   logout logged (`v-log-user-logout`), unless `DISABLE_IP_CHECK=yes`.
   Login attempts are logged via `v-log-user-login`.
 
+## i18n pipeline + CI (Phase 1 complete, 2026-10-23)
+
+- **Translations reuse HestiaCP's own gettext catalogs.** The repo ships
+  only compiled `.mo` files (the .po sources live in Crowdin), so
+  `scripts/extract-locales.mjs` parses the .mo binaries directly into
+  `apps/panel/locales/<lang>.json` — 42 catalogs, 22,786 translated
+  strings. Run it with `pnpm --filter @hestiacp/panel i18n:extract`
+  after pulling upstream translation updates.
+- **Runtime** (`lib/i18n.ts`): gettext semantics — the session's
+  `language` (from the account record, refreshed per request) selects
+  the dictionary; a missing string falls back to the msgid (the English
+  source), so wrapping a string in `t()` is always safe. Interpolation
+  is sprintf-style (`%s`, `%1$s`), matching the PHP panel. The shell
+  slice (layout, login, 2FA, user list) is wired; domain pages get
+  wired as they are built in Phases 2–3.
+- **CI** (`.github/workflows/hestiang.yml`, additive to upstream's):
+  frozen-lockfile install with pinned pnpm 12.9.1, lib tests, typecheck,
+  locale-freshness gate (extract + `git diff --exit-code`), and the
+  production build as the final gate.
+
 ## Remaining limitations (deliberate, later phases)
 
 - Package template fields are text inputs, not the PHP form's
   template-select dropdowns.
 - Visuals are placeholder-minimal: D6 is parity-first, and the theme port
   is Phase 2 work.
-- Still Phase 1: the i18n pipeline and CI (D7).
+- `test/api.bats` against a real install still needs D10 (a throwaway
+  Hestia 1.10.5 box); everything is fixture-verified until then.

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/panel";
+import { getSession, getT } from "@/lib/panel";
 import { twofaAction } from "./actions";
 
 /** Step 2 of login: the TOTP code form. Only reachable with a pending
@@ -14,18 +14,19 @@ export default async function TwofaPage({
 		redirect("/login");
 	}
 	const query = await searchParams;
+	const t = await getT();
 	return (
 		<div className="card login-card">
-			<h1>Two-factor authentication</h1>
+			<h1>{t("Two-factor authentication")}</h1>
 			<p>
 				Enter the 6-digit code from your authenticator app for{" "}
 				{String(session.data.pending_user)}.
 			</p>
 			{query.error ? (
-				<p className="error">Invalid or missing 2FA token.</p>
+				<p className="error">{t("Invalid or missing 2FA token")}</p>
 			) : null}
 			<form action={twofaAction}>
-				<label htmlFor="twofa">Authentication code</label>
+				<label htmlFor="twofa">{t("Authentication code")}</label>
 				<input
 					id="twofa"
 					name="twofa"
@@ -34,7 +35,7 @@ export default async function TwofaPage({
 					required
 				/>
 				<button type="submit" className="primary">
-					Verify
+					{t("Verify")}
 				</button>
 			</form>
 		</div>
