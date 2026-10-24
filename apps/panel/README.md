@@ -215,6 +215,39 @@ Not covered from the PHP mega-form: the long tail of one-off policy
 config values, DNS-cluster remote hosts, and the whitelabel editor —
 candidates for a later settings tranche.
 
+## Phase 4 — WebApp framework, search, restic views (2026-10-23)
+
+- **WebApp framework port** (web/src, the hidden second PHP layer):
+  the lib gains HestiaAppContext (the HestiaApp primitives —
+  v-*-fs-* file ops, v-run-cli-cmd runners for wp-cli/composer/php,
+  the wget download helper, database creation with the limit check,
+  template changes, sendPostRequest resolved to localhost), a
+  BaseSetup::install port (resources → database → templates → app
+  setup), and a file-backed **job runner** (JobStore + startJob):
+  installs run detached and persist status as JSON records, where
+  PHP held the request open for up to 300s. setupApplication ports
+  exist for **WordPress and DokuWiki**; the other 20 installers are
+  catalogued but refuse to install until ported — no fake installs.
+- **Catalog**: scripts/extract-webapps.mjs parses the 22 PHP setup
+  classes into data/webapps.json (info + form schemas + database
+  flag); /list/webapps renders the cards per domain (linked from the
+  web domain edit page), /add/webapp renders the wizard form from the
+  schema (plus install directory, PHP version from v-list-sys-php ∩
+  the app's supported list, and the database block) and queues the
+  job; /list/jobs shows records.
+- **Search**: /search (topbar form) — v-search-object for admins,
+  v-search-user-object otherwise or with ?u=; results link to the
+  matching edit pages.
+- **Restic views**: snapshot list (newest first), detail with
+  full/per-object restore forms in the schedule endpoint's argument
+  shapes (cron passes the type alone), confirm-page delete, and
+  scheduling new incremental backups.
+
+Not ported: the remaining 20 setupApplication implementations,
+the restic file browser (v-list-user-files-restic), and the
+terminal page (the bundled terminal service already shares the
+panel's PHP-format sessions; the page remains a hand-off).
+
 ## Remaining limitations (deliberate, later phases)
 
 - Package template fields are text inputs, not the PHP form's

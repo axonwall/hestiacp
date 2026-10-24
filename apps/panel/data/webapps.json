@@ -1,0 +1,1358 @@
+[
+  {
+    "name": "Castopod",
+    "group": "podcasting",
+    "version": "1.15.5",
+    "thumbnail": "castopod-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "admin_gateway",
+        "type": "text",
+        "value": "cp-admin"
+      },
+      {
+        "key": "auth_gateway",
+        "type": "text",
+        "value": "cp-auth"
+      }
+    ]
+  },
+  {
+    "name": "ClassicPress",
+    "group": "cms",
+    "version": "latest",
+    "thumbnail": "classicpress-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "site_name",
+        "type": "text",
+        "value": "ClassicPress Blog"
+      },
+      {
+        "key": "username",
+        "type": "text",
+        "value": "cpadmin"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      },
+      {
+        "key": "language",
+        "type": "select",
+        "value": "en_US",
+        "options": [
+          {
+            "value": "ar_AR",
+            "label": "Arabic"
+          },
+          {
+            "value": "zh_CN",
+            "label": "Chinese Simplified"
+          },
+          {
+            "value": "cs_CZ",
+            "label": "Czech"
+          },
+          {
+            "value": "nl_NL",
+            "label": "Dutch"
+          },
+          {
+            "value": "en_GB",
+            "label": "English (British)"
+          },
+          {
+            "value": "en_US",
+            "label": "English (United States)"
+          },
+          {
+            "value": "fr_FR",
+            "label": "French"
+          },
+          {
+            "value": "de_DE",
+            "label": "German"
+          },
+          {
+            "value": "it_IT",
+            "label": "Italian"
+          },
+          {
+            "value": "sv_SE",
+            "label": "Swedish"
+          },
+          {
+            "value": "pt_BR",
+            "label": "Portuguese (Brazil)"
+          }
+        ]
+      },
+      {
+        "key": "search_engine_indexing",
+        "type": "select",
+        "options": [
+          {
+            "value": "Allow",
+            "label": "Allow"
+          }
+        ]
+      },
+      {
+        "key": "type",
+        "type": "select,\n                options => [Yes, No],\n            ]"
+      }
+    ]
+  },
+  {
+    "name": "ConcreteCMS",
+    "group": "cms",
+    "version": "latest",
+    "thumbnail": "concrete-cms-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      },
+      {
+        "key": "language",
+        "type": "select",
+        "value": "en_US",
+        "options": [
+          {
+            "value": "en_US",
+            "label": "English (United States)"
+          },
+          {
+            "value": "en_GB",
+            "label": "English (United Kingdom)"
+          },
+          {
+            "value": "cs_CZ",
+            "label": "čeština (Česko)"
+          },
+          {
+            "value": "da_DK",
+            "label": "dansk (Danmark)"
+          },
+          {
+            "value": "de_DE",
+            "label": "Deutsch (Deutschland)"
+          },
+          {
+            "value": "de_CH",
+            "label": "Deutsch (Schweiz)"
+          },
+          {
+            "value": "fr_FR",
+            "label": "français (France)"
+          },
+          {
+            "value": "it_IT",
+            "label": "italiano (Italia)"
+          },
+          {
+            "value": "nl_BE",
+            "label": "Nederlands (België)"
+          },
+          {
+            "value": "nl_NL",
+            "label": "Nederlands (Nederland)"
+          },
+          {
+            "value": "pl_PL",
+            "label": "polski (Polska)"
+          },
+          {
+            "value": "fi_FI",
+            "label": "suomi (Suomi)"
+          },
+          {
+            "value": "tr_TR",
+            "label": "Türkçe (Türkiye)"
+          },
+          {
+            "value": "el_GR",
+            "label": "Ελληνικά (Ελλάδα)"
+          },
+          {
+            "value": "ru_RU",
+            "label": "русский (Россия)"
+          },
+          {
+            "value": "uk_UA",
+            "label": "українська (Україна)"
+          },
+          {
+            "value": "zh_CN",
+            "label": "中文 (中国)"
+          },
+          {
+            "value": "ja_JP",
+            "label": "日本語 (日本)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DokuWiki",
+    "group": "wiki",
+    "version": "latest",
+    "thumbnail": "dokuwiki-logo.svg",
+    "database": false,
+    "form": [
+      {
+        "key": "wiki_name",
+        "type": "text"
+      },
+      {
+        "key": "superuser",
+        "type": "text"
+      },
+      {
+        "key": "real_name",
+        "type": "text"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      },
+      {
+        "key": "initial_ACL_policy",
+        "type": "select",
+        "options": [
+          {
+            "value": "0: Open Wiki (read, write, upload for everyone)",
+            "label": "0: Open Wiki (read, write, upload for everyone)"
+          },
+          {
+            "value": "1: Public Wiki (read for everyone, write and upload for registered users)",
+            "label": "1: Public Wiki (read for everyone, write and upload for registered users)"
+          },
+          {
+            "value": "2: Closed Wiki (read, write, upload for registered users only)",
+            "label": "2: Closed Wiki (read, write, upload for registered users only)"
+          }
+        ]
+      },
+      {
+        "key": "content_license",
+        "type": "select",
+        "options": [
+          {
+            "value": "cc-zero: CC0 1.0 Universal",
+            "label": "cc-zero: CC0 1.0 Universal"
+          },
+          {
+            "value": "publicdomain: Public Domain",
+            "label": "publicdomain: Public Domain"
+          },
+          {
+            "value": "cc-by: CC Attribution 4.0 International",
+            "label": "cc-by: CC Attribution 4.0 International"
+          },
+          {
+            "value": "cc-by-sa: CC Attribution-Share Alike 4.0 International",
+            "label": "cc-by-sa: CC Attribution-Share Alike 4.0 International"
+          },
+          {
+            "value": "gnufdl: GNU Free Documentation License 1.3",
+            "label": "gnufdl: GNU Free Documentation License 1.3"
+          },
+          {
+            "value": "cc-by-nc: CC Attribution-Noncommercial 4.0 International",
+            "label": "cc-by-nc: CC Attribution-Noncommercial 4.0 International"
+          },
+          {
+            "value": "cc-by-nc-sa: CC Attribution-Noncommercial-Share Alike 4.0 International",
+            "label": "cc-by-nc-sa: CC Attribution-Noncommercial-Share Alike 4.0 International"
+          },
+          {
+            "value": "0: Do not show any license information",
+            "label": "0: Do not show any license information"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Dolibarr",
+    "group": "crm",
+    "version": "24.0.1",
+    "thumbnail": "dolibarr_logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "username",
+        "type": "text",
+        "value": "doliadmin"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      },
+      {
+        "key": "language",
+        "type": "select",
+        "value": "en_EN",
+        "options": [
+          {
+            "value": "en_EN",
+            "label": "English"
+          },
+          {
+            "value": "fr_FR",
+            "label": "French"
+          },
+          {
+            "value": "de_DE",
+            "label": "German"
+          },
+          {
+            "value": "es_ES",
+            "label": "Spanish"
+          },
+          {
+            "value": "it_IT",
+            "label": "Italian"
+          },
+          {
+            "value": "pt_PT",
+            "label": "Portuguese"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Drupal",
+    "group": "cms",
+    "version": "latest",
+    "thumbnail": "drupal-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "username",
+        "type": "text",
+        "value": "admin"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "name": "Flarum",
+    "group": "forum",
+    "version": "latest",
+    "thumbnail": "fl-thumb.png",
+    "database": true,
+    "form": [
+      {
+        "key": "forum_title",
+        "type": "text",
+        "value": "Flarum Forum"
+      },
+      {
+        "key": "admin_username",
+        "type": "text",
+        "value": "fladmin"
+      },
+      {
+        "key": "admin_email",
+        "type": "text"
+      },
+      {
+        "key": "admin_password",
+        "type": "password"
+      }
+    ]
+  },
+  {
+    "name": "Grav",
+    "group": "cms",
+    "version": "2.0.24",
+    "thumbnail": "grav-symbol.svg",
+    "database": false,
+    "form": [
+      {
+        "key": "full_name",
+        "type": "text"
+      },
+      {
+        "key": "username",
+        "type": "text",
+        "value": "gravadmin"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "name": "Joomla",
+    "group": "cms",
+    "version": "6.1.3",
+    "thumbnail": "joomla-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "site_name",
+        "type": "text",
+        "value": "Joomla"
+      },
+      {
+        "key": "admin_user",
+        "type": "text"
+      },
+      {
+        "key": "admin_username",
+        "type": "text",
+        "value": "joomlaadmin"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "name": "Laravel",
+    "group": "framework",
+    "version": "latest",
+    "thumbnail": "laravel-logo.svg",
+    "database": true,
+    "form": []
+  },
+  {
+    "name": "MediaWiki",
+    "group": "cms",
+    "version": "1.46.0",
+    "thumbnail": "MediaWiki-2020-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "wiki_name",
+        "type": "text",
+        "value": "MediaWiki"
+      },
+      {
+        "key": "admin_username",
+        "type": "text",
+        "value": "wikiadmin"
+      },
+      {
+        "key": "admin_password",
+        "type": "password"
+      },
+      {
+        "key": "language",
+        "type": "text",
+        "value": "en"
+      }
+    ]
+  },
+  {
+    "name": "NamelessMC",
+    "group": "cms",
+    "version": "2.2.5",
+    "thumbnail": "namelessmc.png",
+    "database": false,
+    "form": [
+      {
+        "key": "protocol",
+        "type": "select",
+        "value": "https",
+        "options": [
+          {
+            "value": "http",
+            "label": "http"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Nextcloud",
+    "group": "cloud",
+    "version": "latest",
+    "thumbnail": "nextcloud-thumb.png",
+    "database": true,
+    "form": [
+      {
+        "key": "username",
+        "type": "text",
+        "value": "admin"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      }
+    ]
+  },
+  {
+    "name": "OpenCart",
+    "group": "ecommerce",
+    "version": "4.1.0.4",
+    "thumbnail": "opencart-thumb.png",
+    "database": true,
+    "form": [
+      {
+        "key": "username",
+        "type": "text",
+        "value": "ocadmin"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      }
+    ]
+  },
+  {
+    "name": "PrestaShop",
+    "group": "ecommerce",
+    "version": "9.1.5",
+    "thumbnail": "prestashop-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "shop_name",
+        "type": "text",
+        "value": "PrestaShop"
+      },
+      {
+        "key": "first_name",
+        "type": "text"
+      },
+      {
+        "key": "last_name",
+        "type": "text"
+      },
+      {
+        "key": "language",
+        "type": "select",
+        "value": "en",
+        "options": [
+          {
+            "value": "en",
+            "label": "English"
+          },
+          {
+            "value": "ar",
+            "label": "العربية (Arabic)"
+          },
+          {
+            "value": "bs",
+            "label": "Bosanski (Bosnian)"
+          },
+          {
+            "value": "bg",
+            "label": "български език (Bulgarian)"
+          },
+          {
+            "value": "ca",
+            "label": "Català (Catalan)"
+          },
+          {
+            "value": "cs",
+            "label": "Čeština (Czech)"
+          },
+          {
+            "value": "da",
+            "label": "Dansk (Danish)"
+          },
+          {
+            "value": "de",
+            "label": "Deutsch (German)"
+          },
+          {
+            "value": "et",
+            "label": "Eesti keel (Estonian)"
+          },
+          {
+            "value": "es",
+            "label": "Español (Spanish)"
+          },
+          {
+            "value": "mx",
+            "label": "Español MX (Spanish)"
+          },
+          {
+            "value": "fr",
+            "label": "Français (French)"
+          },
+          {
+            "value": "qc",
+            "label": "Français CA (French)"
+          },
+          {
+            "value": "gl",
+            "label": "Galego (Galician)"
+          },
+          {
+            "value": "el",
+            "label": "ελληνικά (Greek)"
+          },
+          {
+            "value": "ko",
+            "label": "한국어 (Korean)"
+          },
+          {
+            "value": "hr",
+            "label": "Hrvatski (Croatian)"
+          },
+          {
+            "value": "id",
+            "label": "Indonesia (Indonesian)"
+          },
+          {
+            "value": "it",
+            "label": "Italiano (Italian)"
+          },
+          {
+            "value": "ja",
+            "label": "日本語 (Japanese)"
+          },
+          {
+            "value": "lv",
+            "label": "Latvija (Latvian)"
+          },
+          {
+            "value": "lt",
+            "label": "lietuvių kalba (Lithuanian)"
+          },
+          {
+            "value": "mk",
+            "label": "македонски јазик (Macedonian)"
+          },
+          {
+            "value": "hu",
+            "label": "Magyar (Hungarian)"
+          },
+          {
+            "value": "nl",
+            "label": "Nederlands (Dutch)"
+          },
+          {
+            "value": "no",
+            "label": "Norsk (Norwegian)"
+          },
+          {
+            "value": "fa",
+            "label": "پارسی (Persian)"
+          },
+          {
+            "value": "pl",
+            "label": "Polski (Polish)"
+          },
+          {
+            "value": "br",
+            "label": "Português (Brasil)"
+          },
+          {
+            "value": "pt",
+            "label": "Português (Portuguese)"
+          },
+          {
+            "value": "ro",
+            "label": "Română (Romanian)"
+          },
+          {
+            "value": "ru",
+            "label": "Русский (Russian)"
+          },
+          {
+            "value": "sr",
+            "label": "Srpski (Serbian)"
+          },
+          {
+            "value": "sq",
+            "label": "Shqip (Albanian)"
+          },
+          {
+            "value": "sk",
+            "label": "Slovenčina (Slovak)"
+          },
+          {
+            "value": "si",
+            "label": "slovenski jezik (Slovene)"
+          },
+          {
+            "value": "fi",
+            "label": "Suomi (Finnish)"
+          },
+          {
+            "value": "sv",
+            "label": "svenska (Swedish)"
+          },
+          {
+            "value": "tr",
+            "label": "Türkçe (Turkish)"
+          },
+          {
+            "value": "uk",
+            "label": "Українська (Ukrainian)"
+          },
+          {
+            "value": "vn",
+            "label": "tiếng Việt (Vietnamese)"
+          },
+          {
+            "value": "he",
+            "label": "עברית (Hebrew)"
+          },
+          {
+            "value": "hi",
+            "label": "हिन्दी (Hindi)"
+          },
+          {
+            "value": "bn",
+            "label": "বাংলা (Bengali)"
+          },
+          {
+            "value": "tw",
+            "label": "繁體中文 (Traditional Chinese)"
+          },
+          {
+            "value": "zh",
+            "label": "简体字 (Simplified Chinese)"
+          }
+        ]
+      },
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      }
+    ]
+  },
+  {
+    "name": "QloApps",
+    "group": "ecommerce",
+    "version": "1.7.0",
+    "thumbnail": "qloapps-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "first_name",
+        "type": "text"
+      },
+      {
+        "key": "last_name",
+        "type": "text"
+      },
+      {
+        "key": "language",
+        "type": "select",
+        "value": "en",
+        "options": [
+          {
+            "value": "en",
+            "label": "English"
+          },
+          {
+            "value": "ca",
+            "label": "Català (Catalan)"
+          },
+          {
+            "value": "de",
+            "label": "Deutsch (German)"
+          },
+          {
+            "value": "es",
+            "label": "Español (Spanish)"
+          },
+          {
+            "value": "fr",
+            "label": "Français (French)"
+          },
+          {
+            "value": "qc",
+            "label": "Français CA (French)"
+          },
+          {
+            "value": "hr",
+            "label": "Hrvatski (Croatian)"
+          },
+          {
+            "value": "id",
+            "label": "Indonesia (Indonesian)"
+          },
+          {
+            "value": "it",
+            "label": "Italiano (Italian)"
+          },
+          {
+            "value": "hu",
+            "label": "Magyar (Hungarian)"
+          },
+          {
+            "value": "nl",
+            "label": "Nederlands (Dutch)"
+          },
+          {
+            "value": "no",
+            "label": "Norsk (Norwegian)"
+          },
+          {
+            "value": "pl",
+            "label": "Polski (Polish)"
+          },
+          {
+            "value": "br",
+            "label": "Português (Brasil)"
+          },
+          {
+            "value": "pt",
+            "label": "Português (Portuguese)"
+          },
+          {
+            "value": "ro",
+            "label": "Română (Romanian)"
+          },
+          {
+            "value": "sr",
+            "label": "Srpski (Serbian)"
+          },
+          {
+            "value": "tr",
+            "label": "Türkçe (Turkish)"
+          },
+          {
+            "value": "lt",
+            "label": "lietuvių kalba (Lithuanian)"
+          },
+          {
+            "value": "si",
+            "label": "slovenski jezik (Slovene)"
+          },
+          {
+            "value": "sv",
+            "label": "svenska (Swedish)"
+          },
+          {
+            "value": "vn",
+            "label": "tiếng Việt (Vietnamese)"
+          },
+          {
+            "value": "cs",
+            "label": "Čeština (Czech)"
+          },
+          {
+            "value": "ru",
+            "label": "Русский (Russian)"
+          },
+          {
+            "value": "bg",
+            "label": "български език (Bulgarian)"
+          },
+          {
+            "value": "mk",
+            "label": "македонски јазик (Macedonian)"
+          },
+          {
+            "value": "he",
+            "label": "עברית (Hebrew)"
+          },
+          {
+            "value": "fa",
+            "label": "پارسی (Persian)"
+          },
+          {
+            "value": "bn",
+            "label": "বাংলা (Bengali)"
+          },
+          {
+            "value": "tw",
+            "label": "正體中文 (Traditional Chinese)"
+          },
+          {
+            "value": "zh",
+            "label": "简体字 (Simplified Chinese)"
+          }
+        ]
+      },
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      }
+    ]
+  },
+  {
+    "name": "Shopware",
+    "group": "ecommerce",
+    "version": "latest",
+    "thumbnail": "shopware-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "shop_name",
+        "type": "text",
+        "value": "Shopware"
+      },
+      {
+        "key": "shop_email",
+        "type": "text"
+      },
+      {
+        "key": "shop_locale",
+        "type": "select",
+        "value": "en-GB",
+        "options": [
+          {
+            "value": "en-GB",
+            "label": "English (UK)"
+          },
+          {
+            "value": "en-US",
+            "label": "English (US)"
+          },
+          {
+            "value": "ach-UG",
+            "label": "Lwo (Acholi)"
+          },
+          {
+            "value": "af-ZA",
+            "label": "Afrikaans - South Africa"
+          },
+          {
+            "value": "ar-SA",
+            "label": "العربية (Arabic - Saudi Arabia)"
+          },
+          {
+            "value": "bg-BG",
+            "label": "български език (Bulgarian)"
+          },
+          {
+            "value": "bs-BA",
+            "label": "Bosanski (Bosnian)"
+          },
+          {
+            "value": "ca-ES",
+            "label": "Català (Catalan)"
+          },
+          {
+            "value": "cs-CZ",
+            "label": "Čeština (Czech)"
+          },
+          {
+            "value": "da-DK",
+            "label": "Dansk (Danish)"
+          },
+          {
+            "value": "de-AT",
+            "label": "Deutsch (German - Austria)"
+          },
+          {
+            "value": "de-CH",
+            "label": "Deutsch (German - Switzerland)"
+          },
+          {
+            "value": "de-DE",
+            "label": "Deutsch (German)"
+          },
+          {
+            "value": "el-GR",
+            "label": "Ελληνικά (Greek)"
+          },
+          {
+            "value": "es-AR",
+            "label": "Español (Argentina)"
+          },
+          {
+            "value": "es-ES",
+            "label": "Español (Spanish)"
+          },
+          {
+            "value": "et-EE",
+            "label": "Eesti keel (Estonian)"
+          },
+          {
+            "value": "fi-FI",
+            "label": "Suomi (Finnish)"
+          },
+          {
+            "value": "fr-FR",
+            "label": "Français (French)"
+          },
+          {
+            "value": "hi-IN",
+            "label": "हिन्दी (Hindi)"
+          },
+          {
+            "value": "hr-HR",
+            "label": "Hrvatski (Croatian)"
+          },
+          {
+            "value": "hu-HU",
+            "label": "Magyar (Hungarian)"
+          },
+          {
+            "value": "hy-AM",
+            "label": "Հայերեն (Armenian)"
+          },
+          {
+            "value": "id-ID",
+            "label": "Indonesia (Indonesian)"
+          },
+          {
+            "value": "it-IT",
+            "label": "Italiano (Italian)"
+          },
+          {
+            "value": "ja-JP",
+            "label": "日本語 (Japanese)"
+          },
+          {
+            "value": "ko-KR",
+            "label": "한국어 (Korean)"
+          },
+          {
+            "value": "lt-LT",
+            "label": "lietuvių kalba (Lithuanian)"
+          },
+          {
+            "value": "lv-LV",
+            "label": "Latviešu (Latvian)"
+          },
+          {
+            "value": "nl-NL",
+            "label": "Nederlands (Dutch)"
+          },
+          {
+            "value": "nn-NO",
+            "label": "Norsk Nynorsk (Norwegian)"
+          },
+          {
+            "value": "pl-PL",
+            "label": "Polski (Polish)"
+          },
+          {
+            "value": "pt-PT",
+            "label": "Português (Portuguese)"
+          },
+          {
+            "value": "ro-RO",
+            "label": "Română (Romanian)"
+          },
+          {
+            "value": "ru-RU",
+            "label": "Русский (Russian)"
+          },
+          {
+            "value": "sk-SK",
+            "label": "Slovenčina (Slovak)"
+          },
+          {
+            "value": "sl-SI",
+            "label": "Slovenščina (Slovenian)"
+          },
+          {
+            "value": "sq-AL",
+            "label": "Shqip (Albanian)"
+          },
+          {
+            "value": "sr-RS",
+            "label": "Srpski (Serbian)"
+          },
+          {
+            "value": "sv-SE",
+            "label": "Svenska (Swedish)"
+          },
+          {
+            "value": "th-TH",
+            "label": "ภาษาไทย (Thai)"
+          },
+          {
+            "value": "tr-TR",
+            "label": "Türkçe (Turkish)"
+          },
+          {
+            "value": "uk-UA",
+            "label": "Українська (Ukrainian)"
+          },
+          {
+            "value": "vi-VN",
+            "label": "Tiếng Việt (Vietnamese)"
+          }
+        ]
+      },
+      {
+        "key": "shop_currency",
+        "type": "text",
+        "value": "USD"
+      },
+      {
+        "key": "username",
+        "type": "text",
+        "value": "shopadmin"
+      },
+      {
+        "key": "first_name",
+        "type": "text"
+      },
+      {
+        "key": "last_name",
+        "type": "text"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      }
+    ]
+  },
+  {
+    "name": "Symfony",
+    "group": "framework",
+    "version": "latest",
+    "thumbnail": "symfony-logo.svg",
+    "database": false,
+    "form": []
+  },
+  {
+    "name": "ThirtyBees",
+    "group": "ecommerce",
+    "version": "1.7.0",
+    "thumbnail": "thirtybees-thumb.png",
+    "database": true,
+    "form": [
+      {
+        "key": "store_name",
+        "type": "text",
+        "value": "thirty bees"
+      },
+      {
+        "key": "first_name",
+        "type": "text"
+      },
+      {
+        "key": "last_name",
+        "type": "text"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      }
+    ]
+  },
+  {
+    "name": "Vvveb",
+    "group": "cms",
+    "version": "latest",
+    "thumbnail": "vvveb-symbol.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "vvveb_account_username",
+        "type": "text",
+        "value": "admin"
+      },
+      {
+        "key": "vvveb_account_email",
+        "type": "text"
+      },
+      {
+        "key": "vvveb_account_password",
+        "type": "password"
+      }
+    ]
+  },
+  {
+    "name": "WordPress",
+    "group": "cms",
+    "version": "latest",
+    "thumbnail": "wordpress-logo.svg",
+    "database": true,
+    "form": [
+      {
+        "key": "site_name",
+        "type": "text",
+        "value": "WordPress Blog"
+      },
+      {
+        "key": "username",
+        "type": "text",
+        "value": "wpadmin"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      },
+      {
+        "key": "language",
+        "type": "select",
+        "value": "en_US",
+        "options": [
+          {
+            "value": "cs_CZ",
+            "label": "Czech"
+          },
+          {
+            "value": "de_DE",
+            "label": "German"
+          },
+          {
+            "value": "es_ES",
+            "label": "Spanish"
+          },
+          {
+            "value": "en_US",
+            "label": "English"
+          },
+          {
+            "value": "fr_FR",
+            "label": "French"
+          },
+          {
+            "value": "hu_HU",
+            "label": "Hungarian"
+          },
+          {
+            "value": "it_IT",
+            "label": "Italian"
+          },
+          {
+            "value": "ja",
+            "label": "Japanese"
+          },
+          {
+            "value": "nl_NL",
+            "label": "Dutch"
+          },
+          {
+            "value": "pt_PT",
+            "label": "Portuguese"
+          },
+          {
+            "value": "pt_BR",
+            "label": "Portuguese (Brazil)"
+          },
+          {
+            "value": "sk_SK",
+            "label": "Slovak"
+          },
+          {
+            "value": "sr_RS",
+            "label": "Serbian"
+          },
+          {
+            "value": "sv_SE",
+            "label": "Swedish"
+          },
+          {
+            "value": "tr_TR",
+            "label": "Turkish"
+          },
+          {
+            "value": "ru_RU",
+            "label": "Russian"
+          },
+          {
+            "value": "uk",
+            "label": "Ukrainian"
+          },
+          {
+            "value": "zh-CN",
+            "label": "Simplified Chinese (China)"
+          },
+          {
+            "value": "zh_TW",
+            "label": "Traditional Chinese"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "osTicket",
+    "group": "helpdesk",
+    "version": "1.18.4",
+    "thumbnail": "ost-logo.png",
+    "database": true,
+    "form": [
+      {
+        "key": "helpdesk_name",
+        "type": "text",
+        "value": "osTicket"
+      },
+      {
+        "key": "email",
+        "type": "text"
+      },
+      {
+        "key": "first_name",
+        "type": "text"
+      },
+      {
+        "key": "last_name",
+        "type": "text"
+      },
+      {
+        "key": "username",
+        "type": "text",
+        "value": "osAdmin"
+      },
+      {
+        "key": "admin_email",
+        "type": "text"
+      },
+      {
+        "key": "password",
+        "type": "password"
+      }
+    ]
+  }
+]

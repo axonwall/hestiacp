@@ -49,5 +49,9 @@ jobs:
         run: |
           pnpm --filter @hestiacp/panel i18n:extract
           git diff --exit-code -- apps/panel/locales
+      - name: WebApp catalog is fresh
+        run: |
+          pnpm --filter @hestiacp/panel webapps:extract
+          git diff --exit-code -- apps/panel/data
       - name: Production build (the gate)
         run: pnpm --filter @hestiacp/panel build

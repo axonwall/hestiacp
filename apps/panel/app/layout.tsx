@@ -53,7 +53,13 @@ export default async function RootLayout({
 					<span className="spacer" />
 					{session ? (
 						<>
-							<span className="who">
+							<form action="/search" method="get" className="searchbox">
+							<input name="q" type="search" placeholder={t("Search")} aria-label={t("Search")} />
+						</form>
+						<a className="top-link" href="/list/jobs">
+							Jobs
+						</a>
+						<span className="who">
 								{String(session.data.look || session.data.user || "")}
 							</span>
 							<form action="/logout" method="post">

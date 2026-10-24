@@ -49,7 +49,8 @@ export default async function Page() {
 					{t("Create backup")}
 				</button>
 			</form>{" "}
-			<Link href="/edit/backup/exclusions">{t("Backup exclusions")}</Link>
+			<Link href="/edit/backup/exclusions">{t("Backup exclusions")}</Link>{" "}
+			<Link href="/list/backup/restic">Incremental backups</Link>
 		</ListView>
 	);
 }

@@ -52,6 +52,11 @@ export default async function Page({
 			</h1>
 			{query.error ? <p className="error">{query.error}</p> : null}
 			{query.saved ? <p>{t("Saved")}</p> : null}
+			<p>
+				<a href={`/list/webapps?domain=${encodeURIComponent(domain)}`}>
+					Quick Install App →
+				</a>
+			</p>
 			<form action={editWebDomainAction}>
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="domain" value={domain} />
