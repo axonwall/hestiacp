@@ -11,6 +11,7 @@ export {
 	type AddUserOptions,
 	type HestiaPackage,
 	type HestiaRow,
+	type ResticFileEntry,
 	type HestiaUser,
 } from "./client";
 export { SessionStore, type PanelSession } from "./session";

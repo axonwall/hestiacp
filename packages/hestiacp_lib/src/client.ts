@@ -8,6 +8,17 @@ import { runHestiaCommand, type CommandResult } from "./exec";
 /** One flat row of any v-list-* JSON map. Values are strings, as emitted. */
 export type HestiaRow = Record<string, string>;
 
+/** One entry of a restic snapshot listing (restic ls --json line). */
+export interface ResticFileEntry {
+	name: string;
+	type: string; // "dir" | "file" | "symlink"
+	path: string;
+	size?: number;
+	mtime?: string;
+	mode?: number;
+	[key: string]: unknown;
+}
+
 /** One row of v-list-users / v-list-user JSON output. Values are strings, as emitted. */
 export interface HestiaUser {
 	NAME: string;
@@ -1564,6 +1575,29 @@ export class HestiaClient {
 	async scheduleUserBackupRestic(user: string) {
 		assertUsername(user);
 		await this.runChecked("v-schedule-user-backup-restic", user);
+	}
+	/**
+	 * Browse a restic snapshot (v-list-user-files-restic): the command
+	 * prints restic ls --json output — line 1 is the snapshot info
+	 * object, each following line one entry ({name, type, path, ...}).
+	 */
+	async listUserFilesRestic(user: string, snapshot: string, folder: string) {
+		assertUsername(user);
+		const result = await this.raw(
+			"v-list-user-files-restic",
+			user,
+			snapshot,
+			folder,
+		);
+		if (result.code !== 0) {
+			throw new Error(
+				`v-list-user-files-restic failed (${result.code}): ${result.stderr.trim() || result.stdout.trim()}`,
+			);
+		}
+		const lines = result.stdout.split("\n").filter((l) => l.trim());
+		const info = lines.length ? JSON.parse(lines[0]) : {};
+		const files = lines.slice(1).map((l) => JSON.parse(l) as ResticFileEntry);
+		return { info: info as Record<string, unknown>, files };
 	}
 	/**
 	 * Schedule a restic restore: full snapshot, or one typed object

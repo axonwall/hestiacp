@@ -59,6 +59,24 @@ describe("JobStore / startJob", () => {
 	afterAll(async () => {
 		await rm(dir, { recursive: true, force: true });
 	});
+	it("browses a restic snapshot (JSON-lines)", async () => {
+		const before = await calls();
+		const { info, files } = await client.listUserFilesRestic("demo", "snap001", "/home/demo");
+		expect((await calls()).at(-1)).toBe(
+			"v-list-user-files-restic demo snap001 /home/demo",
+		);
+		expect(info.short_id).toBe("snap001");
+		expect(files.map((f) => f.name)).toEqual([
+			"demo",
+			"web",
+			"conf",
+			"readme.txt",
+			"link",
+		]);
+		expect(files[3].type).toBe("file");
+		expect(files[3].size).toBe(128);
+	});
+
 	it("persists running → done and running → failed", async () => {
 		dir = await mkdtemp(join(tmpdir(), "hestiang-jobs-test-"));
 		const store = new JobStore(dir);

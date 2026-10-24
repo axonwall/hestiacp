@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fixture: v-list-user-files-restic USER SNAPSHOT FOLDER — restic
+# ls --json: line 1 = snapshot info, then one entry object per line.
+echo "v-list-user-files-restic $*" >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
+user="$1"
+cat <<JSON
+{"time":"2026-10-21T02:00:00Z","tree":"tree001","paths":["/home/$user"],"hostname":"hestia","username":"$user","id":"snap001","short_id":"snap001"}
+{"name":"$user","type":"dir","path":"/home/$user","mtime":"2026-10-21T02:00:00Z"}
+{"name":"web","type":"dir","path":"/home/$user/web","mtime":"2026-10-21T02:00:00Z"}
+{"name":"conf","type":"dir","path":"/home/$user/conf","mtime":"2026-10-21T02:00:00Z"}
+{"name":"readme.txt","type":"file","path":"/home/$user/readme.txt","size":128,"mtime":"2026-10-20T10:00:00Z"}
+{"name":"link","type":"symlink","path":"/home/$user/link","mtime":"2026-10-20T10:00:00Z"}
+JSON
