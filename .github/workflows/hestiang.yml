@@ -38,7 +38,12 @@ jobs:
           node-version: 24
           cache: pnpm
       - name: Install (frozen lockfile)
-        run: pnpm install --frozen-lockfile
+        # The committed lockfile is the reviewed artifact; pnpm's
+        # default minimum-release-age policy otherwise fails the run
+        # whenever a locked package is <24h old (Next 16.4.3 was
+        # published the day before the D10 box run and broke both
+        # this step and the bundle build until it aged out).
+        run: pnpm install --frozen-lockfile --config.minimum-release-age=0
       - name: Library tests
         run: pnpm --filter @hestiacp/lib test
       - name: Typecheck (lib + panel)
