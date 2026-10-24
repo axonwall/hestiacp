@@ -2,6 +2,7 @@ import {
 	HestiaClient,
 	loadConfig,
 	PhpSessionStore,
+	type HestiaRow,
 	type HestiaUser,
 	type PhpSessionData,
 } from "@hestiacp/lib";
@@ -159,6 +160,25 @@ export async function requireSession(): Promise<ShellSession> {
 	}
 	await sessions.set(session.id, session.data);
 	return session;
+}
+
+/** The account the panel is acting for: the impersonation target while
+ *  `look` is set, otherwise the session's own user (as in PHP). */
+export function effectiveUser(session: ShellSession): string {
+	return String(session.data.look || session.data.user || "");
+}
+
+/** Run a list fetch, converting failures into a renderable error. */
+export async function loadRows(
+	fn: () => Promise<Record<string, HestiaRow>>,
+): Promise<{ rows: Record<string, HestiaRow> } | { error: string }> {
+	try {
+		return { rows: await fn() };
+	} catch (error) {
+		return {
+			error: error instanceof Error ? error.message : String(error),
+		};
+	}
 }
 
 /** Translator bound to the current session's language (i18n pipeline). */

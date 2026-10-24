@@ -140,3 +140,56 @@ dl.fields dt {
 dl.fields dd {
 	margin: 0;
 }
+
+.sections {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1rem;
+	background: #1f2937;
+	padding: 0.4rem 1rem;
+}
+
+.sections a {
+	color: #c7cede;
+	font-size: 0.88rem;
+	text-decoration: none;
+}
+
+.sections a:hover {
+	color: #fff;
+}
+
+.gauges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.gauge {
+	min-width: 180px;
+	flex: 1;
+}
+
+.gauge-label {
+	font-size: 0.85rem;
+	color: #6b7280;
+}
+
+.gauge-value {
+	font-size: 1.25rem;
+	font-weight: 600;
+	margin: 0.25rem 0;
+}
+
+.gauge-bar {
+	background: #e5e7eb;
+	border-radius: 4px;
+	height: 8px;
+	overflow: hidden;
+}
+
+.gauge-bar > div {
+	background: #2563eb;
+	height: 100%;
+}

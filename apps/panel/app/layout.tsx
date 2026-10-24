@@ -81,6 +81,31 @@ export default async function RootLayout({
 						</form>
 					</div>
 				) : null}
+				{session ? (
+					<nav className="sections">
+						<a href="/dashboard">{t("Dashboard")}</a>
+						<a href="/list/web">{t("Web")}</a>
+						<a href="/list/dns">{t("DNS")}</a>
+						<a href="/list/mail">{t("Mail")}</a>
+						<a href="/list/db">{t("DB")}</a>
+						<a href="/list/cron">{t("Cron Jobs")}</a>
+						<a href="/list/backup">{t("Backups")}</a>
+						<a href="/list/stats">{t("Statistics")}</a>
+						<a href="/list/log">{t("Log")}</a>
+						<a href="/list/notifications">{t("Notifications")}</a>
+						<a href="/list/key">{t("SSH Keys")}</a>
+						<a href="/list/access-key">{t("Access Keys")}</a>
+						{isAdmin ? (
+							<>
+								<a href="/list/server">{t("Server")}</a>
+								<a href="/list/ip">{t("IP Addresses")}</a>
+								<a href="/list/firewall">{t("Firewall")}</a>
+								<a href="/list/updates">{t("Updates")}</a>
+								<a href="/list/rrd">{t("RRD")}</a>
+							</>
+						) : null}
+					</nav>
+				) : null}
 				<main className="content">{children}</main>
 			</body>
 		</html>

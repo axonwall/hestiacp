@@ -106,6 +106,31 @@ On top of the spike slice, the production shell pieces are in:
   locale-freshness gate (extract + `git diff --exit-code`), and the
   production build as the final gate.
 
+## Phase 2 — read-only lists + dashboard (2026-10-23)
+
+All list views are read-only and render through one shared component
+(`components/ListView.tsx`) fed by typed lib wrappers over the
+`v-list-*` commands; lists act for the effective user (the impersonation
+target while looking, as in PHP) and admin views are behind
+`requireAdmin`.
+
+- **User views**: /list/web, /list/dns (+ /records per domain),
+  /list/mail (+ /accounts per domain), /list/db, /list/cron,
+  /list/backup, /list/key (SSH), /list/access-key, /list/log,
+  /list/notifications, /list/stats.
+- **Admin views**: /list/server (sys-info card + services),
+  /list/ip, /list/firewall (+ /banlist, /ipset), /list/updates,
+  /list/rrd (data series; charts are theme work).
+- **Dashboard** (/dashboard): package-quota gauges from the account
+  record's U_* counters (disk, bandwidth, domain/db/cron/backup counts)
+  plus the monthly stats table.
+- A section nav (translated via the Phase 1 i18n pipeline) links them.
+
+Not yet: the detail sub-views (backup detail/incremental/exclusions,
+SSL list, webapps, web-log streaming, search) — they land with their
+Phase 3/4 edit counterparts. Sorting/pagination is server-order for
+now, as the fixtures and most v-list outputs are already ordered.
+
 ## Remaining limitations (deliberate, later phases)
 
 - Package template fields are text inputs, not the PHP form's
