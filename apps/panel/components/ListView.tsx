@@ -25,6 +25,7 @@ export function ListView({
 	result,
 	emptyText = "Nothing here yet.",
 	rowHref,
+	rowActions,
 	children,
 }: {
 	title: string;
@@ -32,6 +33,8 @@ export function ListView({
 	result: RowsResult;
 	emptyText?: string;
 	rowHref?: (key: string, row: HestiaRow) => string;
+	/** Optional per-row action cell (edit links, suspend toggles, deletes). */
+	rowActions?: (key: string, row: HestiaRow) => React.ReactNode;
 	children?: React.ReactNode;
 }) {
 	if ("error" in result) {
@@ -58,6 +61,7 @@ export function ListView({
 							{columns.map((col) => (
 								<th key={col.key}>{col.label}</th>
 							))}
+							{rowActions ? <th>Actions</th> : null}
 						</tr>
 					</thead>
 					<tbody>
@@ -76,6 +80,7 @@ export function ListView({
 										</td>
 									);
 								})}
+								{rowActions ? <td>{rowActions(key, row)}</td> : null}
 							</tr>
 						))}
 					</tbody>

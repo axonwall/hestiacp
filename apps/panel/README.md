@@ -131,6 +131,36 @@ SSL list, webapps, web-log streaming, search) — they land with their
 Phase 3/4 edit counterparts. Sorting/pagination is server-order for
 now, as the fixtures and most v-list outputs are already ordered.
 
+## Phase 3 (first tranche) — CRUD for web / DNS / mail / db / cron (2026-10-23)
+
+Full create/edit/delete/suspend for the five core domains, mirroring
+the PHP pages' command sequences and changed-only discipline:
+
+- **Web** (/add/web, /edit/web, /delete/web, list toggles): add with
+  optional DNS zone (created with the IP's NAT/public address, as PHP)
+  and mail domain; edit = IP (moves the zone too), templates (admin),
+  proxy add/change/delete, alias diff, Let's Encrypt on/off, SSL
+  force/HSTS, remove plain cert, FastCGI cache, stats system; any
+  change restarts web + proxy.
+- **DNS** (/add/dns with a record form, /edit/dns, /edit/dns/record,
+  /delete/dns + record): zone fields incl. SOA/exp/TTL/DNSSEC with
+  restart-on-change; records add/edit (incl. record-ID change),
+  suspend, delete.
+- **Mail** (/add/mail, /add/mail/account, /edit/mail,
+  /edit/mail/account, deletes, toggles): domain toggles
+  antispam/antivirus/DKIM (selector change regenerates), reject,
+  catchall add/change/delete, rate limit (admin); accounts with staged
+  passwords, quota, alias/forwarder diffs, fwd-only, autoreply.
+- **Databases** (/add/db, /edit/db, /delete/db): names are suffixes —
+  the commands prefix `<user>_` themselves; user change + password.
+- **Cron** (/add/cron, /edit/cron, /delete/cron): whole-schedule
+  replace, as PHP does.
+
+Deferred within these domains (later tranches): custom SSL certificate
+upload, FTP accounts, stats users, webmail alias + SMTP relay on mail
+domains, mail-domain SSL/LE. Still ahead in Phase 3: backups/files,
+firewall & IPs, server settings.
+
 ## Remaining limitations (deliberate, later phases)
 
 - Package template fields are text inputs, not the PHP form's

@@ -1,9 +1,13 @@
+import Link from "next/link";
 import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
+import { toggleMailDomainAction } from "./actions";
+
 export default async function Page() {
 	const session = await requireSession();
 	const user = effectiveUser(session);
 	const t = await getT();
+	const token = String(session.data.token ?? "");
 	const result = await loadRows(() => hestia.listMailDomains(user));
 	return (
 		<ListView
@@ -18,6 +22,20 @@ export default async function Page() {
 				{ key: "SUSPENDED", label: t("Suspended") }
 			]}
 			rowHref={(key) => `/list/mail/accounts?domain=${encodeURIComponent(key)}`}
-		></ListView>
+			rowActions={(key, row) => (<>
+				<Link href={`/edit/mail?domain=${encodeURIComponent(key)}`}>{t("Edit")}</Link>
+				{" "}
+				<form action={toggleMailDomainAction} style={{ display: "inline" }}>
+										<input type="hidden" name="token" value={token} />
+										<input type="hidden" name="domain" value={key} />
+										<input type="hidden" name="op" value={row.SUSPENDED === "yes" ? "unsuspend" : "suspend"} />
+										<button type="submit" className="link-button">{row.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")}</button>
+									</form>
+				{" "}
+				<Link href={`/delete/mail?domain=${encodeURIComponent(key)}`}>{t("Delete")}</Link>
+			</>)}
+		>
+			<p><Link className="button" href="/add/mail">{t("Add Mail Domain")}</Link></p>
+		</ListView>
 	);
 }

@@ -5,6 +5,7 @@ import {
 	loadRows,
 	requireSession,
 } from "@/lib/panel";
+import Link from "next/link";
 import { ListView } from "@/components/ListView";
 
 /** DNS records of one domain (/list/dns/ → click a domain). */
@@ -40,9 +41,26 @@ export default async function Page({
 				{ key: "TTL", label: "TTL" },
 				{ key: "SUSPENDED", label: t("Suspended") },
 			]}
+			rowActions={(key) => (
+				<>
+					<Link
+						href={`/edit/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`}
+					>
+						{t("Edit")}
+					</Link>{" "}
+					<Link
+						href={`/delete/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`}
+					>
+						{t("Delete")}
+					</Link>
+				</>
+			)}
 		>
 			<p>
-				<a href="/list/dns">{t("Back")}</a>
+				<a href="/list/dns">{t("Back")}</a> ·{" "}
+				<Link href={`/edit/dns?domain=${encodeURIComponent(domain)}`}>
+					{t("Edit DNS Zone")}
+				</Link>
 			</p>
 		</ListView>
 	);
