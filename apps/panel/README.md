@@ -257,9 +257,15 @@ candidates for a later settings tranche.
   shapes (cron passes the type alone), confirm-page delete, and
   scheduling new incremental backups.
 
-Not ported: the restic file browser (v-list-user-files-restic) and
-the terminal page (the bundled terminal service already shares the
-panel's PHP-format sessions; the page remains a hand-off).
+The restic snapshot file browser followed: /list/backup/restic/browse
+renders v-list-user-files-restic entries (restic ls JSON-lines),
+navigates directories (the account's conf/ stays unlinked, as in
+PHP), and restores single files or checkbox selections through the
+typed "file" schedule shape.
+
+Not ported: the terminal page (the bundled terminal service already
+shares the panel's PHP-format sessions; the page remains a
+hand-off).
 
 ## Phase 5 — cutover prep (2026-10-23)
 

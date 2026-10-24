@@ -65,6 +65,13 @@ export default async function ResticDetailPage({
 					Restore everything
 				</button>
 			</form>
+			<p>
+				<a
+					href={`/list/backup/restic/browse?snapshot=${encodeURIComponent(snapshot)}`}
+				>
+					Browse files →
+				</a>
+			</p>
 			<h2>Restore one object</h2>
 			{SECTIONS.map(({ type, field, label }) => {
 				const objects = (record[field] ?? "")
