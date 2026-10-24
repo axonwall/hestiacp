@@ -1,0 +1,19 @@
+[Unit]
+Description=HestiaCP (Next.js panel)
+Documentation=https://hestiacp.com/docs/
+After=network.target
+
+[Service]
+# Runs as hestiaweb so the existing sudoers rule
+# (hestiaweb ALL=NOPASSWD:/usr/local/hestia/bin/*) authorizes every
+# engine command, exactly as it does for the PHP panel's php-fpm pool.
+# Do not add NoNewPrivileges here — it would break sudo.
+User=hestiaweb
+WorkingDirectory=/usr/local/hestia/web-next/apps/panel
+EnvironmentFile=/usr/local/hestia/web-next/hestiang-panel.env
+ExecStart=/usr/bin/node server.js
+ExecStop=/bin/kill -s TERM $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

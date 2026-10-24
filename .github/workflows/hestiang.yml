@@ -55,3 +55,9 @@ jobs:
           git diff --exit-code -- apps/panel/data
       - name: Production build (the gate)
         run: pnpm --filter @hestiacp/panel build
+      - name: Deploy bundle builds and boots
+        run: |
+          PNPM=pnpm ./apps/panel/deploy/build-bundle.sh
+          BUNDLE=$(ls -d apps/panel/dist/hestiang-panel-*/ | head -1)
+          HESTIA_BIN="$PWD/packages/hestiacp_lib/test/fixtures/bin" \
+            ./apps/panel/deploy/smoke-bundle.sh "$BUNDLE" 3210

@@ -261,6 +261,24 @@ Not ported: the restic file browser (v-list-user-files-restic) and
 the terminal page (the bundled terminal service already shares the
 panel's PHP-format sessions; the page remains a hand-off).
 
+## Phase 5 — cutover prep (2026-10-23)
+
+- **Deploy bundle**: deploy/build-bundle.sh produces a versioned
+  tarball of the standalone panel (51MB unpacked) with the systemd
+  unit, env template, and nginx vhost; deploy/smoke-bundle.sh boots
+  a bundle and checks /api/health + /login; CI builds and smokes the
+  bundle on every run.
+- **Cutover design** (docs/cutover.md): the flip replaces only the
+  server block in Hestia's nginx — / proxies to the panel service
+  (hestiaweb user, existing sudoers rule, 127.0.0.1:8084), /fm/ keeps
+  its PHP fastcgi block (php-fpm stays for FileGator), /_shell/ is
+  unchanged. Sessions are shared with PHP in both directions, so
+  rollback is restoring the block. The installer's own NodeSource
+  Node 24 satisfies the runtime floor — no bundled Node needed.
+- Also fixed: HestiaClient's constructor now merges a partial config
+  over loadConfig() defaults (the test suites' construction style);
+  lib typecheck covers the tests again.
+
 ## Remaining limitations (deliberate, later phases)
 
 - Package template fields are text inputs, not the PHP form's
