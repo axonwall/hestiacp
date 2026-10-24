@@ -142,6 +142,61 @@ describe("Phase 3 CRUD wrappers", () => {
 		);
 	});
 
+	it("stages certificates, FTP, webmail, relay and mail SSL (extras)", async () => {
+		const before = (await calls()).length;
+		await client.changeWebDomainSslcert("demo", "example.com", {
+			crt: "CRT-PEM",
+			key: "KEY-PEM",
+		});
+		await client.addMailDomainSsl("demo", "example.com", {
+			crt: "CRT-PEM",
+			key: "KEY-PEM",
+			ca: "CA-PEM",
+		});
+		await client.addWebDomainFtp("demo", "example.com", "ftp2", "ftp-secret", "/home/demo/ftp");
+		await client.changeWebDomainFtpPath("demo", "example.com", "demo_ftp1", "/new/path");
+		await client.addMailDomainWebmail("demo", "example.com", "webmail");
+		await client.addMailDomainSmtpRelay(
+			"demo",
+			"example.com",
+			"smtp.example.net",
+			"relayuser",
+			"relay-secret",
+			"",
+		);
+		await client.deleteLetsEncryptDomain("demo", "example.com", true);
+		await client.addLetsEncryptDomain("demo", "example.com", " ", "", true);
+		const lines = (await calls()).slice(before);
+		expect(lines[0]).toMatch(
+			/^v-change-web-domain-sslcert demo example\.com \/tmp\/hestiang-stage-\S+ no$/,
+		);
+		expect(lines[1]).toMatch(
+			/^v-add-mail-domain-ssl demo example\.com \/tmp\/hestiang-stage-\S+ no$/,
+		);
+		expect(lines[2]).toMatch(
+			/^v-add-web-domain-ftp demo example\.com ftp2 \/tmp\/hestiang-stage-\S+\/staged \/home\/demo\/ftp$/,
+		);
+		expect(lines[2]).not.toContain("ftp-secret");
+		expect(lines[3]).toBe(
+			"v-change-web-domain-ftp-path demo example.com demo_ftp1 /new/path",
+		);
+		expect(lines[4]).toBe("v-add-mail-domain-webmail demo example.com webmail yes");
+		expect(lines[5]).toMatch(
+			/^v-add-mail-domain-smtp-relay demo example\.com smtp\.example\.net relayuser \/tmp\/hestiang-stage-\S+\/staged 587$/,
+		);
+		expect(lines[5]).not.toContain("relay-secret");
+		// Mail LE delete carries the extra trailing mail flag; add carries
+		// the blank-space alias argument + 'yes', as edit/mail passes them
+		expect(lines[6]).toBe("v-delete-letsencrypt-domain demo example.com  yes");
+		expect(lines[7]).toBe(
+			// (the harness trims the file's trailing space from the last arg)
+			"v-add-letsencrypt-domain demo example.com" + " ".repeat(3) + "yes",
+		);
+		expect((await client.listWebDomainSsl("demo", "example.com")).SUBJECT).toBe(
+			"CN=example.com",
+		);
+	});
+
 	it("runs database and cron flows", async () => {
 		const before = (await calls()).length;
 		await client.addDatabase("demo", "shop", "shopuser", "db-secret-fixture", "mysql", "localhost", "utf8mb4");

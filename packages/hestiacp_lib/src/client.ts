@@ -413,9 +413,20 @@ export class HestiaClient {
 			keyAlgo,
 		);
 	}
-	async deleteLetsEncryptDomain(user: string, domain: string) {
+	async deleteLetsEncryptDomain(
+		user: string,
+		domain: string,
+		mailDomain = false,
+	) {
 		assertUsername(user);
-		await this.runChecked("v-delete-letsencrypt-domain", user, domain, "");
+		// The mail variant carries a trailing 'yes' (the mail flag).
+		await this.runChecked(
+			"v-delete-letsencrypt-domain",
+			user,
+			domain,
+			"",
+			...(mailDomain ? ["yes"] : []),
+		);
 	}
 	async deleteWebDomainSsl(user: string, domain: string) {
 		assertUsername(user);
@@ -991,6 +1002,184 @@ export class HestiaClient {
 	async deleteCronJob(user: string, job: string) {
 		assertUsername(user);
 		await this.runChecked("v-delete-cron-job", user, job);
+	}
+
+	/* ---- Phase 3 extras: cert staging, FTP, mail webmail/relay/SSL ---- */
+
+	/**
+	 * Stage a set of named files in a 0600-per-file temp directory under
+	 * /tmp (the cert pattern from the Phase 0 audit: edit/web + edit/mail
+	 * write <domain>.crt/.key/.ca into a mktemp dir for the SSL commands).
+	 */
+	async withStagedDir<T>(
+		files: Record<string, string>,
+		fn: (dir: string) => Promise<T>,
+	): Promise<T> {
+		if (!tmpdir().startsWith("/tmp")) {
+			throw new Error("withStagedDir requires os.tmpdir() under /tmp");
+		}
+		const dir = await mkdtemp(join(tmpdir(), "hestiang-stage-"));
+		try {
+			for (const [name, contents] of Object.entries(files)) {
+				await writeFile(join(dir, name), contents, { mode: 0o600 });
+			}
+			return await fn(dir);
+		} finally {
+			await rm(dir, { recursive: true, force: true });
+		}
+	}
+
+	/** Cert contents as the PHP pages stage them: CRLF→LF + trailing LF. */
+	private certFiles(
+		domain: string,
+		cert: { crt: string; key: string; ca?: string },
+	): Record<string, string> {
+		const norm = (s: string) => s.replace(/\r\n/g, "\n") + "\n";
+		const files: Record<string, string> = {};
+		if (cert.crt) files[`${domain}.crt`] = norm(cert.crt);
+		if (cert.key) files[`${domain}.key`] = norm(cert.key);
+		if (cert.ca) files[`${domain}.ca`] = norm(cert.ca);
+		return files;
+	}
+
+	listWebDomainSsl(user: string, domain: string) {
+		assertUsername(user);
+		return this.listOne("v-list-web-domain-ssl", domain, user, domain);
+	}
+	listMailDomainSsl(user: string, domain: string) {
+		assertUsername(user);
+		return this.listOne("v-list-mail-domain-ssl", domain, user, domain);
+	}
+	async changeWebDomainSslcert(
+		user: string,
+		domain: string,
+		cert: { crt: string; key: string; ca?: string },
+	) {
+		assertUsername(user);
+		await this.withStagedDir(this.certFiles(domain, cert), (dir) =>
+			this.runChecked("v-change-web-domain-sslcert", user, domain, dir, "no"),
+		);
+	}
+	async addMailDomainSsl(
+		user: string,
+		domain: string,
+		cert: { crt: string; key: string; ca?: string },
+	) {
+		assertUsername(user);
+		await this.withStagedDir(this.certFiles(domain, cert), (dir) =>
+			this.runChecked("v-add-mail-domain-ssl", user, domain, dir, "no"),
+		);
+	}
+	async changeMailDomainSslcert(
+		user: string,
+		domain: string,
+		cert: { crt: string; key: string; ca?: string },
+	) {
+		assertUsername(user);
+		await this.withStagedDir(this.certFiles(domain, cert), (dir) =>
+			this.runChecked("v-change-mail-domain-sslcert", user, domain, dir, "no"),
+		);
+	}
+	async deleteMailDomainSsl(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-mail-domain-ssl", user, domain);
+	}
+	async restartMail() {
+		await this.runChecked("v-restart-mail");
+	}
+
+	/* FTP accounts. NB the PHP asymmetry: v-add-web-domain-ftp takes the
+	 * username SUFFIX (the command prefixes <user>_ itself), while the
+	 * change/delete commands take the FULL username. */
+	async addWebDomainFtp(
+		user: string,
+		domain: string,
+		ftpUserSuffix: string,
+		secret: string,
+		path: string,
+	) {
+		assertUsername(user);
+		await this.withStagedFile(`${secret}\n`, (file) =>
+			this.runChecked(
+				"v-add-web-domain-ftp",
+				user,
+				domain,
+				ftpUserSuffix,
+				file,
+				path,
+			),
+		);
+	}
+	async changeWebDomainFtpPassword(
+		user: string,
+		domain: string,
+		ftpUserFull: string,
+		secret: string,
+	) {
+		assertUsername(user);
+		await this.withStagedFile(`${secret}\n`, (file) =>
+			this.runChecked(
+				"v-change-web-domain-ftp-password",
+				user,
+				domain,
+				ftpUserFull,
+				file,
+			),
+		);
+	}
+	async changeWebDomainFtpPath(
+		user: string,
+		domain: string,
+		ftpUserFull: string,
+		path: string,
+	) {
+		assertUsername(user);
+		await this.runChecked(
+			"v-change-web-domain-ftp-path",
+			user,
+			domain,
+			ftpUserFull,
+			path,
+		);
+	}
+	async deleteWebDomainFtp(user: string, domain: string, ftpUserFull: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-web-domain-ftp", user, domain, ftpUserFull);
+	}
+
+	/* Mail domain webmail alias + SMTP relay. */
+	async addMailDomainWebmail(user: string, domain: string, alias: string) {
+		assertUsername(user);
+		await this.runChecked("v-add-mail-domain-webmail", user, domain, alias, "yes");
+	}
+	async deleteMailDomainWebmail(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-mail-domain-webmail", user, domain, "yes");
+	}
+	async addMailDomainSmtpRelay(
+		user: string,
+		domain: string,
+		host: string,
+		relayUser: string,
+		secret: string,
+		port: string,
+	) {
+		assertUsername(user);
+		await this.withStagedFile(`${secret}\n`, (file) =>
+			this.runChecked(
+				"v-add-mail-domain-smtp-relay",
+				user,
+				domain,
+				host,
+				relayUser,
+				file,
+				port || "587",
+			),
+		);
+	}
+	async deleteMailDomainSmtpRelay(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-mail-domain-smtp-relay", user, domain);
 	}
 
 	/**

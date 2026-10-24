@@ -12,7 +12,7 @@ cat <<'JSON'
         "SSL_FORCE": "no",
         "SSL_HSTS": "no",
         "LETSENCRYPT": "yes",
-        "FTP_USER": "",
+        "FTP_USER": "demo_ftp1", "FTP_PATH": "/home/demo/web/example.com/public_html/ftp",
         "BACKEND": "PHP-8_4",
         "PROXY": "default",
         "PROXY_EXT": "jpg,jpeg,png",

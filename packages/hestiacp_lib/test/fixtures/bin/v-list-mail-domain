@@ -13,7 +13,7 @@ cat <<'JSON'
         "REJECT": "",
         "SSL": "no",
         "LETSENCRYPT": "no",
-        "SUSPENDED": "no",
+        "U_SMTP_RELAY": "no", "U_SMTP_RELAY_HOST": "", "U_SMTP_RELAY_PORT": "", "U_SMTP_RELAY_USERNAME": "", "SUSPENDED": "no",
         "WEBMAIL": "",
         "DATE": "2026-10-02"
     }

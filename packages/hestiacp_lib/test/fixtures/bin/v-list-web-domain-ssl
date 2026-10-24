@@ -1,0 +1,18 @@
+#!/bin/bash
+# Fixture: v-list-web-domain-ssl (ssl record double)
+cat <<'JSON'
+{
+    "example.com": {
+        "CRT": "WEBCRT-PEM",
+        "KEY": "WEBKEY-PEM",
+        "CA": "",
+        "SUBJECT": "CN=example.com",
+        "ALIASES": "example.com www.example.com",
+        "NOT_BEFORE": "2026-09-01",
+        "NOT_AFTER": "2027-09-01",
+        "SIGNATURE": "SHA256-RSA",
+        "PUB_KEY": "RSA2048",
+        "ISSUER": "CN=Fixture CA"
+    }
+}
+JSON
