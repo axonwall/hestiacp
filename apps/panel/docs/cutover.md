@@ -55,7 +55,7 @@ install -d -o hestiaweb -g hestiaweb /usr/local/hestia/data/jobs
 cp /usr/local/hestia/web-next/hestiang-panel.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable --now hestiang-panel
-curl -s http://127.0.0.1:8084/api/health   # {"status":"ok", ...}
+curl -s http://127.0.0.1:8093/api/health   # {"status":"ok", ...}
 ```
 
 ## Flip
@@ -94,7 +94,7 @@ valid for it.
 - **php-fpm stays** for FileGator only. Removing it is a post-cutover
   decision tied to a FileGator replacement, not part of this flip.
 - **phpMyAdmin / webmail** are unchanged (plain links, as in PHP).
-- The Next panel binds 127.0.0.1:8084 only; :8083 remains the single
+- The Next panel binds 127.0.0.1:8093 only; :8083 remains the single
   public entry via nginx. BACKEND_PORT customization (hst-install
   `--port`) still applies at the nginx listener.
 - After the flip, upstream merges keep flowing into bin/func/install

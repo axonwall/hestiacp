@@ -124,9 +124,9 @@ cp /usr/local/hestia/web-next/hestiang-panel.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable --now hestiang-panel
 for i in $(seq 1 30); do
-	curl -sf http://127.0.0.1:8084/api/health > /dev/null && break || sleep 1
+	curl -sf http://127.0.0.1:8093/api/health > /dev/null && break || sleep 1
 done
-curl -s http://127.0.0.1:8084/api/health
+curl -s http://127.0.0.1:8093/api/health
 echo
 
 echo "==> [6/6] Flip the vhost + CUTOVER: api.bats against the Next panel"
@@ -149,7 +149,8 @@ while True:
 open(conf_path, "w").write(conf[:start] + vhost.strip() + conf[i + 1:])
 print(f"server block replaced in {conf_path}")
 PYEOF
-/usr/local/hestia/nginx/sbin/nginx -t -c "$NGINX_CONF"
+# The panel nginx binary is hestia-nginx, not nginx.
+"$(command -v hestia-nginx || echo /usr/local/hestia/nginx/sbin/hestia-nginx)" -t -c "$NGINX_CONF"
 systemctl reload hestia || /usr/local/hestia/bin/v-restart-service hestia || true
 "$BATS" test/api.bats 2>&1 | tee "$WORK/api-cutover.log" || \
 	echo "!! cutover run had failures — see $WORK/api-cutover.log"
