@@ -27,6 +27,14 @@ The service runs as **hestiaweb**, so the existing sudoers rule
 engine command, exactly as for the PHP panel's php-fpm pool. php-fpm
 keeps running — FileGator (`/fm/`) is still PHP.
 
+## Automated path (throwaway test box)
+
+`deploy/provision-testbox.sh <hostname> <admin-email>`, run as root
+on a fresh Debian 12 / Ubuntu LTS host, performs the whole gate:
+stock Hestia install → api.bats baseline against PHP → bundle build
+and service install → this flip → api.bats against the Next panel,
+with both logs kept side by side. That is the D10 verification path.
+
 ## Preflight
 
 1. `node --version` → ≥ 20.9 (expect a 24.x from NodeSource).
