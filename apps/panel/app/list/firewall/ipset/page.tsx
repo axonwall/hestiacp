@@ -1,5 +1,6 @@
 import { getT, hestia, loadRows, requireAdmin } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
+import { RowActionButton } from "@/components/RowAction";
 import {
 	addFirewallIpsetAction,
 	deleteFirewallIpsetAction,
@@ -24,9 +25,7 @@ export default async function Page() {
 				<form action={deleteFirewallIpsetAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="name" value={key} />
-					<button type="submit" className="link-button">
-						{t("Delete")}
-					</button>
+					<RowActionButton title={t("Delete")} icon="fa-trash icon-red" />
 				</form>
 			)}
 		>

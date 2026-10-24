@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RowActionButton } from "@/components/RowAction";
 import { effectiveUser, getT, hestia, requireSession } from "@/lib/panel";
 import type { HestiaRow } from "@hestiacp/lib";
 import { addDnsRecordAction } from "@/app/add/dns/actions";
@@ -109,9 +110,7 @@ export default async function Page({
 											name="op"
 											value={rec.SUSPENDED === "yes" ? "unsuspend" : "suspend"}
 										/>
-										<button type="submit" className="link-button">
-											{rec.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")}
-										</button>
+										<RowActionButton title={rec.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")} icon={rec.SUSPENDED === "yes" ? "fa-play icon-green" : "fa-pause icon-highlight"} />
 									</form>{" "}
 									<Link
 										href={`/delete/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(id)}`}

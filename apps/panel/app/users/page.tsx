@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RowAction, RowActionButton } from "@/components/RowAction";
 import { redirect } from "next/navigation";
 import { getT, hestia, requireSession } from "@/lib/panel";
 import { loginAsAction } from "@/app/session/actions";
@@ -92,10 +93,8 @@ export default async function UsersPage({
 												name="op"
 												value={suspended ? "unsuspend" : "suspend"}
 											/>
-											<button type="submit" className="link-button">
-												{suspended ? t("Unsuspend") : t("Suspend")}
-											</button>
-										</form>{" "}
+											<RowActionButton title={suspended ? t("Unsuspend") : t("Suspend")} icon={suspended ? "fa-play icon-green" : "fa-pause icon-highlight"} />
+										</form>
 										{name !== session.data.user ? (
 											<form
 												action={loginAsAction}
@@ -103,16 +102,10 @@ export default async function UsersPage({
 											>
 												<input type="hidden" name="user" value={name} />
 												<input type="hidden" name="token" value={token} />
-												<button type="submit" className="link-button">
-													{t("Log In As")}
-												</button>
+												<RowActionButton title={t("Log In As")} icon="fa-right-to-bracket icon-green" />
 											</form>
 										) : null}{" "}
-										<Link
-											href={`/users/${encodeURIComponent(name)}/delete`}
-										>
-											{t("Delete")}
-										</Link>
+										<RowAction href={`/users/${encodeURIComponent(name)}/delete`} title={t("Delete")} icon="fa-trash icon-red" />
 									</td>
 								) : null}
 							</tr>

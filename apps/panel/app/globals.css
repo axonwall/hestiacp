@@ -70,6 +70,17 @@
 	text-decoration: underline;
 }
 
+/* --- Row actions: the theme styles .units-table-row-action-link
+   as an <a>; form-submit buttons need the same look without
+   browser button chrome. --- */
+button.units-table-row-action-link {
+	background: none;
+	border: 0;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+}
+
 /* --- Page scaffolding --- */
 .list-title {
 	font-size: 1.05rem;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
+import { RowAction, RowActionButton } from "@/components/RowAction";
 import { toggleDatabaseAction } from "./actions";
 
 export default async function Page() {
@@ -22,16 +23,16 @@ export default async function Page() {
 				{ key: "SUSPENDED", label: t("Suspended") }
 			]}
 			rowActions={(key, row) => (<>
-				<Link href={`/edit/db?database=${encodeURIComponent(key)}`}>{t("Edit")}</Link>
+				<RowAction href={`/edit/db?database=${encodeURIComponent(key)}`} title={t("Edit")} icon="fa-pencil icon-orange" />
 				{" "}
 				<form action={toggleDatabaseAction} style={{ display: "inline" }}>
 										<input type="hidden" name="token" value={token} />
 										<input type="hidden" name="database" value={key} />
 										<input type="hidden" name="op" value={row.SUSPENDED === "yes" ? "unsuspend" : "suspend"} />
-										<button type="submit" className="link-button">{row.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")}</button>
+										<RowActionButton title={row.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")} icon={row.SUSPENDED === "yes" ? "fa-play icon-green" : "fa-pause icon-highlight"} />
 									</form>
 				{" "}
-				<Link href={`/delete/db?database=${encodeURIComponent(key)}`}>{t("Delete")}</Link>
+				<RowAction href={`/delete/db?database=${encodeURIComponent(key)}`} title={t("Delete")} icon="fa-trash icon-red" />
 			</>)}
 		>
 			<Link className="button button-secondary" href="/add/db"><i className="fas fa-circle-plus icon-green"></i>{t("Add Database")}</Link>

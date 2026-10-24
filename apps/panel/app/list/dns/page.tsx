@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
+import { RowAction, RowActionButton } from "@/components/RowAction";
 import { toggleDnsDomainAction } from "./actions";
 
 export default async function Page() {
@@ -23,16 +24,16 @@ export default async function Page() {
 			]}
 			rowHref={(key) => `/list/dns/records?domain=${encodeURIComponent(key)}`}
 			rowActions={(key, row) => (<>
-				<Link href={`/edit/dns?domain=${encodeURIComponent(key)}`}>{t("Edit")}</Link>
+				<RowAction href={`/edit/dns?domain=${encodeURIComponent(key)}`} title={t("Edit")} icon="fa-pencil icon-orange" />
 				{" "}
 				<form action={toggleDnsDomainAction} style={{ display: "inline" }}>
 										<input type="hidden" name="token" value={token} />
 										<input type="hidden" name="domain" value={key} />
 										<input type="hidden" name="op" value={row.SUSPENDED === "yes" ? "unsuspend" : "suspend"} />
-										<button type="submit" className="link-button">{row.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")}</button>
+										<RowActionButton title={row.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")} icon={row.SUSPENDED === "yes" ? "fa-play icon-green" : "fa-pause icon-highlight"} />
 									</form>
 				{" "}
-				<Link href={`/delete/dns?domain=${encodeURIComponent(key)}`}>{t("Delete")}</Link>
+				<RowAction href={`/delete/dns?domain=${encodeURIComponent(key)}`} title={t("Delete")} icon="fa-trash icon-red" />
 			</>)}
 		>
 			<Link className="button button-secondary" href="/add/dns"><i className="fas fa-circle-plus icon-green"></i>{t("Add DNS Zone")}</Link>

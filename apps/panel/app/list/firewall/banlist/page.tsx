@@ -1,5 +1,6 @@
 import { getT, hestia, loadRows, requireAdmin } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
+import { RowActionButton } from "@/components/RowAction";
 import {
 	addFirewallBanAction,
 	deleteFirewallBanAction,
@@ -25,9 +26,7 @@ export default async function Page() {
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="ip" value={key} />
 					<input type="hidden" name="chain" value={row.CHAIN ?? "INPUT"} />
-					<button type="submit" className="link-button">
-						{t("Unban")}
-					</button>
+					<RowActionButton title={t("Unban")} icon="fa-ban icon-green" />
 				</form>
 			)}
 		>

@@ -7,6 +7,7 @@ import {
 	requireSession,
 } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
+import { RowAction } from "@/components/RowAction";
 import { scheduleBackupAction } from "./actions";
 
 export default async function Page() {
@@ -28,29 +29,45 @@ export default async function Page() {
 			]}
 			rowActions={(key) => (
 				<>
-					<Link href={`/list/backup/detail?backup=${encodeURIComponent(key)}`}>
-						{t("Detail")}
-					</Link>{" "}
-					<Link href={`/edit/backup/restore?backup=${encodeURIComponent(key)}`}>
-						{t("Restore")}
-					</Link>{" "}
-					<a href={`/download/backup?backup=${encodeURIComponent(key)}`}>
-						{t("Download")}
-					</a>{" "}
-					<Link href={`/delete/backup?backup=${encodeURIComponent(key)}`}>
-						{t("Delete")}
-					</Link>
+					<RowAction
+						href={`/list/backup/detail?backup=${encodeURIComponent(key)}`}
+						title={t("Detail")}
+						icon="fa-magnifying-glass icon-lightblue"
+					/>
+					<RowAction
+						href={`/edit/backup/restore?backup=${encodeURIComponent(key)}`}
+						title={t("Restore")}
+						icon="fa-arrow-rotate-left icon-green"
+					/>
+					<RowAction
+						href={`/download/backup?backup=${encodeURIComponent(key)}`}
+						title={t("Download")}
+						icon="fa-file-arrow-down icon-lightblue"
+						plain
+					/>
+					<RowAction
+						href={`/delete/backup?backup=${encodeURIComponent(key)}`}
+						title={t("Delete")}
+						icon="fa-trash icon-red"
+					/>
 				</>
 			)}
 		>
 			<form action={scheduleBackupAction} style={{ display: "inline" }}>
 				<input type="hidden" name="token" value={token} />
-				<button type="submit" className="button">
+				<button type="submit" className="button button-secondary">
+					<i className="fas fa-circle-plus icon-green"></i>
 					{t("Create backup")}
 				</button>
 			</form>{" "}
-			<Link href="/edit/backup/exclusions">{t("Backup exclusions")}</Link>{" "}
-			<Link href="/list/backup/restic">Incremental backups</Link>
+			<Link className="button button-secondary" href="/edit/backup/exclusions">
+				<i className="fas fa-folder-minus icon-orange"></i>
+				{t("Backup exclusions")}
+			</Link>{" "}
+			<Link className="button button-secondary" href="/list/backup/restic">
+				<i className="fas fa-vault icon-blue"></i>
+				Incremental backups
+			</Link>
 		</ListView>
 	);
 }

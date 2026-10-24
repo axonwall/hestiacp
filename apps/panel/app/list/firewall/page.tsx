@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getT, hestia, loadRows, requireAdmin } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
+import { RowAction, RowActionButton } from "@/components/RowAction";
 
 export default async function Page() {
 	const session = await requireAdmin();
@@ -22,20 +23,16 @@ export default async function Page() {
 			]}
 			rowActions={(key) => (
 				<>
-					<Link href={`/edit/firewall?rule=${encodeURIComponent(key)}`}>
-						{t("Edit")}
-					</Link>{" "}
-					<Link href={`/delete/firewall?rule=${encodeURIComponent(key)}`}>
-						{t("Delete")}
-					</Link>
+					<RowAction href={`/edit/firewall?rule=${encodeURIComponent(key)}`} title={t("Edit")} icon="fa-pencil icon-orange" />
+					<RowAction href={`/delete/firewall?rule=${encodeURIComponent(key)}`} title={t("Delete")} icon="fa-trash icon-red" />
 				</>
 			)}
 		>
-			<Link href="/add/firewall">{t("Add rule")}</Link>
+			<Link className="button button-secondary" href="/add/firewall"><i className="fas fa-circle-plus icon-green"></i>{t("Add rule")}</Link>
 			{" · "}
-			<Link href="/list/firewall/banlist">{t("Banlist")}</Link>
+			<Link className="button button-secondary" href="/list/firewall/banlist">{t("Banlist")}</Link>
 			{" · "}
-			<Link href="/list/firewall/ipset">{t("IP Sets")}</Link>
+			<Link className="button button-secondary" href="/list/firewall/ipset">{t("IP Sets")}</Link>
 			<span data-token={token} hidden />
 		</ListView>
 	);

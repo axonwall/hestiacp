@@ -7,6 +7,7 @@ import {
 } from "@/lib/panel";
 import Link from "next/link";
 import { ListView } from "@/components/ListView";
+import { RowAction, RowActionButton } from "@/components/RowAction";
 
 /** DNS records of one domain (/list/dns/ → click a domain). */
 export default async function Page({
@@ -43,16 +44,8 @@ export default async function Page({
 			]}
 			rowActions={(key) => (
 				<>
-					<Link
-						href={`/edit/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`}
-					>
-						{t("Edit")}
-					</Link>{" "}
-					<Link
-						href={`/delete/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`}
-					>
-						{t("Delete")}
-					</Link>
+					<RowAction href={`/edit/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`} title={t("Edit")} icon="fa-pencil icon-orange" />
+					<RowAction href={`/delete/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`} title={t("Delete")} icon="fa-trash icon-red" />
 				</>
 			)}
 		>

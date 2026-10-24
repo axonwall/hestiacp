@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { getT, hestia, loadRows, requireAdmin } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
+import { RowAction, RowActionButton } from "@/components/RowAction";
 import { serviceControlAction } from "./actions";
 
 /**
@@ -38,26 +40,20 @@ export default async function Page() {
 				]}
 				rowActions={(key, row) => (
 					<>
-						<a href={`/edit/server/service?service=${encodeURIComponent(key)}`}>
-							{t("Config")}
-						</a>{" "}
+						<RowAction href={`/edit/server/service?service=${encodeURIComponent(key)}`} title={t("Config")} icon="fa-gear icon-maroon" />{" "}
 						{row.STATE === "running" ? (
 							<>
 								<form action={serviceControlAction} style={{ display: "inline" }}>
 									<input type="hidden" name="token" value={token} />
 									<input type="hidden" name="service" value={key} />
 									<input type="hidden" name="op" value="restart" />
-									<button type="submit" className="link-button">
-										{t("Restart")}
-									</button>
-								</form>{" "}
+									<RowActionButton title={t("Restart")} icon="fa-arrow-rotate-left icon-red" />
+								</form>
 								<form action={serviceControlAction} style={{ display: "inline" }}>
 									<input type="hidden" name="token" value={token} />
 									<input type="hidden" name="service" value={key} />
 									<input type="hidden" name="op" value="stop" />
-									<button type="submit" className="link-button">
-										{t("Stop")}
-									</button>
+									<RowActionButton title={t("Stop")} icon="fa-stop icon-red" />
 								</form>
 							</>
 						) : (
@@ -65,15 +61,13 @@ export default async function Page() {
 								<input type="hidden" name="token" value={token} />
 								<input type="hidden" name="service" value={key} />
 								<input type="hidden" name="op" value="start" />
-								<button type="submit" className="link-button">
-									{t("Start")}
-								</button>
+								<RowActionButton title={t("Start")} icon="fa-play icon-green" />
 							</form>
 						)}
 					</>
 				)}
 			>
-				<a href="/edit/server">{t("Server settings")}</a>
+				<Link className="button button-secondary" href="/edit/server">{t("Server settings")}</Link>
 			</ListView>
 		</div>
 	);

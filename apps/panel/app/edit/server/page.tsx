@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RowActionButton } from "@/components/RowAction";
 import { getT, hestia, requireAdmin } from "@/lib/panel";
 import {
 	addBackupHostAction,
@@ -120,9 +121,7 @@ export default async function Page({
 						<form action={deleteBackupHostAction} style={{ display: "inline" }}>
 							<input type="hidden" name="token" value={token} />
 							<input type="hidden" name="type" value={key} />
-							<button type="submit" className="link-button">
-								{t("Delete")}
-							</button>
+							<RowActionButton title={t("Delete")} icon="fa-trash icon-red" />
 						</form>
 					</li>
 				))}
