@@ -1,0 +1,15 @@
+#!/bin/bash
+# Fixture: v-list-sys-ips (read-only list double)
+cat <<'JSON'
+{
+    "203.0.113.10": {
+        "IP": "203.0.113.10",
+        "OWNER": "admin",
+        "STATUS": "shared",
+        "NAME": "",
+        "INTERFACE": "eth0",
+        "NAT": "",
+        "NETMASK": "255.255.255.0"
+    }
+}
+JSON

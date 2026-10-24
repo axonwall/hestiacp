@@ -5,6 +5,9 @@ import type { HestiaConfig } from "./config";
 import { loadConfig } from "./config";
 import { runHestiaCommand, type CommandResult } from "./exec";
 
+/** One flat row of any v-list-* JSON map. Values are strings, as emitted. */
+export type HestiaRow = Record<string, string>;
+
 /** One row of v-list-users / v-list-user JSON output. Values are strings, as emitted. */
 export interface HestiaUser {
 	NAME: string;
@@ -77,6 +80,102 @@ export class HestiaClient {
 
 	async listSysConfig(): Promise<Record<string, Record<string, string>>> {
 		return this.json("v-list-sys-config", "json");
+	}
+
+	/**
+	 * Generic read for the panel's list views: nearly every v-list-*
+	 * command with `json` returns a map keyed by the row's primary name
+	 * or id, values being flat string records. The Phase 2 list pages
+	 * render these directly; typed wrappers below name each view's call.
+	 */
+	async listRows(
+		command: string,
+		...args: string[]
+	): Promise<Record<string, HestiaRow>> {
+		return this.json<Record<string, HestiaRow>>(command, ...args, "json");
+	}
+
+	/* ---- Per-user domain lists (Phase 2 read-only views) ---- */
+
+	listWebDomains(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-web-domains", user);
+	}
+	listDnsDomains(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-dns-domains", user);
+	}
+	listDnsRecords(user: string, domain: string) {
+		assertUsername(user);
+		return this.listRows("v-list-dns-records", user, domain);
+	}
+	listMailDomains(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-mail-domains", user);
+	}
+	listMailAccounts(user: string, domain: string) {
+		assertUsername(user);
+		return this.listRows("v-list-mail-accounts", user, domain);
+	}
+	listDatabases(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-databases", user);
+	}
+	listCronJobs(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-cron-jobs", user);
+	}
+	listUserBackups(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-user-backups", user);
+	}
+	listUserSshKeys(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-user-ssh-key", user);
+	}
+	listAccessKeys(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-access-keys", user);
+	}
+	listUserLog(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-user-log", user);
+	}
+	listUserNotifications(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-user-notifications", user);
+	}
+	listUserStats(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-user-stats", user);
+	}
+
+	/* ---- Server / admin lists ---- */
+
+	listSysServices() {
+		return this.listRows("v-list-sys-services");
+	}
+	/** v-list-sys-info returns one flat record, not a map of rows. */
+	async listSysInfo(): Promise<HestiaRow> {
+		return this.json<HestiaRow>("v-list-sys-info", "json");
+	}
+	listSysIps() {
+		return this.listRows("v-list-sys-ips");
+	}
+	listFirewallRules() {
+		return this.listRows("v-list-firewall");
+	}
+	listFirewallBan() {
+		return this.listRows("v-list-firewall-ban");
+	}
+	listFirewallIpset() {
+		return this.listRows("v-list-firewall-ipset");
+	}
+	listSysHestiaUpdates() {
+		return this.listRows("v-list-sys-hestia-updates");
+	}
+	listSysRrd() {
+		return this.listRows("v-list-sys-rrd");
 	}
 
 	/**

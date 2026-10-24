@@ -1,0 +1,24 @@
+#!/bin/bash
+# Fixture: v-list-firewall (read-only list double)
+cat <<'JSON'
+{
+    "1": {
+        "RULE": "1",
+        "ACTION": "ACCEPT",
+        "PROTOCOL": "TCP",
+        "PORT": "22",
+        "IP": "0.0.0.0/0",
+        "COMMENT": "SSH",
+        "SUSPENDED": "no"
+    },
+    "2": {
+        "RULE": "2",
+        "ACTION": "DROP",
+        "PROTOCOL": "TCP",
+        "PORT": "23",
+        "IP": "0.0.0.0/0",
+        "COMMENT": "telnet blocked",
+        "SUSPENDED": "no"
+    }
+}
+JSON

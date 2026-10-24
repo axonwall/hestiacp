@@ -1,0 +1,14 @@
+#!/bin/bash
+# Fixture: v-list-access-keys (read-only list double)
+cat <<'JSON'
+{
+    "fixturekey1": {
+        "ACCESS_KEY_ID": "fixturekey1",
+        "USER": "demo",
+        "COMMENT": "ci key",
+        "APIS": "v-list-web-domains,v-list-dns-domains",
+        "SUSPENDED": "no",
+        "DATE": "2026-10-06"
+    }
+}
+JSON

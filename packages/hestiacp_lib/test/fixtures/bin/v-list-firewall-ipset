@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fixture: v-list-firewall-ipset (read-only list double)
+cat <<'JSON'
+{
+    "blocklist": {
+        "IPSET": "blocklist",
+        "SOURCE": "https://example.test/blocklist.ipset",
+        "AUTOUPDATE": "yes",
+        "IP_VERSION": "v4",
+        "DATE": "2026-10-01"
+    }
+}
+JSON

@@ -1,0 +1,16 @@
+#!/bin/bash
+# Fixture: v-list-dns-domains (read-only list double)
+cat <<'JSON'
+{
+    "example.com": {
+        "DOMAIN": "example.com",
+        "IP": "203.0.113.10",
+        "SOA": "ns1.example.com",
+        "TTL": "14400",
+        "RECORDS": "3",
+        "DNSSEC": "no",
+        "SUSPENDED": "no",
+        "DATE": "2026-10-01"
+    }
+}
+JSON

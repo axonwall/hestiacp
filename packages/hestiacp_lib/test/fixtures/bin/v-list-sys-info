@@ -1,0 +1,15 @@
+#!/bin/bash
+# Fixture: v-list-sys-info json (flat record)
+cat <<'JSON'
+{
+    "HOSTNAME": "panel.example.test",
+    "OS": "Debian",
+    "OS_VERSION": "13",
+    "VERSION": "1.10.5",
+    "RELEASE": "stable",
+    "CPU": "4",
+    "MEM": "8192",
+    "UPTIME": "86400",
+    "LOADAVERAGE": "0.10"
+}
+JSON

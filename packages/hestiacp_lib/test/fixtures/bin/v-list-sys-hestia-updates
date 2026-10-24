@@ -1,0 +1,21 @@
+#!/bin/bash
+# Fixture: v-list-sys-hestia-updates (read-only list double)
+cat <<'JSON'
+{
+    "hestia": {
+        "PACKAGE": "hestia",
+        "VERSION": "1.10.5",
+        "UPDATE": "no"
+    },
+    "hestia-nginx": {
+        "PACKAGE": "hestia-nginx",
+        "VERSION": "1.29.2",
+        "UPDATE": "no"
+    },
+    "hestia-php": {
+        "PACKAGE": "hestia-php",
+        "VERSION": "8.4.13",
+        "UPDATE": "yes"
+    }
+}
+JSON

@@ -10,6 +10,7 @@ export {
 	USER_PACKAGE_FIELDS,
 	type AddUserOptions,
 	type HestiaPackage,
+	type HestiaRow,
 	type HestiaUser,
 } from "./client";
 export { SessionStore, type PanelSession } from "./session";

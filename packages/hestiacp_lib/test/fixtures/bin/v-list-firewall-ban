@@ -1,0 +1,12 @@
+#!/bin/bash
+# Fixture: v-list-firewall-ban (read-only list double)
+cat <<'JSON'
+{
+    "198.51.100.7": {
+        "IP": "198.51.100.7",
+        "CHAIN": "SSH",
+        "TIME": "01:02:03",
+        "DATE": "2026-10-22"
+    }
+}
+JSON
