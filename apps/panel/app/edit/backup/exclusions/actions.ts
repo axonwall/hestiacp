@@ -27,6 +27,7 @@ export async function saveBackupExclusionsAction(
 			DNS: clean(formData.get("DNS")),
 			MAIL: clean(formData.get("MAIL")),
 			DB: clean(formData.get("DB")),
+			CRON: clean(formData.get("CRON")),
 			USER: clean(formData.get("USER")),
 		});
 	} catch (error) {

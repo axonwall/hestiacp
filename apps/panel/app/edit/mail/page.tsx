@@ -88,7 +88,7 @@ export default async function Page({
 				<label htmlFor="webmail">{t("Webmail alias")}</label>
 				<input className="form-control" id="webmail" name="webmail" defaultValue={record.WEBMAIL ?? ""} placeholder="webmail" />
 				<label>
-					<input type="checkbox" name="relay" value="yes" defaultChecked={record.U_SMTP_RELAY === "yes"} />{" "}
+					<input type="checkbox" name="relay" value="yes" defaultChecked={record.U_SMTP_RELAY === "true" || record.U_SMTP_RELAY === "yes"} />{" "}
 					{t("SMTP Relay")}
 				</label>
 				<label htmlFor="relayHost">{t("Relay host")}</label>

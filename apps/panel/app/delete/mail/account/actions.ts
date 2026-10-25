@@ -24,5 +24,5 @@ export async function deleteMailAccountAction(formData: FormData): Promise<void>
 	} catch (error) {
 		redirect(`${back}&error=${encodeURIComponent(errorMessage(error))}`);
 	}
-	redirect("/list/mail/accounts?domain=${encodeURIComponent(domain)}&saved=1");
+	redirect(`/list/mail/accounts?domain=${encodeURIComponent(domain)}&saved=1`);
 }

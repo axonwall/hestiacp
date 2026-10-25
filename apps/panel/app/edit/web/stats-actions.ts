@@ -25,7 +25,7 @@ export async function editWebDomainStatsAuthAction(
 	const user = effectiveUser(session);
 	try {
 		const record = await hestia.listWebDomain(user, domain);
-		const currentUser = record.AUTH_USER ?? "";
+		const currentUser = record.STATS_USER ?? "";
 		const authOn = formData.get("statsAuth") === "yes";
 		if (!authOn) {
 			if (currentUser) await hestia.deleteWebDomainStatsUser(user, domain);

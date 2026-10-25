@@ -194,11 +194,11 @@ export default async function Page({
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="domain" value={domain} />
 				<label>
-					<input type="checkbox" name="statsAuth" value="yes" defaultChecked={!!record.AUTH_USER} />{" "}
+					<input type="checkbox" name="statsAuth" value="yes" defaultChecked={!!record.STATS_USER} />{" "}
 					{t("Protect stats with a password")}
 				</label>
 				<label htmlFor="statsUser">{t("Stats user")}</label>
-				<input className="form-control" id="statsUser" name="statsUser" defaultValue={record.AUTH_USER ?? ""} />
+				<input className="form-control" id="statsUser" name="statsUser" defaultValue={record.STATS_USER ?? ""} />
 				<label htmlFor="statsPass">
 					{t("Stats password")} ({t("leave empty to keep")})
 				</label>

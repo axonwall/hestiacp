@@ -1282,26 +1282,48 @@ export class HestiaClient {
 		assertUsername(user);
 		await this.runChecked("v-schedule-user-backup-download", user, backup);
 	}
-	/** Exclusion lists as a flat {WEB: "a,b", DNS: "", ...} record. */
+	/** Exclusion lists as a flat {WEB: "a,b", DNS: "", ...} record.
+	 *  Real v-list-user-backup-exclusions json maps each system to an
+	 *  OBJECT keyed by excluded name ({WEB: {"a": "seg"}} for a:b
+	 *  entries, {} when empty) — returning it raw made the exclusions
+	 *  page's .split throw (500 on every visit, found live 2026-10-25).
+	 *  Normalize objects back to CSV strings (key, or key:detail). */
 	async listUserBackupExclusions(
 		user: string,
 	): Promise<Record<string, string>> {
 		assertUsername(user);
-		const parsed = await this.json<Record<string, string>>(
+		const parsed = await this.json<Record<string, unknown>>(
 			"v-list-user-backup-exclusions",
 			user,
 			"json",
 		);
-		return parsed;
+		const out: Record<string, string> = {};
+		for (const [system, value] of Object.entries(parsed)) {
+			if (typeof value === "string") {
+				out[system] = value;
+			} else if (value && typeof value === "object") {
+				out[system] = Object.entries(value as Record<string, unknown>)
+					.map(([k, detail]) =>
+						detail ? `${k}:${String(detail)}` : k,
+					)
+					.join(",");
+			} else {
+				out[system] = "";
+			}
+		}
+		return out;
 	}
-	/** Stage the five KEY='csv' lines, as web/edit/backup/exclusions does. */
+	/** Stage the six KEY='csv' lines, as web/edit/backup/exclusions does.
+	 *  CRON is included: the update script rewrites all six lines, so
+	 *  omitting it silently wiped any CRON='*' exclusion on every save
+	 *  (verified live 2026-10-25). */
 	async updateUserBackupExclusions(
 		user: string,
 		exclusions: Record<string, string>,
 	) {
 		assertUsername(user);
 		const body =
-			["WEB", "DNS", "MAIL", "DB", "USER"]
+			["WEB", "DNS", "MAIL", "DB", "CRON", "USER"]
 				.map((k) => `${k}='${(exclusions[k] ?? "").replace(/'/g, "")}'`)
 				.join("\n") + "\n";
 		await this.withStagedFile(body, (file) =>
@@ -1471,6 +1493,22 @@ export class HestiaClient {
 	async openFsConfig(path: string): Promise<string> {
 		const result = await this.raw("v-open-fs-config", path);
 		if (result.code !== 0) {
+			// v-open-fs-config prints the file, then runs
+			// $BIN/v-log-action — but it never sources func/main.sh, so
+			// $BIN is empty under the panel's sudo invocation and the
+			// script exits 127 AFTER printing the content (verified
+			// live 2026-10-25: 3700 bytes on stdout, exit 127, stderr
+			// "/v-log-action: No such file"). Accept that shape: real
+			// failures (missing file, bad path) print "Error: ..." and
+			// exit 1/2/3/10, never 127 with file content.
+			const body = result.stdout;
+			if (
+				result.code === 127 &&
+				body.trim() !== "" &&
+				!body.trimStart().startsWith("Error:")
+			) {
+				return body;
+			}
 			throw new Error(
 				`v-open-fs-config exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
 			);

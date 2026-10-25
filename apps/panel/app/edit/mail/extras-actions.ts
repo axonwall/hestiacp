@@ -36,7 +36,11 @@ export async function editMailDomainExtrasAction(
 		}
 
 		const relayOn = formData.get("relay") === "yes";
-		const currentlyOn = current.U_SMTP_RELAY === "yes";
+		// U_SMTP_RELAY is 'true', not 'yes' (verified live 2026-10-25):
+		// checking only "yes" made the clear branch unreachable, so a
+		// relay could never be removed from the panel.
+		const currentlyOn =
+			current.U_SMTP_RELAY === "true" || current.U_SMTP_RELAY === "yes";
 		if (!relayOn && currentlyOn) {
 			await hestia.deleteMailDomainSmtpRelay(user, domain);
 		} else if (relayOn) {

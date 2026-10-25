@@ -5,7 +5,7 @@ import {
 	saveBackupExclusionsAction,
 } from "./actions";
 
-const SYSTEMS = ["WEB", "DNS", "MAIL", "DB", "USER"] as const;
+const SYSTEMS = ["WEB", "DNS", "MAIL", "DB", "CRON", "USER"] as const;
 
 export default async function Page({
 	searchParams,

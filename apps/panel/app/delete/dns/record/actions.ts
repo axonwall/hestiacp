@@ -24,5 +24,5 @@ export async function deleteDnsRecordAction(formData: FormData): Promise<void> {
 	} catch (error) {
 		redirect(`${back}&error=${encodeURIComponent(errorMessage(error))}`);
 	}
-	redirect("/edit/dns?domain=${encodeURIComponent(domain)}&saved=1");
+	redirect(`/edit/dns?domain=${encodeURIComponent(domain)}&saved=1`);
 }
