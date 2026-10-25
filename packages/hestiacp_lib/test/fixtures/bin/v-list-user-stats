@@ -1,9 +1,9 @@
 #!/bin/bash
-# Fixture: v-list-user-stats (read-only list double)
+# Fixture: v-list-user-stats (read-only list double; rows keyed by day)
 cat <<'JSON'
 {
-    "2026-10": {
-        "DATE": "2026-10",
+    "2026-10-31": {
+        "TIME": "05:22:16",
         "U_DISK": "512",
         "U_BANDWIDTH": "2048",
         "U_WEB_DOMAINS": "2",
@@ -12,8 +12,8 @@ cat <<'JSON'
         "U_DATABASES": "1",
         "U_CRON_JOBS": "2"
     },
-    "2026-09": {
-        "DATE": "2026-09",
+    "2026-10-30": {
+        "TIME": "05:22:16",
         "U_DISK": "480",
         "U_BANDWIDTH": "1024",
         "U_WEB_DOMAINS": "2",

@@ -3,19 +3,17 @@
 cat <<'JSON'
 {
     "1": {
-        "ID": "1",
         "DATE": "2026-10-22",
         "TIME": "09:14:02",
         "CATEGORY": "Web",
-        "TYPE": "Info",
+        "LEVEL": "Info",
         "MESSAGE": "Login success (User: demo)"
     },
     "2": {
-        "ID": "2",
         "DATE": "2026-10-21",
         "TIME": "22:03:11",
         "CATEGORY": "Cron",
-        "TYPE": "Warning",
+        "LEVEL": "Warning",
         "MESSAGE": "Cron job 2 exited with code 1"
     }
 }

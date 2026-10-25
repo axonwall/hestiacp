@@ -10,8 +10,9 @@ export default async function Page() {
 			result={result}
 			columns={[
 				{ key: "PACKAGE", label: t("Package") },
-				{ key: "VERSION", label: t("Version") },
-				{ key: "UPDATE", label: t("Update available") }
+				{ key: "DESCR", label: t("Description") },
+				{ key: "VERSION", label: t("Version"), format: (v, row) => `${v} (${row.ARCH})` },
+				{ key: "UPDATED", label: t("Status"), format: (v) => (v === "no" ? t("Update available") : t("Up-to-date")) }
 			]}
 		></ListView>
 	);

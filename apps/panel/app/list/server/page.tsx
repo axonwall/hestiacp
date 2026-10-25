@@ -21,11 +21,10 @@ export default async function Page() {
 			{info ? (
 				<div className="card">
 					<h1>
-						{info.HOSTNAME} — {info.OS} {info.OS_VERSION}
+						{info.HOSTNAME} — {info.OS} {info.VERSION}
 					</h1>
 					<p>
-						Hestia {info.VERSION} ({info.RELEASE}) · CPU {info.CPU} ·{" "}
-						{t("Memory")} {info.MEM} MB · Load {info.LOADAVERAGE}
+						Hestia {info.HESTIA} ({info.RELEASE}) · Load {info.LOADAVERAGE}
 					</p>
 				</div>
 			) : null}
@@ -34,6 +33,7 @@ export default async function Page() {
 				result={services}
 				columns={[
 					{ key: "SERVICE", label: t("Services") },
+				{ key: "SYSTEM", label: t("Description") },
 					{ key: "STATE", label: t("Status") },
 					{ key: "CPU", label: "CPU %" },
 					{ key: "MEM", label: `${t("Memory")} MB` },

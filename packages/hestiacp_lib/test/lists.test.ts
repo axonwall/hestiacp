@@ -35,29 +35,26 @@ describe("Phase 2 list wrappers", () => {
 		expect(Object.keys(await client.listDatabases("demo"))).toEqual(["demo_main"]);
 		expect((await client.listCronJobs("demo"))["2"].CMD).toContain("cron.php");
 		expect(Object.keys(await client.listUserBackups("demo"))[0]).toContain(".tar");
-		expect((await client.listUserSshKeys("demo"))["1"].COMMENT).toBe("demo@laptop");
+		expect((await client.listUserSshKeys("demo"))["1"].KEY).toContain("demo@laptop");
 		expect((await client.listAccessKeys("demo"))["fixturekey1"].USER).toBe("demo");
 		expect((await client.listUserLog("demo"))["1"].CATEGORY).toBe("Web");
 		expect((await client.listUserNotifications("demo"))["1"].ACK).toBe("no");
 		const stats = await client.listUserStats("demo");
-		expect(stats["2026-10"].U_BANDWIDTH).toBe("2048");
+		expect(stats["2026-10-31"].U_BANDWIDTH).toBe("2048");
 	});
 
 	it("reads the server/admin lists", async () => {
 		expect((await client.listSysServices()).mysqld.STATE).toBe("stopped");
 		const info = await client.listSysInfo();
 		expect(info.HOSTNAME).toBe("panel.example.test");
-		expect(info.VERSION).toBe("1.10.5");
+		expect(info.VERSION).toBe("24.04");
+		expect(info.HESTIA).toBe("1.10.5");
 		expect(Object.keys(await client.listSysIps())).toEqual(["203.0.113.10"]);
 		expect((await client.listFirewallRules())["2"].ACTION).toBe("DROP");
 		expect(Object.keys(await client.listFirewallBan())).toEqual(["198.51.100.7"]);
 		expect((await client.listFirewallIpset()).blocklist.AUTOUPDATE).toBe("yes");
-		expect((await client.listSysHestiaUpdates())["hestia-php"].UPDATE).toBe("yes");
-		expect(Object.keys(await client.listSysRrd())).toEqual([
-			"daily",
-			"weekly",
-			"monthly",
-		]);
+		expect((await client.listSysHestiaUpdates())["hestia-php"].UPDATED).toBe("yes");
+		expect(Object.keys(await client.listSysRrd())).toEqual(["1", "2", "3"]);
 	});
 
 	it("rejects invalid usernames on user-scoped lists", () => {

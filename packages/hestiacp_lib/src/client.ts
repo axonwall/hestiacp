@@ -168,7 +168,11 @@ export class HestiaClient {
 	}
 	/** v-list-sys-info returns one flat record, not a map of rows. */
 	async listSysInfo(): Promise<HestiaRow> {
-		return this.json<HestiaRow>("v-list-sys-info", "json");
+		// Real v-list-sys-info json wraps the record: {"sysinfo": {...}}.
+		// Unwrap it (a flat record still passes through unchanged).
+		const data = await this.json<Record<string, unknown>>("v-list-sys-info", "json");
+		const inner = (data as { sysinfo?: HestiaRow }).sysinfo;
+		return (inner ?? (data as HestiaRow)) as HestiaRow;
 	}
 	listSysIps() {
 		return this.listRows("v-list-sys-ips");

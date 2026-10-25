@@ -10,7 +10,7 @@ export default async function Page() {
 			result={result}
 			columns={[
 				{ key: "TITLE", label: t("Title") },
-				{ key: "PERIOD", label: t("Period") }
+				{ key: "TYPE", label: t("Type") }
 			]}
 		></ListView>
 	);

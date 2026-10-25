@@ -13,7 +13,7 @@ export default async function Page() {
 				{ key: "DATE", label: t("Date") },
 				{ key: "TIME", label: t("Time") },
 				{ key: "CATEGORY", label: t("Category") },
-				{ key: "TYPE", label: t("Type") },
+				{ key: "LEVEL", label: t("Level") },
 				{ key: "MESSAGE", label: t("Message") }
 			]}
 		></ListView>
