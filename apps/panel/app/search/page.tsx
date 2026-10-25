@@ -55,10 +55,10 @@ export default async function SearchPage({
 					<p>{t("No results found.")}</p>
 				) : (
 					<ul>
-						{results.map((row, i) => {
+						{results.map((row) => {
 							const link = EDIT_LINKS[row.TYPE?.toLowerCase() ?? ""];
 							return (
-								<li key={`${row.TYPE}-${row.KEY}-${i}`}>
+								<li key={`${row.USER ?? ""}-${row.TYPE}-${row.KEY}`}>
 									{link ? (
 										<Link href={link(row.KEY)}>{row.RESULT}</Link>
 									) : (

@@ -44,11 +44,10 @@ function stringField(block, key) {
 function parseOptions(block) {
 	const options = [];
 	const pairRe = /["']([^"']+)["']\s*=>\s*["']([^"']*)["']/g;
-	let m;
-	while ((m = pairRe.exec(block))) options.push({ value: m[1], label: m[2] });
+	for (const m of block.matchAll(pairRe)) options.push({ value: m[1], label: m[2] });
 	if (options.length) return options;
 	const listRe = /["']([^"']+)["']\s*,/g;
-	while ((m = listRe.exec(block))) options.push({ value: m[1], label: m[1] });
+	for (const m of block.matchAll(listRe)) options.push({ value: m[1], label: m[1] });
 	return options;
 }
 

@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import type { HestiaUser } from "@hestiacp/lib";
 import {
 	csrfValid,
 	errorMessage,
@@ -34,7 +35,7 @@ export async function editUserAction(formData: FormData): Promise<void> {
 		redirect("/users");
 	}
 
-	let record;
+	let record: HestiaUser;
 	try {
 		record = await hestia.listUser(user);
 	} catch (error) {

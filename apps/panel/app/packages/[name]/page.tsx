@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { HestiaPackage } from "@hestiacp/lib";
 import { hestia, requireAdmin } from "@/lib/panel";
 import { PackageFormFields } from "../package-form";
 import { editPackageAction } from "./actions";
@@ -15,7 +16,7 @@ export default async function PackageDetailPage({
 	const query = await searchParams;
 	const packageName = decodeURIComponent(name);
 	const token = String(session.data.token ?? "");
-	let record;
+	let record: HestiaPackage;
 	try {
 		record = await hestia.listUserPackage(packageName);
 	} catch {

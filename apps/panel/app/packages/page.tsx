@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { HestiaPackage } from "@hestiacp/lib";
 import { hestia, requireAdmin } from "@/lib/panel";
 
 export default async function PackagesPage({
@@ -8,7 +9,7 @@ export default async function PackagesPage({
 }) {
 	await requireAdmin();
 	const query = await searchParams;
-	let packages;
+	let packages: Record<string, HestiaPackage>;
 	try {
 		packages = await hestia.listUserPackages();
 	} catch (error) {

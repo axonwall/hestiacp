@@ -98,7 +98,7 @@ export async function requireSession(): Promise<ShellSession> {
 		redirect("/login");
 	}
 
-	let userRecord;
+	let userRecord: HestiaUser;
 	try {
 		userRecord = await hestia.listUser(String(session.data.user));
 	} catch {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import type { HestiaUser } from "@hestiacp/lib";
 import { hestia, requireSession } from "@/lib/panel";
 import { disable2faAction, editUserAction, enable2faAction } from "./actions";
 
@@ -22,7 +23,7 @@ export default async function UserDetailPage({
 		session.data.userContext === "admin" && !session.data.look;
 	const token = String(session.data.token ?? "");
 
-	let record;
+	let record: HestiaUser;
 	try {
 		record = await hestia.listUser(username);
 	} catch {

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RowAction, RowActionButton } from "@/components/RowAction";
 import { redirect } from "next/navigation";
+import type { HestiaUser } from "@hestiacp/lib";
 import { getT, hestia, requireSession } from "@/lib/panel";
 import { loginAsAction } from "@/app/session/actions";
 import { toggleSuspendAction } from "./actions";
@@ -20,7 +21,7 @@ export default async function UsersPage({
 	const t = await getT();
 	const isAdmin = session.data.userContext === "admin";
 	const token = String(session.data.token ?? "");
-	let users;
+	let users: Record<string, HestiaUser>;
 	try {
 		users = await hestia.listUsers();
 	} catch (error) {
