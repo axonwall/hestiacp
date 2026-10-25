@@ -275,9 +275,16 @@ export class HestiaClient {
 	async listWebStatsSystems(): Promise<string[]> {
 		return normalizeStringList(await this.json("v-list-web-stats", "json"));
 	}
-	/** Database hosts as a map keyed by hostname ({ TYPE, CHARSETS, ... }). */
-	listDatabaseHosts() {
-		return this.listRows("v-list-database-hosts");
+	/** Database hosts as a map keyed by hostname ({ TYPE, CHARSETS, ... }).
+	 *  Real v-list-database-hosts json is an ARRAY of host rows, not a
+	 *  keyed object — returning it raw made /add/db's Host select offer
+	 *  the array index "0" instead of "localhost" (found live 2026-10-25).
+	 */
+	async listDatabaseHosts(): Promise<Record<string, HestiaRow>> {
+		return normalizeKeyedRows(
+			await this.json("v-list-database-hosts", "json"),
+			"HOST",
+		);
 	}
 	/** Autoreply text is a plain-text command, not JSON. */
 	async listMailAccountAutoreply(
@@ -1550,12 +1557,17 @@ export class HestiaClient {
 
 	/** Global object search (admin): v-search-object. */
 	async searchObjects(query: string): Promise<HestiaRow[]> {
-		return this.json<HestiaRow[]>("v-search-object", query, "json");
+		// Real v-search-object json is a keyed object {"1": {...}}, not
+		// an array — returning it raw made the search page's .map throw
+		// (500 on every query with results, found live 2026-10-25).
+		return normalizeRowList(await this.json("v-search-object", query, "json"));
 	}
 	/** Per-user object search: v-search-user-object. */
 	async searchUserObjects(user: string, query: string): Promise<HestiaRow[]> {
 		assertUsername(user);
-		return this.json<HestiaRow[]>("v-search-user-object", user, query, "json");
+		return normalizeRowList(
+			await this.json("v-search-user-object", user, query, "json"),
+		);
 	}
 	/** Restic snapshots for a user (a JSON array, newest last upstream). */
 	async listUserBackupsRestic(user: string): Promise<HestiaRow[]> {
@@ -2049,4 +2061,31 @@ function normalizeStringList(data: unknown): string[] {
 	if (Array.isArray(data)) return data.map((v) => String(v));
 	if (data && typeof data === "object") return Object.keys(data);
 	return [];
+}
+
+/** Keyed-object search output -> rows in numeric-key order; arrays pass through. */
+function normalizeRowList(data: unknown): HestiaRow[] {
+	if (Array.isArray(data)) return data as HestiaRow[];
+	if (data && typeof data === "object") {
+		return Object.entries(data as Record<string, HestiaRow>)
+			.sort(([a], [b]) => Number(a) - Number(b) || (a < b ? -1 : a > b ? 1 : 0))
+			.map(([, row]) => row);
+	}
+	return [];
+}
+
+/** Array-of-rows enumeration -> map keyed by the given field; keyed objects pass through. */
+function normalizeKeyedRows(
+	data: unknown,
+	keyField: string,
+): Record<string, HestiaRow> {
+	if (Array.isArray(data)) {
+		const out: Record<string, HestiaRow> = {};
+		for (const row of data as HestiaRow[]) {
+			const k = String(row[keyField] ?? "");
+			if (k) out[k] = row;
+		}
+		return out;
+	}
+	return data as Record<string, HestiaRow>;
 }

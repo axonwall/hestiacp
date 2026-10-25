@@ -1,18 +1,18 @@
 #!/bin/bash
-# Fixture: v-search-object (record double)
+# Fixture: v-search-object (real shape: keyed object, not an array)
 cat <<'JSON'
-[
-    {
+{
+    "1": {
         "TYPE": "web",
         "KEY": "example.com",
         "RESULT": "example.com",
         "USER": "demo"
     },
-    {
+    "2": {
         "TYPE": "user",
         "KEY": "demo",
         "RESULT": "demo",
         "USER": "demo"
     }
-]
+}
 JSON
