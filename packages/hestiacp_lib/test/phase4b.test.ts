@@ -1,4 +1,5 @@
 import { readFile, rm } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
 import { HestiaClient } from "../src/client";
@@ -11,7 +12,11 @@ import {
 	type WebAppTarget,
 } from "../src/webapp";
 
-const FIXTURES = fileURLToPath(new URL("./fixtures/bin", import.meta.url));
+const FIXTURES = join(
+	dirname(fileURLToPath(import.meta.url)),
+	"fixtures",
+	"bin",
+);
 const LOG = "/tmp/hestiang-test-p4b-calls.log";
 const client = new HestiaClient({ binDir: FIXTURES, useSudo: false });
 const DOCROOT = "/home/demo/web/example.com/public_html";
@@ -99,8 +104,10 @@ function hasLine(lines: string[], prefix: string): boolean {
 
 beforeAll(async () => {
 	process.env.HESTIA_FIXTURE_LOG = LOG;
-	process.env.HESTIA_PHP_BIN = fileURLToPath(
-		new URL("./fixtures/php-stub.sh", import.meta.url),
+	process.env.HESTIA_PHP_BIN = join(
+		dirname(fileURLToPath(import.meta.url)),
+		"fixtures",
+		"php-stub.sh",
 	);
 	await rm(LOG, { force: true });
 });

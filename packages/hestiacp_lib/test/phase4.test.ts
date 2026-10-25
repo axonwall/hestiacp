@@ -1,6 +1,6 @@
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { HestiaClient } from "../src/client";
@@ -13,7 +13,11 @@ import {
 	type PostRequestFn,
 } from "../src/webapp";
 
-const FIXTURES = fileURLToPath(new URL("./fixtures/bin", import.meta.url));
+const FIXTURES = join(
+	dirname(fileURLToPath(import.meta.url)),
+	"fixtures",
+	"bin",
+);
 const LOG = "/tmp/hestiang-test-p4-calls.log";
 const client = new HestiaClient({ binDir: FIXTURES, useSudo: false });
 

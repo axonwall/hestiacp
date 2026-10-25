@@ -1,9 +1,14 @@
 import { readFile, rm } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
 import { HestiaClient } from "../src/client";
 
-const FIXTURES = fileURLToPath(new URL("./fixtures/bin", import.meta.url));
+const FIXTURES = join(
+	dirname(fileURLToPath(import.meta.url)),
+	"fixtures",
+	"bin",
+);
 const LOG = "/tmp/hestiang-test-rest-calls.log";
 const client = new HestiaClient({ binDir: FIXTURES, useSudo: false });
 
