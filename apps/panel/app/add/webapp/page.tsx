@@ -14,11 +14,11 @@ import { installWebAppAction } from "./actions";
 export default async function AddWebAppPage({
 	searchParams,
 }: {
-	searchParams: Promise<{ app?: string; domain?: string }>;
+	searchParams: Promise<{ app?: string; domain?: string; error?: string }>;
 }) {
 	const session = await requireSession();
 	const user = effectiveUser(session);
-	const { app = "", domain = "" } = await searchParams;
+	const { app = "", domain = "", error = "" } = await searchParams;
 	const entry = catalogEntry(app);
 	const def = WEBAPP_DEFINITIONS[app];
 	if (!entry || !domain) notFound();
@@ -45,6 +45,29 @@ export default async function AddWebAppPage({
 	const phpChoices = def.phpSupported
 		? installedPhp.filter((v) => def.phpSupported?.includes(v))
 		: installedPhp;
+	// PHP's add/webapp refuses the wizard entirely when no installed
+	// version satisfies the app's declaration (InstallerInfo::
+	// isInstallable). Without this, the wizard rendered an empty PHP
+	// select whose submit queued a job guaranteed to fail AFTER
+	// downloading (found live 2026-10-25: DokuWiki declares up to 8.4,
+	// the box has only 8.5, and the job failed post-download).
+	if (def.phpSupported && phpChoices.length === 0) {
+		return (
+			<div className="card">
+				<h1>
+					Install {app} on {domain}
+				</h1>
+				<p className="error">
+					Unable to install {app}, required php version is not available.
+				</p>
+				<p>
+					<Link href={`/list/webapps?domain=${encodeURIComponent(domain)}`}>
+						← Catalog
+					</Link>
+				</p>
+			</div>
+		);
+	}
 	const slug = app.toLowerCase().replace(/[^a-z0-9]+/g, "");
 	const token = String(session.data.token ?? "");
 	return (
@@ -52,6 +75,7 @@ export default async function AddWebAppPage({
 			<h1>
 				Install {app} on {domain}
 			</h1>
+			{error ? <p className="error">{error}</p> : null}
 			<form action={installWebAppAction}>
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="app" value={app} />

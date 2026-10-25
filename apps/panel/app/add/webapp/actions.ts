@@ -45,6 +45,18 @@ export async function installWebAppAction(formData: FormData) {
 	options.php_version = formData.get("php_version")?.toString() ?? "";
 	options.__webSystem = String(session.data.WEB_SYSTEM ?? "nginx");
 	options.__webBackend = String(session.data.WEB_BACKEND ?? "php-fpm");
+	// Fail fast on a version the install would reject after downloading
+	// (same gate installWebApp applies, but before the job starts, so a
+	// tampered or stale submit cannot waste a download).
+	if (
+		options.__webBackend === "php-fpm" &&
+		def.phpSupported &&
+		!def.phpSupported.includes(options.php_version)
+	) {
+		redirect(
+			`/add/webapp?app=${encodeURIComponent(app)}&domain=${encodeURIComponent(domain)}&error=${encodeURIComponent("Required PHP version is not supported")}`,
+		);
+	}
 	const docrootBase = `/home/${user}/web/${domain}/public_html`;
 	const dbSecret = formData.get("database_secret")?.toString() ?? "";
 	const record = await hestia.listWebDomain(user, domain).catch(() => undefined);
