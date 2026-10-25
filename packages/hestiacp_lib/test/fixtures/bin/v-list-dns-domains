@@ -3,7 +3,6 @@
 cat <<'JSON'
 {
     "example.com": {
-        "DOMAIN": "example.com",
         "IP": "203.0.113.10",
         "SOA": "ns1.example.com",
         "TTL": "14400",

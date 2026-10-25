@@ -3,7 +3,6 @@
 cat <<'JSON'
 {
     "1": {
-        "RULE": "1",
         "ACTION": "ACCEPT",
         "PROTOCOL": "TCP",
         "PORT": "22",
@@ -12,7 +11,6 @@ cat <<'JSON'
         "SUSPENDED": "no"
     },
     "2": {
-        "RULE": "2",
         "ACTION": "DROP",
         "PROTOCOL": "TCP",
         "PORT": "23",

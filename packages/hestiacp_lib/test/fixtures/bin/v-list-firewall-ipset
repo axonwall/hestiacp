@@ -3,7 +3,6 @@
 cat <<'JSON'
 {
     "blocklist": {
-        "IPSET": "blocklist",
         "SOURCE": "https://example.test/blocklist.ipset",
         "AUTOUPDATE": "yes",
         "IP_VERSION": "v4",

@@ -3,7 +3,6 @@
 cat <<'JSON'
 {
     "203.0.113.10": {
-        "IP": "203.0.113.10",
         "OWNER": "admin",
         "STATUS": "shared",
         "NAME": "",

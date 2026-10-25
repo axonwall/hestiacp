@@ -3,7 +3,6 @@
 cat <<'JSON'
 {
     "example.com": {
-        "DOMAIN": "example.com",
         "ACCOUNTS": "2",
         "ANTISPAM": "yes",
         "ANTIVIRUS": "yes",

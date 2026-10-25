@@ -18,6 +18,16 @@ export type RowsResult =
  * empty state, and an error state when the command layer is unreachable.
  * The first column links via rowHref when given (e.g. a DNS domain to
  * its records).
+ *
+ * First-column rule: the v-list-* JSON objects are keyed by the object
+ * name (domain, IP, backup file, ...) but most of them do NOT repeat
+ * that name as a field inside the row — v-list-dns-domains rows carry
+ * IP/TPL/TTL/... with no DOMAIN, v-list-sys-ips rows no IP, and so on.
+ * So an empty first-column field falls back to the row key, which is
+ * the object's name in every list. Without this the name column
+ * renders as an empty link (found live 2026-10-25: /list/dns showed
+ * rows with no visible domain name, because the fixtures wrongly
+ * included the key as a field and masked it).
  */
 export function ListView({
 	title,
@@ -77,7 +87,11 @@ export function ListView({
 						>
 							{columns.map((col, i) => {
 								const raw = row[col.key] ?? "";
-								const text = col.format ? col.format(raw, row) : raw;
+								// First column: fall back to the row key
+								// (the object's name) when the field is
+								// absent — see the header comment.
+								const value = i === 0 && !raw ? key : raw;
+								const text = col.format ? col.format(value, row) : value;
 								return (
 									<div className="units-table-cell" key={col.key}>
 										{i === 0 && rowHref ? (

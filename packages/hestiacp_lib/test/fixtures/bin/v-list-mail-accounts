@@ -3,7 +3,6 @@
 cat <<'JSON'
 {
     "info": {
-        "ACCOUNT": "info",
         "ALIAS": "",
         "AUTOREPLY": "no",
         "FWD": "",
@@ -12,7 +11,6 @@ cat <<'JSON'
         "SUSPENDED": "no"
     },
     "admin": {
-        "ACCOUNT": "admin",
         "ALIAS": "",
         "AUTOREPLY": "no",
         "FWD": "",
