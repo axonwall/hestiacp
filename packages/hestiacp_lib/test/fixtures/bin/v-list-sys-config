@@ -15,6 +15,7 @@ cat << 'JSON'
         "ROOT_USER": "admin",
         "API": "yes",
         "API_SYSTEM": "2",
+        "PHPMYADMIN_KEY": "fixture-pma-key",
         "API_ALLOWED_IP": "allow-all",
         "FILE_MANAGER": "true",
         "WEB_TERMINAL": "true",

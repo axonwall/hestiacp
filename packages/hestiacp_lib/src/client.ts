@@ -198,6 +198,22 @@ export class HestiaClient {
 		assertUsername(user);
 		return this.listRows("v-list-databases", user);
 	}
+
+	/** Database dump (PHP /download/database/): v-dump-database prints the archive path. */
+	async dumpDatabase(user: string, database: string): Promise<string> {
+		assertUsername(user);
+		const result = await this.raw("v-dump-database", user, database, "file", "gzip");
+		if (result.code !== 0) {
+			throw new Error(
+				`v-dump-database exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
+			);
+		}
+		const path = result.stdout.split("\n")[0]?.trim();
+		if (!path) {
+			throw new Error("v-dump-database returned no output");
+		}
+		return path;
+	}
 	listCronJobs(user: string) {
 		assertUsername(user);
 		return this.listRows("v-list-cron-jobs", user);

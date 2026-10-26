@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
+import { hash as bcryptHash } from "bcryptjs";
 import { humanizeUsage } from "@hestiacp/lib";
 import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
 import { ListView, sortByDate, sortByName } from "@/components/ListView";
@@ -23,6 +24,33 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 	const ipUsed = /^(?:\d{1,3}\.){3}\d{1,3}$/.test(hostNoPort) || hostNoPort.startsWith("[");
 	const pma = `//${host}/${sys.DB_PMA_ALIAS || "phpmyadmin"}/`;
 	const pga = `//${host}/${sys.DB_PGA_ALIAS || "phppgadmin"}/`;
+	// PHP's per-row phpMyAdmin SSO link (list_db.php): a bcrypt of
+	// database + user + combined IP + time + PHPMYADMIN_KEY, verified
+	// by hestia-sso.php's password_verify (so bcryptjs's $2a$ hash
+	// verifies exactly like PHP's $2y$ one for this ASCII payload).
+	// Gated on mysql + a configured key + a hostname (not an IP).
+	const pmaKey = sys.PHPMYADMIN_KEY ?? "";
+	const ssoUrls = new Map<string, string>();
+	if (!("error" in result) && pmaKey !== "" && !ipUsed) {
+		const time = Math.floor(Date.now() / 1000);
+		const userPlain = String(session.data.user ?? "");
+		const ip = String(session.data.user_combined_ip ?? "");
+		await Promise.all(
+			Object.entries(result.rows)
+				.filter(([, row]) => row.TYPE === "mysql")
+				.map(async ([key, row]) => {
+					const token = await bcryptHash(`${key}${userPlain}${ip}${time}${pmaKey}`, 10);
+					const query = new URLSearchParams({
+						host: row.HOST ?? "localhost",
+						database: key,
+						user: userPlain,
+						exp: String(time),
+						hestia_token: token,
+					});
+					ssoUrls.set(key, `${pma}hestia-sso.php?${query.toString()}`);
+				}),
+		);
+	}
 	const usage = (v: string) => {
 		const { size, measure } = humanizeUsage(v);
 		return (
@@ -59,6 +87,27 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 								icon="fa-pencil icon-orange"
 							/>,
 						]),
+				...(ssoUrls.has(key)
+					? [
+							<a
+								key="sso"
+								className="units-table-row-action-link"
+								href={ssoUrls.get(key)}
+								target="_blank"
+								rel="noopener"
+								title="phpMyAdmin"
+							>
+								<i className="fas fa-right-to-bracket icon-orange"></i>
+								<span className="u-hide-desktop">phpMyAdmin</span>
+							</a>,
+						]
+					: []),
+				<RowAction
+					key="download"
+					href={`/download/database?database=${encodeURIComponent(key)}&token=${encodeURIComponent(token)}`}
+					title={t("Download Database")}
+					icon="fa-download icon-orange"
+				/>,
 				<form key="toggle" action={toggleDatabaseAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="database" value={key} />

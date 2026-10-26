@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-dump-database USER DATABASE file gzip -> archive path
+echo "/tmp/hestiang-dumps/admin_demo_main_mysql_20261026.sql.gz"
