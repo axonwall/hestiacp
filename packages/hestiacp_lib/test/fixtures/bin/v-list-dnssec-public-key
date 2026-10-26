@@ -1,0 +1,14 @@
+#!/bin/bash
+# Fixture: v-list-dnssec-public-key USER DOMAIN json
+cat << 'JSON'
+{
+    "example.com": {
+        "RECORD": "example.com. IN DNSKEY 257 3 8 AwEAAaX7examplekeymaterial",
+        "DS": "12345 8 2 0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF",
+        "KEY": "AwEAAaX7examplekeymaterial",
+        "KEYTAG": "12345",
+        "FLAG": "257",
+        "ALGORITHM": "8"
+    }
+}
+JSON

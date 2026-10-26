@@ -129,6 +129,12 @@ export class HestiaClient {
 		assertUsername(user);
 		return this.listRows("v-list-dns-records", user, domain);
 	}
+
+	/** Public DNSSEC key of one domain (PHP /list/dns/?action=dnssec). */
+	listDnssecPublicKey(user: string, domain: string) {
+		assertUsername(user);
+		return this.listRows("v-list-dnssec-public-key", user, domain);
+	}
 	listMailDomains(user: string) {
 		assertUsername(user);
 		return this.listRows("v-list-mail-domains", user);

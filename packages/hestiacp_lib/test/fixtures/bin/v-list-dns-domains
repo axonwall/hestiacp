@@ -8,7 +8,7 @@ cat << 'JSON'
         "SOA": "ns1.example.com",
         "TTL": "14400",
         "RECORDS": "3",
-        "DNSSEC": "no",
+        "DNSSEC": "yes",
         "SUSPENDED": "no",
         "DATE": "2026-10-01"
     }

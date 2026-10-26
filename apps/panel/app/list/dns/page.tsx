@@ -71,6 +71,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 								icon="fa-pencil icon-orange"
 							/>,
 						]),
+				...(row.DNSSEC === "yes"
+					? [
+							<RowAction
+								key="dnssec"
+								href={`/list/dns/dnssec?domain=${encodeURIComponent(key)}`}
+								title={t("View Public DNSSEC Key")}
+								icon="fa-key icon-orange"
+							/>,
+						]
+					: []),
 				<RowAction
 					key="records"
 					href={`/list/dns/records?domain=${encodeURIComponent(key)}`}
