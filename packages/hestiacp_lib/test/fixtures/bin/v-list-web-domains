@@ -4,6 +4,8 @@ cat << 'JSON'
 {
     "example.com": {
         "IP": "203.0.113.10",
+        "U_DISK": "120",
+        "U_BANDWIDTH": "300",
         "CUSTOM_DOCROOT": "",
         "REDIRECT": "",
         "SSL": "yes",
@@ -14,6 +16,8 @@ cat << 'JSON'
     },
     "blog.example.com": {
         "IP": "203.0.113.10",
+        "U_DISK": "45",
+        "U_BANDWIDTH": "90",
         "CUSTOM_DOCROOT": "",
         "REDIRECT": "",
         "SSL": "no",

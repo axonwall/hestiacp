@@ -4,6 +4,7 @@ cat << 'JSON'
 {
     "nginx": {
         "SERVICE": "nginx",
+        "SYSTEM": "Web Server",
         "STATE": "running",
         "CPU": "0.1",
         "MEM": "42",
@@ -11,6 +12,7 @@ cat << 'JSON'
     },
     "php-fpm": {
         "SERVICE": "php-fpm",
+        "SYSTEM": "PHP-FPM",
         "STATE": "running",
         "CPU": "0.4",
         "MEM": "128",
@@ -18,6 +20,7 @@ cat << 'JSON'
     },
     "mysqld": {
         "SERVICE": "mysqld",
+        "SYSTEM": "MySQL Server",
         "STATE": "stopped",
         "CPU": "0",
         "MEM": "0",

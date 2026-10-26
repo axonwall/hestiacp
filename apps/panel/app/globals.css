@@ -173,6 +173,17 @@ main form input[type="radio"] {
 	margin: 0;
 }
 
+/* --- ListView sort menu: a <details> dropdown, so no JS is needed
+   to open it. Hide the browser's disclosure triangle; the theme's
+   toggle styling + arrow icon carry the affordance. --- */
+.toolbar-sorting summary {
+	list-style: none;
+	cursor: pointer;
+}
+.toolbar-sorting summary::-webkit-details-marker {
+	display: none;
+}
+
 /* --- Data tables that are not ListView (sublists, stats).
    Borders use a translucent gray so they read on both themes. --- */
 table.grid {

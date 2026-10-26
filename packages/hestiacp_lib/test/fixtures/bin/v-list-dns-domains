@@ -4,6 +4,7 @@ cat << 'JSON'
 {
     "example.com": {
         "IP": "203.0.113.10",
+        "TPL": "default",
         "SOA": "ns1.example.com",
         "TTL": "14400",
         "RECORDS": "3",

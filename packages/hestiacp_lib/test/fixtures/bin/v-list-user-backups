@@ -5,6 +5,7 @@ cat << 'JSON'
     "demo.2026-10-20_05-00-00.tar": {
         "TYPE": "local",
         "SIZE": "128",
+        "RUNTIME": "5",
         "TIME": "05:00:00",
         "DATE": "2026-10-20"
     }

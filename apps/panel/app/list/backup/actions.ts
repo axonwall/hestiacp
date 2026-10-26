@@ -15,3 +15,17 @@ export async function scheduleBackupAction(formData: FormData): Promise<void> {
 	}
 	redirect("/list/backup?saved=1");
 }
+
+/** Bulk backup action (PHP /bulk/backup/): delete only. */
+export async function bulkBackupAction(formData: FormData): Promise<void> {
+	const session = await requireSession();
+	if (!csrfValid(session, formData)) redirect("/list/backup?error=csrf");
+	const user = effectiveUser(session);
+	const backups = formData.getAll("backup[]").map(String).filter(Boolean);
+	try {
+		for (const backup of backups) await hestia.deleteUserBackup(user, backup);
+	} catch (error) {
+		redirect(`/list/backup?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/list/backup?saved=1");
+}

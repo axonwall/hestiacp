@@ -1,7 +1,12 @@
+import Link from "next/link";
 import { getT, hestia, loadRows, requireAdmin } from "@/lib/panel";
-import { ListView } from "@/components/ListView";
+import { ListView, statusIcon } from "@/components/ListView";
 import { RowActionButton } from "@/components/RowAction";
-import { addFirewallIpsetAction, deleteFirewallIpsetAction } from "../actions";
+import {
+	addFirewallIpsetAction,
+	bulkFirewallIpsetAction,
+	deleteFirewallIpsetAction,
+} from "../actions";
 
 export default async function Page() {
 	const session = await requireAdmin();
@@ -12,20 +17,47 @@ export default async function Page() {
 		<ListView
 			title={t("IP Sets")}
 			result={result}
+			emptyText={t("There are currently no IP lists defined.")}
 			columns={[
-				{ key: "IPSET", label: t("IP Sets") },
-				{ key: "SOURCE", label: t("Source") },
-				{ key: "AUTOUPDATE", label: t("Autoupdate") },
-				{ key: "IP_VERSION", label: t("Version") },
+				{ key: "IPSET", label: t("IP List Name") },
+				{
+					key: "AUTOUPDATE",
+					label: t("Auto Update"),
+					format: (v) => statusIcon(v, false, t("Auto Update On"), t("Auto Update Off")),
+				},
+				{ key: "IP_VERSION", label: t("IP Version") },
+				{
+					key: "DATE",
+					label: t("Date"),
+					format: (v) => <time dateTime={v}>{v}</time>,
+				},
+				{ key: "TIME", label: t("Time") },
 			]}
-			rowActions={(key) => (
+			rowActions={(key) => [
 				<form action={deleteFirewallIpsetAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="name" value={key} />
 					<RowActionButton title={t("Delete")} icon="fa-trash icon-red" />
-				</form>
-			)}
+				</form>,
+			]}
+			footer={{ singular: t("IP list"), plural: t("IP lists") }}
+			checkboxName="setname[]"
+			bulkAction={bulkFirewallIpsetAction}
+			bulkToken={token}
+			bulkOptions={[{ value: "delete", label: t("Delete") }]}
+			containerId="list-firewall-ipset"
+			chrome={{
+				sortBy: t("Sort by"),
+				search: t("Search"),
+				applyToSelected: t("Apply to selected"),
+				select: t("Select"),
+				selectAll: t("Select all"),
+			}}
 		>
+			<Link className="button button-secondary" href="/list/firewall">
+				<i className="fas fa-arrow-left icon-blue"></i>
+				{t("Back")}
+			</Link>
 			<form action={addFirewallIpsetAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="setName">{t("Add IP set")}</label>

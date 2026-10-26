@@ -18,3 +18,21 @@ export async function serviceControlAction(formData: FormData): Promise<void> {
 	}
 	redirect("/list/server?saved=1");
 }
+
+/** Bulk service action (PHP /bulk/service/): stop / start / restart. */
+export async function bulkServiceAction(formData: FormData): Promise<void> {
+	const session = await requireAdmin();
+	if (!csrfValid(session, formData)) redirect("/list/server?error=csrf");
+	const services = formData.getAll("service[]").map(String).filter(Boolean);
+	const op = String(formData.get("action") ?? "");
+	try {
+		for (const service of services) {
+			if (op === "start") await hestia.startService(service);
+			else if (op === "stop") await hestia.stopService(service);
+			else if (op === "restart") await hestia.restartService(service);
+		}
+	} catch (error) {
+		redirect(`/list/server?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/list/server?saved=1");
+}

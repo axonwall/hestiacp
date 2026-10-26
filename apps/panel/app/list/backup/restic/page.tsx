@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ListView } from "@/components/ListView";
-import { RowAction, RowActionButton } from "@/components/RowAction";
+import { RowAction } from "@/components/RowAction";
 import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
-import { scheduleResticBackupAction } from "./actions";
+import { bulkResticAction, scheduleResticBackupAction } from "./actions";
 
 /**
  * Incremental (restic) backups (web/list/backup/incremental without a
@@ -28,33 +28,65 @@ export default async function ResticBackupsPage() {
 			title="Incremental backups"
 			result={result}
 			columns={[
-				{ key: "ID", label: "Snapshot" },
-				{ key: "DATE", label: t("Date") },
-				{ key: "TIME", label: t("Time") },
-				{ key: "SIZE", label: t("Size") },
+				{ key: "ID", label: t("Snapshot") },
+				{
+					key: "DATE",
+					label: t("Date"),
+					format: (v, row) => (
+						<span className="u-text-bold">{[v, row.TIME].filter(Boolean).join(" ")}</span>
+					),
+				},
+				{
+					key: "TYPE",
+					label: t("Type"),
+					format: () => <span className="u-text-bold">Restic</span>,
+				},
+				{
+					key: "HOSTNAME",
+					label: t("Hostname"),
+					format: (v) => <span className="u-text-bold">{v}</span>,
+				},
 			]}
-			rowActions={(id) => (
-				<>
-					<RowAction
-						href={`/list/backup/restic/detail?snapshot=${encodeURIComponent(id)}`}
-						title={`${t("Detail")} / ${t("Restore")}`}
-						icon="fa-magnifying-glass icon-lightblue"
-					/>
-					<RowAction
-						href={`/delete/backup/restic?snapshot=${encodeURIComponent(id)}`}
-						title={t("Delete")}
-						icon="fa-trash icon-red"
-					/>
-				</>
-			)}
+			rowHref={(id) => `/list/backup/restic/detail?snapshot=${encodeURIComponent(id)}`}
+			rowActions={(id) => [
+				<RowAction
+					href={`/list/backup/restic/browse?snapshot=${encodeURIComponent(id)}`}
+					title={t("Browse")}
+					icon="fa-folder-open icon-lightblue icon-dim"
+				/>,
+				<RowAction
+					href={`/list/backup/restic/detail?snapshot=${encodeURIComponent(id)}`}
+					title={`${t("Detail")} / ${t("Restore")}`}
+					icon="fa-magnifying-glass icon-lightblue"
+				/>,
+				<RowAction
+					href={`/delete/backup/restic?snapshot=${encodeURIComponent(id)}`}
+					title={t("Delete")}
+					icon="fa-trash icon-red"
+				/>,
+			]}
+			checkboxName="backup[]"
+			bulkAction={bulkResticAction}
+			bulkToken={token}
+			bulkOptions={[{ value: "delete", label: t("Delete") }]}
+			containerId="list-backup-restic"
+			chrome={{
+				sortBy: t("Sort by"),
+				search: t("Search"),
+				applyToSelected: t("Apply to selected"),
+				select: t("Select"),
+				selectAll: t("Select all"),
+			}}
 		>
-			<p>
-				<Link href="/list/backup">← {t("Backups")}</Link>
-			</p>
+			<Link className="button button-secondary" href="/list/backup">
+				<i className="fas fa-arrow-left icon-blue"></i>
+				{t("Back")}
+			</Link>
 			<form action={scheduleResticBackupAction} style={{ display: "inline" }}>
 				<input type="hidden" name="token" value={token} />
 				<button type="submit" className="button button-secondary">
-					<i className="fas fa-circle-plus icon-green"></i>Create incremental backup
+					<i className="fas fa-circle-plus icon-green"></i>
+					{t("Create Snapshot")}
 				</button>
 			</form>
 		</ListView>
