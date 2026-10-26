@@ -1,0 +1,4 @@
+#!/bin/bash
+# Fixture: v-dump-site USER SITE full -> filename, then path
+echo "admin_example.com_20261026.zip"
+echo "/tmp/hestiang-dumps/admin_example.com_20261026.zip"

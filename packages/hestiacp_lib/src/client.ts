@@ -24,7 +24,7 @@ export interface RrdExport {
 	meta: { start: number; step: number; legend: string[] };
 }
 
-/** One v-list-access-key / v-add-access-key record (flat, JSON form). */
+	/** One v-list-access-key / v-add-access-key record (flat, JSON form). */
 export interface AccessKeyRecord {
 	ACCESS_KEY_ID: string;
 	SECRET_ACCESS_KEY: string;
@@ -137,6 +137,40 @@ export class HestiaClient {
 	listWebDomains(user: string) {
 		assertUsername(user);
 		return this.listRows("v-list-web-domains", user);
+	}
+
+	/** Site dump (PHP /download/site/): v-dump-site prints filename then path. */
+	async dumpSite(user: string, site: string): Promise<{ filename: string; path: string }> {
+		assertUsername(user);
+		const result = await this.raw("v-dump-site", user, site, "full");
+		if (result.code !== 0) {
+			throw new Error(
+				`v-dump-site exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
+			);
+		}
+		const [filename, path] = result.stdout.trim().split("\n");
+		if (!filename || !path) {
+			throw new Error("v-dump-site returned an unexpected output shape");
+		}
+		return { filename, path };
+	}
+
+	/** Raw access/error log lines (PHP /list/web-log/ and /download/web-log/). */
+	async listWebDomainLog(
+		user: string,
+		domain: string,
+		type: "access" | "error",
+		limit?: string,
+	): Promise<string> {
+		assertUsername(user);
+		const args = limit ? [user, domain, limit] : [user, domain];
+		const result = await this.raw(`v-list-web-domain-${type}log`, ...args);
+		if (result.code !== 0) {
+			throw new Error(
+				`v-list-web-domain-${type}log exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
+			);
+		}
+		return result.stdout;
 	}
 	listDnsDomains(user: string) {
 		assertUsername(user);

@@ -1,0 +1,5 @@
+#!/bin/bash
+# Fixture: v-list-web-domain-errorlog USER DOMAIN [LIMIT]
+cat << 'LOG'
+[Mon Oct 26 09:15:00 2026] [error] [client 203.0.113.50] File does not exist: /var/www/html/missing
+LOG
