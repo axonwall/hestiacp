@@ -34,7 +34,7 @@ export default async function Page() {
 				{ key: "TIME", label: t("Time") },
 			]}
 			rowActions={(key) => [
-				<form action={deleteFirewallIpsetAction} style={{ display: "inline" }}>
+				<form key="delete" action={deleteFirewallIpsetAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="name" value={key} />
 					<RowActionButton title={t("Delete")} icon="fa-trash icon-red" />

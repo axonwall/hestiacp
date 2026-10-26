@@ -25,7 +25,7 @@ export default async function Page() {
 				{ key: "CHAIN", label: t("Chain") },
 			]}
 			rowActions={(key, row) => [
-				<form action={deleteFirewallBanAction} style={{ display: "inline" }}>
+				<form key="unban" action={deleteFirewallBanAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="ip" value={key} />
 					<input type="hidden" name="chain" value={row.CHAIN ?? "INPUT"} />

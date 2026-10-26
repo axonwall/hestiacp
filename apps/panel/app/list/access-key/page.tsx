@@ -30,7 +30,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 				{ key: "TIME", label: t("Time"), center: true, format: bold },
 			]}
 			rowActions={(key) => [
-				<form action={deleteAccessKeyAction} style={{ display: "inline" }}>
+				<form key="delete" action={deleteAccessKeyAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="key" value={key} />
 					<RowActionButton title={t("Delete")} icon="fa-trash icon-red" />

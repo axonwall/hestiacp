@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 	const firstRule = ruleKeys[0];
 	const lastRule = ruleKeys[ruleKeys.length - 1];
 	const moveForm = (rule: string, direction: string, title: string, icon: string) => (
-		<form action={moveFirewallRuleAction} style={{ display: "inline" }}>
+		<form key={`move-${direction}`} action={moveFirewallRuleAction} style={{ display: "inline" }}>
 			<input type="hidden" name="token" value={token} />
 			<input type="hidden" name="rule" value={rule} />
 			<input type="hidden" name="direction" value={direction} />
@@ -69,11 +69,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					? [moveForm(key, "down", t("Move Firewall Rule Down"), "fa-arrow-down icon-blue")]
 					: []),
 				<RowAction
+					key="edit"
 					href={`/edit/firewall?rule=${encodeURIComponent(key)}`}
 					title={t("Edit Firewall Rule")}
 					icon="fa-pencil icon-orange"
 				/>,
-				<form action={toggleFirewallRuleAction} style={{ display: "inline" }}>
+				<form key="toggle" action={toggleFirewallRuleAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="rule" value={key} />
 					<input
@@ -87,6 +88,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					/>
 				</form>,
 				<RowAction
+					key="delete"
 					href={`/delete/firewall?rule=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

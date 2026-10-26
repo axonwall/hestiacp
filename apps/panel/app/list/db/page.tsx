@@ -53,12 +53,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					? []
 					: [
 							<RowAction
+								key="edit"
 								href={`/edit/db?database=${encodeURIComponent(key)}`}
 								title={t("Edit Database")}
 								icon="fa-pencil icon-orange"
 							/>,
 						]),
-				<form action={toggleDatabaseAction} style={{ display: "inline" }}>
+				<form key="toggle" action={toggleDatabaseAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="database" value={key} />
 					<input
@@ -72,6 +73,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					/>
 				</form>,
 				<RowAction
+					key="delete"
 					href={`/delete/db?database=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

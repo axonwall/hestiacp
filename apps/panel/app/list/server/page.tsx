@@ -30,14 +30,14 @@ export default async function Page() {
 	};
 	const toggleForm = (key: string, row: Record<string, string>) =>
 		row.STATE === "running" ? (
-			<form action={serviceControlAction} style={{ display: "inline" }}>
+			<form key="toggle" action={serviceControlAction} style={{ display: "inline" }}>
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="service" value={key} />
 				<input type="hidden" name="op" value="stop" />
 				<RowActionButton title={t("Stop")} icon="fa-stop icon-red" />
 			</form>
 		) : (
-			<form action={serviceControlAction} style={{ display: "inline" }}>
+			<form key="toggle" action={serviceControlAction} style={{ display: "inline" }}>
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="service" value={key} />
 				<input type="hidden" name="op" value="start" />
@@ -103,11 +103,12 @@ export default async function Page() {
 				rowHref={(key) => `/edit/server/service?service=${encodeURIComponent(key)}`}
 				rowActions={(key, row) => [
 					<RowAction
+						key="edit"
 						href={`/edit/server/service?service=${encodeURIComponent(key)}`}
 						title={t("Edit")}
 						icon="fa-pencil icon-orange"
 					/>,
-					<form action={serviceControlAction} style={{ display: "inline" }}>
+					<form key="restart" action={serviceControlAction} style={{ display: "inline" }}>
 						<input type="hidden" name="token" value={token} />
 						<input type="hidden" name="service" value={key} />
 						<input type="hidden" name="op" value="restart" />

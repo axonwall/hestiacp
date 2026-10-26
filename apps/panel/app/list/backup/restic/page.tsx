@@ -50,16 +50,19 @@ export default async function ResticBackupsPage() {
 			rowHref={(id) => `/list/backup/restic/detail?snapshot=${encodeURIComponent(id)}`}
 			rowActions={(id) => [
 				<RowAction
+					key="browse"
 					href={`/list/backup/restic/browse?snapshot=${encodeURIComponent(id)}`}
 					title={t("Browse")}
 					icon="fa-folder-open icon-lightblue icon-dim"
 				/>,
 				<RowAction
+					key="detail"
 					href={`/list/backup/restic/detail?snapshot=${encodeURIComponent(id)}`}
 					title={`${t("Detail")} / ${t("Restore")}`}
 					icon="fa-magnifying-glass icon-lightblue"
 				/>,
 				<RowAction
+					key="delete"
 					href={`/delete/backup/restic?snapshot=${encodeURIComponent(id)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

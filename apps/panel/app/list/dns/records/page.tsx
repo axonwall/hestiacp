@@ -60,12 +60,14 @@ export default async function Page({
 					? []
 					: [
 							<RowAction
+								key="edit"
 								href={`/edit/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`}
 								title={t("Edit DNS Record")}
 								icon="fa-pencil icon-orange"
 							/>,
 						]),
 				<RowAction
+					key="delete"
 					href={`/delete/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

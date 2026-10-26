@@ -37,22 +37,26 @@ export default async function Page() {
 			rowHref={(key) => `/edit/backup/restore?backup=${encodeURIComponent(key)}`}
 			rowActions={(key) => [
 				<RowAction
+					key="download"
 					href={`/download/backup?backup=${encodeURIComponent(key)}`}
 					title={t("Download")}
 					icon="fa-file-arrow-down icon-lightblue"
 					plain
 				/>,
 				<RowAction
+					key="restore"
 					href={`/edit/backup/restore?backup=${encodeURIComponent(key)}`}
 					title={t("Restore")}
 					icon="fa-arrow-rotate-left icon-green"
 				/>,
 				<RowAction
+					key="detail"
 					href={`/list/backup/detail?backup=${encodeURIComponent(key)}`}
 					title={t("Detail")}
 					icon="fa-magnifying-glass icon-lightblue"
 				/>,
 				<RowAction
+					key="delete"
 					href={`/delete/backup?backup=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

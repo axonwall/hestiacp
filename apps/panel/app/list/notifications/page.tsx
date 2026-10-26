@@ -30,13 +30,17 @@ export default async function Page() {
 				...(row.ACK === "yes"
 					? []
 					: [
-							<form action={acknowledgeNotificationAction} style={{ display: "inline" }}>
+							<form
+								key="acknowledge"
+								action={acknowledgeNotificationAction}
+								style={{ display: "inline" }}
+							>
 								<input type="hidden" name="token" value={token} />
 								<input type="hidden" name="notice" value={key} />
 								<RowActionButton title={t("Acknowledge")} icon="fa-check icon-green" />
 							</form>,
 						]),
-				<form action={deleteNotificationAction} style={{ display: "inline" }}>
+				<form key="delete" action={deleteNotificationAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="notice" value={key} />
 					<RowActionButton title={t("Delete")} icon="fa-trash icon-red" />

@@ -35,11 +35,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 			rowHref={(key) => `/edit/cron?job=${encodeURIComponent(key)}`}
 			rowActions={(key, row) => [
 				<RowAction
+					key="edit"
 					href={`/edit/cron?job=${encodeURIComponent(key)}`}
 					title={t("Edit")}
 					icon="fa-pencil icon-orange"
 				/>,
-				<form action={toggleCronJobAction} style={{ display: "inline" }}>
+				<form key="toggle" action={toggleCronJobAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="job" value={key} />
 					<input
@@ -53,6 +54,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					/>
 				</form>,
 				<RowAction
+					key="delete"
 					href={`/delete/cron?job=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

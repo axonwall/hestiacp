@@ -63,7 +63,9 @@ export function BulkActions({
 		fd.set("action", op);
 		if (token) fd.set("token", token);
 		if (extra) for (const [k, v] of Object.entries(extra)) fd.set(k, v);
-		checked.forEach((el) => fd.append(checkboxName, (el as HTMLInputElement).value));
+		checked.forEach((el) => {
+			fd.append(checkboxName, (el as HTMLInputElement).value);
+		});
 		startTransition(() => {
 			void action(fd);
 		});

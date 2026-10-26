@@ -76,6 +76,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 				...(row.STATS && row.STATS !== "no"
 					? [
 							<a
+								key="stats"
 								className="units-table-row-action-link"
 								href={`${row.SSL === "yes" ? "https" : "http"}://${key}/vstats/`}
 								target="_blank"
@@ -88,6 +89,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 						]
 					: []),
 				<a
+					key="visit"
 					className="units-table-row-action-link"
 					href={`http://${key}/`}
 					target="_blank"
@@ -101,12 +103,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					? []
 					: [
 							<RowAction
+								key="edit"
 								href={`/edit/web?domain=${encodeURIComponent(key)}`}
 								title={t("Edit Domain")}
 								icon="fa-pencil icon-orange"
 							/>,
 						]),
-				<form action={toggleWebDomainAction} style={{ display: "inline" }}>
+				<form key="toggle" action={toggleWebDomainAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="domain" value={key} />
 					<input
@@ -120,6 +123,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					/>
 				</form>,
 				<RowAction
+					key="delete"
 					href={`/delete/web?domain=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

@@ -116,7 +116,7 @@ export function ListView({
 	emptyText?: string;
 	rowHref?: (key: string, row: HestiaRow) => string | null;
 	/** Per-row actions; each entry becomes one <li> in the actions <ul>. */
-	rowActions?: (key: string, row: HestiaRow) => React.ReactNode[];
+	rowActions?: (key: string, row: HestiaRow) => React.ReactElement[];
 	children?: React.ReactNode;
 	/** Footer count words, e.g. { singular: "DNS zone", plural: "DNS zones" }. */
 	footer?: { singular: string; plural: string };
@@ -310,8 +310,8 @@ export function ListView({
 								{rowActions ? (
 									<div className="units-table-cell">
 										<ul className="units-table-row-actions">
-											{rowActions(key, row).map((action, i) => (
-												<li className="units-table-row-action" key={i}>
+											{rowActions(key, row).map((action) => (
+												<li className="units-table-row-action" key={action.key}>
 													{action}
 												</li>
 											))}

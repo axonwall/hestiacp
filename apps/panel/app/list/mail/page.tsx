@@ -60,11 +60,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 			rowHref={(key) => `/list/mail/accounts?domain=${encodeURIComponent(key)}`}
 			rowActions={(key, row) => [
 				<RowAction
+					key="accounts"
 					href={`/list/mail/accounts?domain=${encodeURIComponent(key)}`}
 					title={t("Mail Accounts")}
 					icon="fa-users icon-blue"
 				/>,
 				<RowAction
+					key="records"
 					href={`/list/dns/records?domain=${encodeURIComponent(key)}`}
 					title={t("DNS Records")}
 					icon="fa-book-atlas icon-blue"
@@ -73,6 +75,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					? []
 					: [
 							<RowAction
+								key="add"
 								href={`/add/mail/account?domain=${encodeURIComponent(key)}`}
 								title={t("Add Mail Account")}
 								icon="fa-circle-plus icon-green"
@@ -81,6 +84,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 				...(webmailSystem && row.WEBMAIL && row.SUSPENDED !== "yes"
 					? [
 							<a
+								key="webmail"
 								className="units-table-row-action-link"
 								href={`https://${webmailAlias}.${key}/`}
 								target="_blank"
@@ -93,11 +97,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 						]
 					: []),
 				<RowAction
+					key="edit"
 					href={`/edit/mail?domain=${encodeURIComponent(key)}`}
 					title={t("Edit Mail Domain")}
 					icon="fa-pencil icon-orange"
 				/>,
-				<form action={toggleMailDomainAction} style={{ display: "inline" }}>
+				<form key="toggle" action={toggleMailDomainAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="domain" value={key} />
 					<input
@@ -111,6 +116,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					/>
 				</form>,
 				<RowAction
+					key="delete"
 					href={`/delete/mail?domain=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

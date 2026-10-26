@@ -53,7 +53,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 				},
 			]}
 			rowHref={(key) => `/list/dns/records?domain=${encodeURIComponent(key)}`}
-			sub={(key, row) =>
+			sub={(_key, row) =>
 				row.SRC ? (
 					<>
 						<br />⇢ <span className="u-text-small">{row.SRC}</span>
@@ -65,17 +65,19 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					? []
 					: [
 							<RowAction
+								key="edit"
 								href={`/edit/dns?domain=${encodeURIComponent(key)}`}
 								title={t("Edit DNS Domain")}
 								icon="fa-pencil icon-orange"
 							/>,
 						]),
 				<RowAction
+					key="records"
 					href={`/list/dns/records?domain=${encodeURIComponent(key)}`}
 					title={t("DNS Records")}
 					icon="fa-list icon-lightblue"
 				/>,
-				<form action={toggleDnsDomainAction} style={{ display: "inline" }}>
+				<form key="toggle" action={toggleDnsDomainAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="domain" value={key} />
 					<input
@@ -89,6 +91,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 					/>
 				</form>,
 				<RowAction
+					key="delete"
 					href={`/delete/dns?domain=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

@@ -37,7 +37,7 @@ export default async function Page() {
 				},
 			]}
 			rowActions={(key) => [
-				<form action={deleteSshKeyAction} style={{ display: "inline" }}>
+				<form key="delete" action={deleteSshKeyAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="key" value={key} />
 					<RowActionButton title={t("Delete")} icon="fa-trash icon-red" />

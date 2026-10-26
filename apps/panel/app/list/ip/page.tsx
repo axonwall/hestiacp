@@ -33,11 +33,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 			rowHref={(key) => `/edit/ip?ip=${encodeURIComponent(key)}`}
 			rowActions={(key) => [
 				<RowAction
+					key="edit"
 					href={`/edit/ip?ip=${encodeURIComponent(key)}`}
 					title={t("Edit")}
 					icon="fa-pencil icon-orange"
 				/>,
 				<RowAction
+					key="delete"
 					href={`/delete/ip?ip=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"

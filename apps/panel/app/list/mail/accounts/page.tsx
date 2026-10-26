@@ -87,6 +87,7 @@ export default async function Page({
 				...(webmailSystem && row.WEBMAIL && row.SUSPENDED !== "yes"
 					? [
 							<a
+								key="webmail"
 								className="units-table-row-action-link"
 								href={`http://${webmailAlias}.${domain}/?_user=${encodeURIComponent(key)}@${encodeURIComponent(domain)}`}
 								target="_blank"
@@ -99,11 +100,12 @@ export default async function Page({
 						]
 					: []),
 				<RowAction
+					key="edit"
 					href={`/edit/mail/account?domain=${encodeURIComponent(domain)}&account=${encodeURIComponent(key)}`}
 					title={t("Edit Mail Account")}
 					icon="fa-pencil icon-orange"
 				/>,
-				<form action={toggleMailAccountAction} style={{ display: "inline" }}>
+				<form key="toggle" action={toggleMailAccountAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="domain" value={domain} />
 					<input type="hidden" name="account" value={key} />
@@ -118,6 +120,7 @@ export default async function Page({
 					/>
 				</form>,
 				<RowAction
+					key="delete"
 					href={`/delete/mail/account?domain=${encodeURIComponent(domain)}&account=${encodeURIComponent(key)}`}
 					title={t("Delete")}
 					icon="fa-trash icon-red"
