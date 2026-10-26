@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-user-backup-restic (record double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "snap001": {
         "SNAPSHOT": "snap001",

@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /** Delete delete web domain (web/delete/web) after the confirm page's checkbox. */
 export async function deleteWebDomainAction(formData: FormData): Promise<void> {

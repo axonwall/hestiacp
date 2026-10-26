@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-user-stats (read-only list double; rows keyed by day)
-cat <<'JSON'
+cat << 'JSON'
 {
     "2026-10-31": {
         "TIME": "05:22:16",

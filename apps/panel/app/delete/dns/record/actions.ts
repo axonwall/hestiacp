@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /** Delete a dns record (web/delete/dns/record) after the confirm page's checkbox. */
 export async function deleteDnsRecordAction(formData: FormData): Promise<void> {

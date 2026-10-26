@@ -3,9 +3,7 @@
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"isolatedModules": true,
-		"lib": [
-			"ES2022"
-		],
+		"lib": ["ES2022"],
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"noEmit": true,
@@ -13,12 +11,7 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"target": "ES2022",
-		"types": [
-			"node"
-		]
+		"types": ["node"]
 	},
-	"include": [
-		"src",
-		"test"
-	]
+	"include": ["src", "test"]
 }

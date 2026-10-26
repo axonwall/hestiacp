@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /**
  * Web stats authorization (edit/web stats section): one auth user per
@@ -15,9 +9,7 @@ import {
  * its password, v-delete-web-domain-stats-user removes the auth
  * entirely (no username argument).
  */
-export async function editWebDomainStatsAuthAction(
-	formData: FormData,
-): Promise<void> {
+export async function editWebDomainStatsAuthAction(formData: FormData): Promise<void> {
 	const session = await requireSession();
 	const domain = String(formData.get("domain") ?? "");
 	const back = `/edit/web?domain=${encodeURIComponent(domain)}`;

@@ -1,10 +1,4 @@
-import {
-	effectiveUser,
-	getT,
-	hestia,
-	loadRows,
-	requireSession,
-} from "@/lib/panel";
+import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
 import Link from "next/link";
 import { ListView } from "@/components/ListView";
 import { RowAction, RowActionButton } from "@/components/RowAction";
@@ -44,16 +38,22 @@ export default async function Page({
 			]}
 			rowActions={(key) => (
 				<>
-					<RowAction href={`/edit/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`} title={t("Edit")} icon="fa-pencil icon-orange" />
-					<RowAction href={`/delete/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`} title={t("Delete")} icon="fa-trash icon-red" />
+					<RowAction
+						href={`/edit/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`}
+						title={t("Edit")}
+						icon="fa-pencil icon-orange"
+					/>
+					<RowAction
+						href={`/delete/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(key)}`}
+						title={t("Delete")}
+						icon="fa-trash icon-red"
+					/>
 				</>
 			)}
 		>
 			<p>
 				<a href="/list/dns">{t("Back")}</a> ·{" "}
-				<Link href={`/edit/dns?domain=${encodeURIComponent(domain)}`}>
-					{t("Edit DNS Zone")}
-				</Link>
+				<Link href={`/edit/dns?domain=${encodeURIComponent(domain)}`}>{t("Edit DNS Zone")}</Link>
 			</p>
 		</ListView>
 	);

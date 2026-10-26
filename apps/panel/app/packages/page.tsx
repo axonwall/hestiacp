@@ -29,7 +29,8 @@ export default async function PackagesPage({
 			<h1>Packages</h1>
 			{query.error ? <p className="error">{query.error}</p> : null}
 			<p>
-				<Link className="button button-secondary" href="/add/package"><i className="fas fa-circle-plus icon-green"></i>
+				<Link className="button button-secondary" href="/add/package">
+					<i className="fas fa-circle-plus icon-green"></i>
 					Add package
 				</Link>
 			</p>
@@ -53,9 +54,7 @@ export default async function PackagesPage({
 						return (
 							<tr key={name}>
 								<td>
-									<Link href={`/packages/${encodeURIComponent(name)}`}>
-										{name}
-									</Link>
+									<Link href={`/packages/${encodeURIComponent(name)}`}>{name}</Link>
 								</td>
 								<td>{p.WEB_DOMAINS}</td>
 								<td>{p.DNS_DOMAINS}</td>
@@ -65,9 +64,7 @@ export default async function PackagesPage({
 								<td>{p.BANDWIDTH}</td>
 								<td>{p.SHELL}</td>
 								<td>
-									<Link href={`/packages/${encodeURIComponent(name)}/delete`}>
-										Delete
-									</Link>
+									<Link href={`/packages/${encodeURIComponent(name)}/delete`}>Delete</Link>
 								</td>
 							</tr>
 						);

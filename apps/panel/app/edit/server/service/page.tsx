@@ -46,9 +46,7 @@ export default async function Page({
 	const query = await searchParams;
 	const service = query.service ?? "";
 	const path = service ? await resolvePath(service) : null;
-	const contents = path
-		? await hestia.openFsConfig(path).catch(() => null)
-		: null;
+	const contents = path ? await hestia.openFsConfig(path).catch(() => null) : null;
 	const token = String(session.data.token ?? "");
 	return (
 		<div className="card">
@@ -58,9 +56,7 @@ export default async function Page({
 			{query.error ? <p className="error">{query.error}</p> : null}
 			{query.saved ? <p className="ok">Changes have been saved.</p> : null}
 			{!service || !path ? (
-				<p className="error">
-					No editable config path is known for this service.
-				</p>
+				<p className="error">No editable config path is known for this service.</p>
 			) : contents === null ? (
 				<p className="error">Could not read {path}.</p>
 			) : (

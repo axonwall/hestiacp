@@ -13,11 +13,7 @@ import {
 	type PostRequestFn,
 } from "../src/webapp";
 
-const FIXTURES = join(
-	dirname(fileURLToPath(import.meta.url)),
-	"fixtures",
-	"bin",
-);
+const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "bin");
 const LOG = "/tmp/hestiang-test-p4-calls.log";
 const client = new HestiaClient({ binDir: FIXTURES, useSudo: false });
 
@@ -66,17 +62,9 @@ describe("JobStore / startJob", () => {
 	it("browses a restic snapshot (JSON-lines)", async () => {
 		const before = await calls();
 		const { info, files } = await client.listUserFilesRestic("demo", "snap001", "/home/demo");
-		expect((await calls()).at(-1)).toBe(
-			"v-list-user-files-restic demo snap001 /home/demo",
-		);
+		expect((await calls()).at(-1)).toBe("v-list-user-files-restic demo snap001 /home/demo");
 		expect(info.short_id).toBe("snap001");
-		expect(files.map((f) => f.name)).toEqual([
-			"demo",
-			"web",
-			"conf",
-			"readme.txt",
-			"link",
-		]);
+		expect(files.map((f) => f.name)).toEqual(["demo", "web", "conf", "readme.txt", "link"]);
 		expect(files[3].type).toBe("file");
 		expect(files[3].size).toBe(128);
 	});
@@ -152,9 +140,7 @@ describe("WebApp framework port", () => {
 		);
 		expect(lines[4]).not.toContain("db-secret");
 		expect(lines[5]).toBe("v-change-web-domain-tpl demo example.com wordpress");
-		expect(lines[6]).toBe(
-			"v-change-web-domain-backend-tpl demo example.com PHP-8_4",
-		);
+		expect(lines[6]).toBe("v-change-web-domain-backend-tpl demo example.com PHP-8_4");
 		expect(lines[7]).toBe("v-add-user-wp-cli demo yes");
 		expect(lines[8]).toMatch(
 			/^v-run-cli-cmd demo \/usr\/bin\/php8\.4 \/home\/demo\/\.wp-cli\/wp config create --dbname=demo_wp --dbuser=demo_wp --dbpass=db-secret --dbhost=localhost --dbprefix=wp_[A-Za-z0-9]{5}_ --dbcharset=utf8mb4 --locale=en_US --path=\/home\/demo\/web\/example\.com\/public_html$/,
@@ -205,9 +191,7 @@ describe("WebApp framework port", () => {
 			"v-delete-fs-file demo /home/demo/web/example.com/public_html/dokuwiki-stable.tgz",
 		);
 		expect(lines[5]).toBe("v-change-web-domain-tpl demo example.com dokuwiki");
-		expect(lines[6]).toBe(
-			"v-change-web-domain-backend-tpl demo example.com PHP-8_4",
-		);
+		expect(lines[6]).toBe("v-change-web-domain-backend-tpl demo example.com PHP-8_4");
 		expect(lines[7]).toBe(
 			"v-move-fs-file demo /home/demo/web/example.com/public_html/.htaccess.dist /home/demo/web/example.com/public_html/.htaccess",
 		);
@@ -234,7 +218,7 @@ describe("WebApp framework port", () => {
 					domain: "example.com",
 					docroot: "/home/demo/web/example.com/public_html",
 					url: "https://example.com",
-				ssl: true,
+					ssl: true,
 					database: { create: false, name: "", user: "", password: "", host: "" },
 				},
 				{ php_version: "8.4" },

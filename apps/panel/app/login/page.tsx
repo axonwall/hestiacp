@@ -22,20 +22,12 @@ export default async function LoginPage({
 			</a>
 			<form action={loginAction}>
 				<h1 className="login-title">{t("Welcome to %s", "HestiaCP")}</h1>
-				{params.error ? (
-					<p className="error">{t("Invalid username or password")}</p>
-				) : null}
+				{params.error ? <p className="error">{t("Invalid username or password")}</p> : null}
 				<div className="u-mb20">
 					<label htmlFor="user" className="form-label">
 						{t("Username")}
 					</label>
-					<input
-						id="user"
-						name="user"
-						className="form-control"
-						autoComplete="username"
-						required
-					/>
+					<input id="user" name="user" className="form-control" autoComplete="username" required />
 				</div>
 				<div className="u-mb20">
 					<label htmlFor="secret" className="form-label">

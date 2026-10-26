@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-user-log (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "1": {
         "DATE": "2026-10-22",

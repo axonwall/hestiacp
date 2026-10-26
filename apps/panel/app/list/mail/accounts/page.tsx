@@ -1,10 +1,4 @@
-import {
-	effectiveUser,
-	getT,
-	hestia,
-	loadRows,
-	requireSession,
-} from "@/lib/panel";
+import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
 import Link from "next/link";
 import { ListView } from "@/components/ListView";
 import { RowAction, RowActionButton } from "@/components/RowAction";
@@ -49,7 +43,11 @@ export default async function Page({
 			]}
 			rowActions={(key, row) => (
 				<>
-					<RowAction href={`/edit/mail/account?domain=${encodeURIComponent(domain)}&account=${encodeURIComponent(key)}`} title={t("Edit")} icon="fa-pencil icon-orange" />
+					<RowAction
+						href={`/edit/mail/account?domain=${encodeURIComponent(domain)}&account=${encodeURIComponent(key)}`}
+						title={t("Edit")}
+						icon="fa-pencil icon-orange"
+					/>
 					<form action={toggleMailAccountAction} style={{ display: "inline" }}>
 						<input type="hidden" name="token" value={token} />
 						<input type="hidden" name="domain" value={domain} />
@@ -59,15 +57,28 @@ export default async function Page({
 							name="op"
 							value={row.SUSPENDED === "yes" ? "unsuspend" : "suspend"}
 						/>
-						<RowActionButton title={row.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")} icon={row.SUSPENDED === "yes" ? "fa-play icon-green" : "fa-pause icon-highlight"} />
+						<RowActionButton
+							title={row.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")}
+							icon={row.SUSPENDED === "yes" ? "fa-play icon-green" : "fa-pause icon-highlight"}
+						/>
 					</form>
-					<RowAction href={`/delete/mail/account?domain=${encodeURIComponent(domain)}&account=${encodeURIComponent(key)}`} title={t("Delete")} icon="fa-trash icon-red" />
+					<RowAction
+						href={`/delete/mail/account?domain=${encodeURIComponent(domain)}&account=${encodeURIComponent(key)}`}
+						title={t("Delete")}
+						icon="fa-trash icon-red"
+					/>
 				</>
 			)}
 		>
 			<p>
 				<a href="/list/mail">{t("Back")}</a> ·{" "}
-				<Link className="button button-secondary" href={`/add/mail/account?domain=${encodeURIComponent(domain)}`}><i className="fas fa-circle-plus icon-green"></i>{t("Add Mail Account")}</Link>
+				<Link
+					className="button button-secondary"
+					href={`/add/mail/account?domain=${encodeURIComponent(domain)}`}
+				>
+					<i className="fas fa-circle-plus icon-green"></i>
+					{t("Add Mail Account")}
+				</Link>
 			</p>
 		</ListView>
 	);

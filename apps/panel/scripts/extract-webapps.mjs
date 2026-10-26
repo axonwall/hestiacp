@@ -107,7 +107,8 @@ for (const file of globSync(join(installersDir, "*/*Setup.php")).sort()) {
 	const configIdx = php.search(/\$(config)\s*=\s*\[/);
 	const configBlock = configIdx >= 0 ? balancedSlice(php, php.indexOf("[", configIdx)) : "";
 	const formIdx = configBlock.search(/["']form["']\s*=>\s*\[/);
-	const formBlock = formIdx >= 0 ? balancedSlice(configBlock, configBlock.indexOf("[", formIdx)) : "[]";
+	const formBlock =
+		formIdx >= 0 ? balancedSlice(configBlock, configBlock.indexOf("[", formIdx)) : "[]";
 	catalog.push({
 		name: stringField(infoBlock, "name"),
 		group: stringField(infoBlock, "group"),

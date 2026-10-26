@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-databases (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "demo_main": {
         "DATABASE": "demo_main",

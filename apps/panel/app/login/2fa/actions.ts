@@ -2,13 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import {
-	buildFullSessionData,
-	clientIp,
-	getSession,
-	hestia,
-	sessions,
-} from "@/lib/panel";
+import { buildFullSessionData, clientIp, getSession, hestia, sessions } from "@/lib/panel";
 
 /**
  * Login action, step 2 (TOTP code), for sessions in the pending state
@@ -53,12 +47,6 @@ export async function twofaAction(formData: FormData): Promise<void> {
 
 	const { data } = await buildFullSessionData(pendingUser, ip);
 	await sessions.set(session.id, data);
-	await hestia.logUserLogin(
-		pendingUser,
-		ip,
-		"success",
-		String(data.token ?? ""),
-		userAgent,
-	);
+	await hestia.logUserLogin(pendingUser, ip, "success", String(data.token ?? ""), userAgent);
 	redirect("/users");
 }

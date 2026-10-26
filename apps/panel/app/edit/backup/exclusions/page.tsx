@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { effectiveUser, getT, hestia, requireSession } from "@/lib/panel";
-import {
-	deleteBackupExclusionsAction,
-	saveBackupExclusionsAction,
-} from "./actions";
+import { deleteBackupExclusionsAction, saveBackupExclusionsAction } from "./actions";
 
 const SYSTEMS = ["WEB", "DNS", "MAIL", "DB", "CRON", "USER"] as const;
 
@@ -31,7 +28,8 @@ export default async function Page({
 				{SYSTEMS.map((system) => (
 					<div key={system}>
 						<label htmlFor={`ex-${system}`}>{system}</label>
-						<textarea className="form-control"
+						<textarea
+							className="form-control"
 							id={`ex-${system}`}
 							name={system}
 							rows={3}

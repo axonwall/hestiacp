@@ -1,16 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 function splitList(raw: string): string[] {
-	return raw.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+	return raw
+		.split(/[\s,]+/)
+		.map((s) => s.trim())
+		.filter(Boolean);
 }
 
 /** Create a mail account (web/add/mail, account form): the secret is
@@ -22,7 +19,9 @@ export async function addMailAccountAction(formData: FormData): Promise<void> {
 	if (!csrfValid(session, formData)) redirect(`${back}?error=csrf`);
 	const user = effectiveUser(session);
 	const domain = String(formData.get("domain") ?? "");
-	const account = String(formData.get("account") ?? "").trim().toLowerCase();
+	const account = String(formData.get("account") ?? "")
+		.trim()
+		.toLowerCase();
 	const secret = String(formData.get("secret") ?? "");
 	if (!domain || !account || !secret) redirect(`${back}?error=missing`);
 	try {
@@ -49,7 +48,5 @@ export async function addMailAccountAction(formData: FormData): Promise<void> {
 	} catch (error) {
 		redirect(`${back}?error=${encodeURIComponent(errorMessage(error))}`);
 	}
-	redirect(
-		`/list/mail/accounts?domain=${encodeURIComponent(domain)}&saved=1`,
-	);
+	redirect(`/list/mail/accounts?domain=${encodeURIComponent(domain)}&saved=1`);
 }

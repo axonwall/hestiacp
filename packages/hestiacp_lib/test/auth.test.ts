@@ -5,11 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { HestiaClient } from "../src/client";
 import type { HestiaConfig } from "../src/config";
 
-const fixturesBin = join(
-	dirname(fileURLToPath(import.meta.url)),
-	"fixtures",
-	"bin",
-);
+const fixturesBin = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "bin");
 const LOG = "/tmp/hestiang-test-auth-calls.log";
 
 const client = new HestiaClient({
@@ -49,12 +45,7 @@ describe("two-factor authentication", () => {
 
 describe("audit logging", () => {
 	it("logAction formats type/category/message as separate args", async () => {
-		await client.logAction(
-			"admin",
-			"Info",
-			"Security",
-			"Logged in as another user (User: demo)",
-		);
+		await client.logAction("admin", "Info", "Security", "Logged in as another user (User: demo)");
 		const log = await readFile(LOG, "utf8");
 		expect(log).toContain(
 			"v-log-action admin Info Security Logged in as another user (User: demo)",

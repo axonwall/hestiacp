@@ -65,13 +65,8 @@ for (const lang of langs) {
 	} catch {
 		continue; // directory without a catalog (e.g. tooling dirs)
 	}
-	const sorted = Object.fromEntries(
-		Object.entries(dict).sort(([a], [b]) => (a < b ? -1 : 1)),
-	);
-	await writeFile(
-		join(outDir, `${lang}.json`),
-		`${JSON.stringify(sorted, null, "\t")}\n`,
-	);
+	const sorted = Object.fromEntries(Object.entries(dict).sort(([a], [b]) => (a < b ? -1 : 1)));
+	await writeFile(join(outDir, `${lang}.json`), `${JSON.stringify(sorted, null, "\t")}\n`);
 	total += Object.keys(sorted).length;
 	console.log(`${lang}: ${Object.keys(sorted).length} strings`);
 }

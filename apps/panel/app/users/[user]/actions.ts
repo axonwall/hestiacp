@@ -2,12 +2,7 @@
 
 import { redirect } from "next/navigation";
 import type { HestiaUser } from "@hestiacp/lib";
-import {
-	csrfValid,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /**
  * Full user edit (web/edit/user). Mirrors the PHP discipline: one command
@@ -45,13 +40,9 @@ export async function editUserAction(formData: FormData): Promise<void> {
 	const get = (name: string) => String(formData.get(name) ?? "").trim();
 	const steps: Array<() => Promise<void>> = [];
 
-	const fullName = [get("firstName"), get("lastName")]
-		.filter(Boolean)
-		.join(" ");
+	const fullName = [get("firstName"), get("lastName")].filter(Boolean).join(" ");
 	if (fullName && fullName !== record.NAME) {
-		steps.push(() =>
-			hestia.changeUserName(user, get("firstName"), get("lastName") || undefined),
-		);
+		steps.push(() => hestia.changeUserName(user, get("firstName"), get("lastName") || undefined));
 	}
 	const email = get("email");
 	if (email && email !== (record.CONTACT ?? "")) {
@@ -93,9 +84,7 @@ export async function editUserAction(formData: FormData): Promise<void> {
 	}
 	const loginDisabled = formData.get("loginDisabled") === "yes" ? "yes" : "no";
 	if (loginDisabled !== (record.LOGIN_DISABLED ?? "no")) {
-		steps.push(() =>
-			hestia.changeUserConfigValue(user, "LOGIN_DISABLED", loginDisabled),
-		);
+		steps.push(() => hestia.changeUserConfigValue(user, "LOGIN_DISABLED", loginDisabled));
 	}
 
 	try {
@@ -116,9 +105,7 @@ function canManage2fa(
 ): boolean {
 	const look = String(session.data.look ?? "");
 	return (
-		(session.data.userContext === "admin" && !look) ||
-		session.data.user === user ||
-		look === user
+		(session.data.userContext === "admin" && !look) || session.data.user === user || look === user
 	);
 }
 

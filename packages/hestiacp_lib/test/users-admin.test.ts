@@ -5,11 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { HestiaClient, serializeUserPackage } from "../src/client";
 import type { HestiaConfig } from "../src/config";
 
-const fixturesBin = join(
-	dirname(fileURLToPath(import.meta.url)),
-	"fixtures",
-	"bin",
-);
+const fixturesBin = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "bin");
 const LOG = "/tmp/hestiang-test-admin-calls.log";
 
 const config: HestiaConfig = {
@@ -47,9 +43,7 @@ describe("user administration", () => {
 			loginDisabled: true,
 		});
 		const log = await callLog();
-		const addLine = log
-			.split("\n")
-			.find((l) => l.startsWith("v-add-user newhire"));
+		const addLine = log.split("\n").find((l) => l.startsWith("v-add-user newhire"));
 		expect(addLine).toBeDefined();
 		// The second argument is a /tmp path, and the secret never appears.
 		expect(addLine).toMatch(/v-add-user newhire \/tmp\/\S+ hire@example\.com small New Hire/);
@@ -57,9 +51,7 @@ describe("user administration", () => {
 		// Follow-up commands ran, in PHP's order.
 		expect(log).toContain("v-change-user-language newhire de");
 		expect(log).toContain("v-change-user-role newhire user");
-		expect(log).toContain(
-			"v-change-user-config-value newhire LOGIN_DISABLED yes",
-		);
+		expect(log).toContain("v-change-user-config-value newhire LOGIN_DISABLED yes");
 	});
 
 	it("changeUserPassword stages the secret the same way", async () => {
@@ -80,14 +72,8 @@ describe("user administration", () => {
 	});
 
 	it("changeUserNs passes each nameserver as its own argument", async () => {
-		await client.changeUserNs("demo", [
-			"ns1.example.com",
-			" ns2.example.com ",
-			"",
-		]);
-		expect(await callLog()).toContain(
-			"v-change-user-ns demo ns1.example.com ns2.example.com",
-		);
+		await client.changeUserNs("demo", ["ns1.example.com", " ns2.example.com ", ""]);
+		expect(await callLog()).toContain("v-change-user-ns demo ns1.example.com ns2.example.com");
 	});
 });
 
@@ -115,9 +101,7 @@ describe("packages", () => {
 	});
 
 	it("serializeUserPackage rejects unquotable values", () => {
-		expect(() =>
-			serializeUserPackage({ WEB_TEMPLATE: "x'; rm -rf" }),
-		).toThrow(/illegal character/);
+		expect(() => serializeUserPackage({ WEB_TEMPLATE: "x'; rm -rf" })).toThrow(/illegal character/);
 	});
 
 	it("addUserPackage stages a serialized definition", async () => {
@@ -143,16 +127,7 @@ describe("packages", () => {
 describe("system enumerations", () => {
 	it("normalizes map-shaped and array-shaped lists", async () => {
 		expect(await client.listSysLanguages()).toEqual(["en", "de", "fr"]);
-		expect(await client.listSysShells()).toEqual([
-			"bash",
-			"nologin",
-			"rssh",
-			"rbash",
-		]);
-		expect(await client.listSysThemes()).toEqual([
-			"default",
-			"dark",
-			"vestia",
-		]);
+		expect(await client.listSysShells()).toEqual(["bash", "nologin", "rssh", "rbash"]);
+		expect(await client.listSysThemes()).toEqual(["default", "dark", "vestia"]);
 	});
 });

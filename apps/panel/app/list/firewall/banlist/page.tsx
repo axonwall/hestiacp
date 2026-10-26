@@ -1,10 +1,7 @@
 import { getT, hestia, loadRows, requireAdmin } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
 import { RowActionButton } from "@/components/RowAction";
-import {
-	addFirewallBanAction,
-	deleteFirewallBanAction,
-} from "../actions";
+import { addFirewallBanAction, deleteFirewallBanAction } from "../actions";
 
 export default async function Page() {
 	const session = await requireAdmin();

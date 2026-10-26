@@ -130,12 +130,7 @@ export async function handleApiRequest(
 		// success is 204 No Content; failures take the mapped HTTP code.
 		const body = result.stdout.trim();
 		return {
-			httpStatus:
-				result.code > 0
-					? exitCodeToHttpCode(result.code)
-					: body === ""
-						? 204
-						: 200,
+			httpStatus: result.code > 0 ? exitCodeToHttpCode(result.code) : body === "" ? 204 : 200,
 			exitCode: result.code,
 			body,
 		};
@@ -180,14 +175,7 @@ export async function handleApiRequest(
 				? fail(E_INVALID, "Command not provided")
 				: fail(E_INVALID, `${cmd} command invalid`);
 		}
-		const check = await client.raw(
-			"v-check-access-key",
-			keyId,
-			secretKey,
-			cmd,
-			ip,
-			"json",
-		);
+		const check = await client.raw("v-check-access-key", keyId, secretKey, cmd, ip, "json");
 		if (check.code !== 0) {
 			// PHP passes v-check-access-key's stdout through as the
 			// error message (its errors proper go to stderr, so this
@@ -207,10 +195,7 @@ export async function handleApiRequest(
 		const userArgPosition = Number(keyData.USER_ARG_POSITION ?? 0) || 0;
 		if (keyUser !== rootUser && userArgPosition > 0) {
 			if (args[userArgPosition - 1] !== keyUser) {
-				return fail(
-					E_FORBIDDEN,
-					`Key ${keyId} - the "user" argument doesn't match the key's user`,
-				);
+				return fail(E_FORBIDDEN, `Key ${keyId} - the "user" argument doesn't match the key's user`);
 			}
 		}
 		return dispatch("accesskey");
@@ -232,11 +217,7 @@ export async function handleApiRequest(
 		if (data.user !== rootUser) {
 			return fail(E_FORBIDDEN, "authentication failed");
 		}
-		const ok = await client.verifyUserPassword(
-			rootUser,
-			data.password ?? "",
-			ip,
-		);
+		const ok = await client.verifyUserPassword(rootUser, data.password ?? "", ip);
 		if (!ok) return fail(E_PASSWORD, "authentication failed");
 	}
 	return dispatch("legacy");

@@ -10,12 +10,12 @@ both directions.
 
 ## What ships where
 
-| Piece | Source | Target on host |
-|---|---|---|
-| Panel bundle | `apps/panel/deploy/build-bundle.sh` | `/usr/local/hestia/web-next/` |
-| Service | `deploy/hestiang-panel.service` | `/etc/systemd/system/` |
-| Environment | `deploy/hestiang-panel.env` | `/usr/local/hestia/web-next/` |
-| Vhost | `deploy/nginx-vhost.conf` | replaces the `server {}` block in Hestia nginx's `nginx.conf` |
+| Piece        | Source                              | Target on host                                                |
+| ------------ | ----------------------------------- | ------------------------------------------------------------- |
+| Panel bundle | `apps/panel/deploy/build-bundle.sh` | `/usr/local/hestia/web-next/`                                 |
+| Service      | `deploy/hestiang-panel.service`     | `/etc/systemd/system/`                                        |
+| Environment  | `deploy/hestiang-panel.env`         | `/usr/local/hestia/web-next/`                                 |
+| Vhost        | `deploy/nginx-vhost.conf`           | replaces the `server {}` block in Hestia nginx's `nginx.conf` |
 
 Runtime: the installer's own Node.js — `hst-install` already
 installs **Node 24 LTS from NodeSource** for the web terminal
@@ -49,13 +49,13 @@ with both logs kept side by side. That is the D10 verification path.
 ## Install (host, root)
 
 ```sh
-tar -xzf hestiang-panel-<version>.tar.gz -C /usr/local/hestia/
-mv /usr/local/hestia/hestiang-panel-<version> /usr/local/hestia/web-next
+tar -xzf hestiang-panel- -C /usr/local/hestia/ < version > .tar.gz
+mv /usr/local/hestia/hestiang-panel- < version > /usr/local/hestia/web-next
 install -d -o hestiaweb -g hestiaweb /usr/local/hestia/data/jobs
 cp /usr/local/hestia/web-next/hestiang-panel.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable --now hestiang-panel
-curl -s http://127.0.0.1:8093/api/health   # {"status":"ok", ...}
+curl -s http://127.0.0.1:8093/api/health # {"status":"ok", ...}
 ```
 
 ## Flip

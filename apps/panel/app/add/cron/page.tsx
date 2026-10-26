@@ -28,7 +28,9 @@ export default async function Page({
 				<input className="form-control" id="wday" name="wday" required placeholder="*" />
 				<label htmlFor="cmd">{t("Command")}</label>
 				<input className="form-control" id="cmd" name="cmd" required />
-				<button type="submit" className="button">{t("Add")}</button>
+				<button type="submit" className="button">
+					{t("Add")}
+				</button>
 			</form>
 		</div>
 	);

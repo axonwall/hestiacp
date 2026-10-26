@@ -24,8 +24,7 @@ export default async function DeleteResticPage({
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="snapshot" value={snapshot} />
 				<label>
-					<input type="checkbox" name="confirm" value="yes" /> Yes, delete
-					this snapshot
+					<input type="checkbox" name="confirm" value="yes" /> Yes, delete this snapshot
 				</label>
 				<button type="submit" className="button button-danger">
 					{t("Delete")}

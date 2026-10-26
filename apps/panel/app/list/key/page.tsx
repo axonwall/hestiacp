@@ -11,7 +11,7 @@ export default async function Page() {
 			result={result}
 			columns={[
 				{ key: "ID", label: t("ID") },
-				{ key: "KEY", label: t("Key"), format: (v) => (v.length > 32 ? `${v.slice(0, 32)}…` : v) }
+				{ key: "KEY", label: t("Key"), format: (v) => (v.length > 32 ? `${v.slice(0, 32)}…` : v) },
 			]}
 		></ListView>
 	);

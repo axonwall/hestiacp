@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-firewall-ipset (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "blocklist": {
         "SOURCE": "https://example.test/blocklist.ipset",

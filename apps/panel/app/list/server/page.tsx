@@ -33,14 +33,18 @@ export default async function Page() {
 				result={services}
 				columns={[
 					{ key: "SERVICE", label: t("Services") },
-				{ key: "SYSTEM", label: t("Description") },
+					{ key: "SYSTEM", label: t("Description") },
 					{ key: "STATE", label: t("Status") },
 					{ key: "CPU", label: "CPU %" },
 					{ key: "MEM", label: `${t("Memory")} MB` },
 				]}
 				rowActions={(key, row) => (
 					<>
-						<RowAction href={`/edit/server/service?service=${encodeURIComponent(key)}`} title={t("Config")} icon="fa-gear icon-maroon" />{" "}
+						<RowAction
+							href={`/edit/server/service?service=${encodeURIComponent(key)}`}
+							title={t("Config")}
+							icon="fa-gear icon-maroon"
+						/>{" "}
 						{row.STATE === "running" ? (
 							<>
 								<form action={serviceControlAction} style={{ display: "inline" }}>
@@ -67,7 +71,9 @@ export default async function Page() {
 					</>
 				)}
 			>
-				<Link className="button button-secondary" href="/edit/server">{t("Server settings")}</Link>
+				<Link className="button button-secondary" href="/edit/server">
+					{t("Server settings")}
+				</Link>
 			</ListView>
 		</div>
 	);

@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /** Schedule a backup of the effective user's account (v-schedule-user-backup). */
 export async function scheduleBackupAction(formData: FormData): Promise<void> {

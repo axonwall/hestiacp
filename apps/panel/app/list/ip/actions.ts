@@ -1,12 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	errorMessage,
-	hestia,
-	requireAdmin,
-} from "@/lib/panel";
+import { csrfValid, errorMessage, hestia, requireAdmin } from "@/lib/panel";
 
 export async function addSysIpAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();

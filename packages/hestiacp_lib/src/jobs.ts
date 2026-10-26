@@ -30,10 +30,7 @@ export class JobStore {
 		return join(this.dir, `${id}.json`);
 	}
 
-	async create(
-		name: string,
-		meta?: Record<string, string>,
-	): Promise<JobRecord> {
+	async create(name: string, meta?: Record<string, string>): Promise<JobRecord> {
 		await mkdir(this.dir, { recursive: true });
 		const record: JobRecord = {
 			id: randomBytes(8).toString("hex"),
@@ -49,10 +46,7 @@ export class JobStore {
 	async update(id: string, patch: Partial<JobRecord>): Promise<void> {
 		const current = await this.get(id);
 		if (!current) return;
-		await writeFile(
-			this.path(id),
-			JSON.stringify({ ...current, ...patch }, null, 2),
-		);
+		await writeFile(this.path(id), JSON.stringify({ ...current, ...patch }, null, 2));
 	}
 
 	async get(id: string): Promise<JobRecord | null> {

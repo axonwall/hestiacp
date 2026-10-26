@@ -42,19 +42,13 @@ export default async function PackageDetailPage({
 			<div className="card">
 				<form action={editPackageAction}>
 					<input type="hidden" name="name" value={packageName} />
-					<PackageFormFields
-						values={record}
-						token={token}
-						submitLabel="Save package"
-					/>
+					<PackageFormFields values={record} token={token} submitLabel="Save package" />
 				</form>
 			</div>
 			<p>
 				<Link href="/packages">Back to packages</Link>
 				{" · "}
-				<Link href={`/packages/${encodeURIComponent(packageName)}/delete`}>
-					Delete package
-				</Link>
+				<Link href={`/packages/${encodeURIComponent(packageName)}/delete`}>Delete package</Link>
 			</p>
 		</div>
 	);

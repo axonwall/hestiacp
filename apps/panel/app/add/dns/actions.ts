@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 function back(path: string, error?: string): never {
 	redirect(error ? `${path}?error=${encodeURIComponent(error)}` : path);
@@ -19,11 +13,11 @@ export async function addDnsDomainAction(formData: FormData): Promise<void> {
 	const session = await requireSession();
 	if (!csrfValid(session, formData)) redirect("/add/dns?error=csrf");
 	const user = effectiveUser(session);
-	const domain = String(formData.get("domain") ?? "").trim().toLowerCase();
+	const domain = String(formData.get("domain") ?? "")
+		.trim()
+		.toLowerCase();
 	const ip = String(formData.get("ip") ?? "");
-	const ns = [1, 2, 3, 4, 5, 6, 7, 8].map((i) =>
-		String(formData.get(`ns${i}`) ?? "").trim(),
-	);
+	const ns = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => String(formData.get(`ns${i}`) ?? "").trim());
 	if (!domain || !ip) redirect("/add/dns?error=missing");
 	try {
 		await hestia.addDnsDomain(user, domain, ip, ns, formData.get("dnssec") === "yes");

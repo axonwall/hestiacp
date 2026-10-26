@@ -13,8 +13,8 @@ From the repo root:
 ```sh
 pnpm install --filter @hestiacp/panel --filter @hestiacp/lib
 HESTIA_BIN="$PWD/packages/hestiacp_lib/test/fixtures/bin" \
-HESTIA_USE_SUDO=0 \
-pnpm --filter @hestiacp/panel dev
+	HESTIA_USE_SUDO=0 \
+	pnpm --filter @hestiacp/panel dev
 ```
 
 Open http://localhost:3000 — login is **admin / spike-fixture-secret**
@@ -29,10 +29,10 @@ Against a real install, omit both variables: the defaults are
 ## Verify
 
 ```sh
-pnpm --filter @hestiacp/lib test        # client + session store, against fixtures
+pnpm --filter @hestiacp/lib test # client + session store, against fixtures
 pnpm --filter @hestiacp/lib typecheck
 pnpm --filter @hestiacp/panel typecheck
-pnpm --filter @hestiacp/panel build     # production build is the gate (D7)
+pnpm --filter @hestiacp/panel build # production build is the gate (D7)
 ```
 
 ## Phase 1 shell (2026-10-23)
@@ -72,7 +72,7 @@ On top of the spike slice, the production shell pieces are in:
 ## Phase 1 auth completion (2026-10-23)
 
 - **2FA (TOTP)**: accounts with TWOFA set get a two-step login — the
-  password step parks a *pending* session (no credentials in it; PHP
+  password step parks a _pending_ session (no credentials in it; PHP
   parks the password itself, we don't), the code step verifies via
   `v-check-user-2fa` and promotes the session in place. Enable/disable
   lives on the user page (`v-add-user-2fa` / `v-delete-user-2fa`); the
@@ -219,7 +219,7 @@ candidates for a later settings tranche.
 
 - **WebApp framework port** (web/src, the hidden second PHP layer):
   the lib gains HestiaAppContext (the HestiaApp primitives —
-  v-*-fs-* file ops, v-run-cli-cmd runners for wp-cli/composer/php,
+  v-_-fs-_ file ops, v-run-cli-cmd runners for wp-cli/composer/php,
   the wget download helper, database creation with the limit check,
   template changes, sendPostRequest resolved to localhost), a
   BaseSetup::install port (resources → database → templates → app

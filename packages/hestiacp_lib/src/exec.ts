@@ -42,9 +42,7 @@ export function runHestiaCommand(
 				if (error && typeof error.code !== "number") {
 					// Spawn failure (missing binary, EACCES, timeout kill) — not a
 					// Hestia exit code. Surface it as an exception, not a result.
-					reject(
-						new Error(`Failed to run ${command}: ${error.message}`),
-					);
+					reject(new Error(`Failed to run ${command}: ${error.message}`));
 					return;
 				}
 				resolve({

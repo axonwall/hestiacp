@@ -81,12 +81,6 @@ export async function loginAction(formData: FormData): Promise<void> {
 	const { data } = await buildFullSessionData(user, ip);
 	const id = await sessions.create(data);
 	jar.set(SESSION_COOKIE, id, cookieOpts);
-	await hestia.logUserLogin(
-		user,
-		ip,
-		"success",
-		String(data.token ?? ""),
-		userAgent,
-	);
+	await hestia.logUserLogin(user, ip, "success", String(data.token ?? ""), userAgent);
 	redirect("/users");
 }

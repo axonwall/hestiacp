@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /** Delete delete mail domain (web/delete/mail) after the confirm page's checkbox. */
 export async function deleteMailDomainAction(formData: FormData): Promise<void> {

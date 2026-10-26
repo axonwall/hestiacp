@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-firewall-ban (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "198.51.100.7": {
         "IP": "198.51.100.7",

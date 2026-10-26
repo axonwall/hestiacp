@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 function splitAliases(raw: string): string[] {
 	return raw
@@ -63,10 +57,7 @@ export async function editWebDomainAction(formData: FormData): Promise<void> {
 		} else if (proxyTpl && !current.PROXY) {
 			await hestia.addWebDomainProxy(user, domain, proxyTpl, proxyExt);
 			changed = true;
-		} else if (
-			proxyTpl &&
-			(proxyTpl !== current.PROXY || proxyExt !== (current.PROXY_EXT ?? ""))
-		) {
+		} else if (proxyTpl && (proxyTpl !== current.PROXY || proxyExt !== (current.PROXY_EXT ?? ""))) {
 			await hestia.changeWebDomainProxyTpl(user, domain, proxyTpl, proxyExt);
 			changed = true;
 		}
@@ -109,8 +100,7 @@ export async function editWebDomainAction(formData: FormData): Promise<void> {
 			await hestia.deleteWebDomainSsl(user, domain);
 			changed = true;
 		}
-		const sslOn =
-			current.SSL === "yes" || (wantLe && current.LETSENCRYPT !== "yes");
+		const sslOn = current.SSL === "yes" || (wantLe && current.LETSENCRYPT !== "yes");
 		if (sslOn) {
 			const force = formData.get("sslForce") === "yes";
 			if (force !== (current.SSL_FORCE === "yes")) {
@@ -133,11 +123,7 @@ export async function editWebDomainAction(formData: FormData): Promise<void> {
 		} else if (!cache && current.FASTCGI_CACHE === "yes") {
 			await hestia.deleteFastcgiCache(user, domain);
 			changed = true;
-		} else if (
-			cache &&
-			duration &&
-			duration !== (current.FASTCGI_DURATION ?? "")
-		) {
+		} else if (cache && duration && duration !== (current.FASTCGI_DURATION ?? "")) {
 			await hestia.deleteFastcgiCache(user, domain);
 			await hestia.addFastcgiCache(user, domain, duration);
 			changed = true;

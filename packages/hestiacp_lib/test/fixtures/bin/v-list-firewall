@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-firewall (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "1": {
         "ACTION": "ACCEPT",

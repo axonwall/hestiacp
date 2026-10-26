@@ -19,8 +19,7 @@ export default async function UserDetailPage({
 	if (session.data.look && session.data.look !== username) {
 		redirect(`/users/${encodeURIComponent(String(session.data.look))}`);
 	}
-	const isAdmin =
-		session.data.userContext === "admin" && !session.data.look;
+	const isAdmin = session.data.userContext === "admin" && !session.data.look;
 	const token = String(session.data.token ?? "");
 
 	let record: HestiaUser;
@@ -83,18 +82,25 @@ export default async function UserDetailPage({
 					<input type="hidden" name="user" value={username} />
 					<input type="hidden" name="token" value={token} />
 					<label htmlFor="firstName">First name</label>
-					<input className="form-control" id="firstName" name="firstName" defaultValue={firstName} />
+					<input
+						className="form-control"
+						id="firstName"
+						name="firstName"
+						defaultValue={firstName}
+					/>
 					<label htmlFor="lastName">Last name</label>
 					<input className="form-control" id="lastName" name="lastName" defaultValue={lastName} />
 					<label htmlFor="email">Email</label>
-					<input className="form-control"
+					<input
+						className="form-control"
 						id="email"
 						name="email"
 						type="email"
 						defaultValue={record.CONTACT ?? ""}
 					/>
 					<label htmlFor="secret">New password (leave empty to keep)</label>
-					<input className="form-control"
+					<input
+						className="form-control"
 						id="secret"
 						name="secret"
 						type="password"
@@ -103,7 +109,12 @@ export default async function UserDetailPage({
 					{isAdmin ? (
 						<>
 							<label htmlFor="package">Package</label>
-							<select className="form-select" id="package" name="package" defaultValue={record.PACKAGE}>
+							<select
+								className="form-select"
+								id="package"
+								name="package"
+								defaultValue={record.PACKAGE}
+							>
 								{Object.keys(packages)
 									.sort()
 									.map((name) => (
@@ -128,7 +139,12 @@ export default async function UserDetailPage({
 						</>
 					) : null}
 					<label htmlFor="language">Language</label>
-					<select className="form-select" id="language" name="language" defaultValue={record.LANGUAGE}>
+					<select
+						className="form-select"
+						id="language"
+						name="language"
+						defaultValue={record.LANGUAGE}
+					>
 						{languages.map((lang) => (
 							<option key={lang} value={lang}>
 								{lang}
@@ -136,7 +152,12 @@ export default async function UserDetailPage({
 						))}
 					</select>
 					<label htmlFor="theme">Theme</label>
-					<select className="form-select" id="theme" name="theme" defaultValue={record.THEME ?? "default"}>
+					<select
+						className="form-select"
+						id="theme"
+						name="theme"
+						defaultValue={record.THEME ?? "default"}
+					>
 						{themes.map((theme) => (
 							<option key={theme} value={theme}>
 								{theme}
@@ -166,7 +187,12 @@ export default async function UserDetailPage({
 						<p>
 							2FA is <strong>enabled</strong> for this account. Secret:
 						</p>
-						<input className="form-control" readOnly value={record.TWOFA} style={{ width: "100%" }} />
+						<input
+							className="form-control"
+							readOnly
+							value={record.TWOFA}
+							style={{ width: "100%" }}
+						/>
 						{record.QRCODE ? (
 							<p>
 								{/* QRCODE is a data-URI PNG produced by Hestia's own 2fa helper */}
@@ -195,9 +221,7 @@ export default async function UserDetailPage({
 				{isAdmin ? (
 					<>
 						{" · "}
-						<Link href={`/users/${encodeURIComponent(username)}/delete`}>
-							Delete user
-						</Link>
+						<Link href={`/users/${encodeURIComponent(username)}/delete`}>Delete user</Link>
 					</>
 				) : null}
 			</p>

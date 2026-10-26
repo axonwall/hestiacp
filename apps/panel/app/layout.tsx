@@ -19,8 +19,7 @@ function humanize(mb: number): [string, string] {
 		value /= 1024;
 		unit++;
 	}
-	const text =
-		value >= 100 ? String(Math.round(value)) : String(Math.round(value * 10) / 10);
+	const text = value >= 100 ? String(Math.round(value)) : String(Math.round(value * 10) / 10);
 	return [text, units[unit]];
 }
 
@@ -38,11 +37,7 @@ function quotaLine(
 	return `${t(label)}: ${u} / ${limit} (${pct}%)`;
 }
 
-export default async function RootLayout({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
 	const session = await getSession();
 	const t = await getT();
 
@@ -88,8 +83,7 @@ export default async function RootLayout({
 	const record = await hestia.listUser(user).catch(() => null);
 
 	const showFileManager = data.FILE_MANAGER === "true";
-	const showTerminal =
-		data.WEB_TERMINAL === "true" && data.login_shell !== "nologin";
+	const showTerminal = data.WEB_TERMINAL === "true" && data.login_shell !== "nologin";
 
 	const menuItems: MainMenuItem[] = [];
 	if (isAdmin && !looking) {
@@ -158,9 +152,7 @@ export default async function RootLayout({
 			match: ["/list/db", "/add/db", "/edit/db"],
 			label: t("DB"),
 			icon: "fa-database",
-			stats: record
-				? [quotaLine(t, "Databases", record.U_DATABASES, record.DATABASES)]
-				: [],
+			stats: record ? [quotaLine(t, "Databases", record.U_DATABASES, record.DATABASES)] : [],
 			title: t("DB"),
 		});
 	}
@@ -170,9 +162,7 @@ export default async function RootLayout({
 			match: ["/list/cron", "/add/cron", "/edit/cron"],
 			label: t("CRON"),
 			icon: "fa-clock",
-			stats: record
-				? [quotaLine(t, "Jobs", record.U_CRON_JOBS, record.CRON_JOBS)]
-				: [],
+			stats: record ? [quotaLine(t, "Jobs", record.U_CRON_JOBS, record.CRON_JOBS)] : [],
 			title: t("Cron Jobs"),
 		});
 	}
@@ -182,9 +172,7 @@ export default async function RootLayout({
 			match: ["/list/backup"],
 			label: t("BACKUP"),
 			icon: "fa-file-zipper",
-			stats: record
-				? [quotaLine(t, "Backups", record.U_BACKUPS, record.BACKUPS)]
-				: [],
+			stats: record ? [quotaLine(t, "Backups", record.U_BACKUPS, record.BACKUPS)] : [],
 			title: t("Backups"),
 		});
 	}
@@ -286,7 +274,9 @@ export default async function RootLayout({
 													<li className="top-bar-menu-item">
 														<a className="top-bar-menu-link" href="/edit/server">
 															<i className="fas fa-gears"></i>
-															<span className="top-bar-menu-link-label">{t("Server settings")}</span>
+															<span className="top-bar-menu-link-label">
+																{t("Server settings")}
+															</span>
 														</a>
 													</li>
 												) : null}
@@ -315,7 +305,10 @@ export default async function RootLayout({
 												</li>
 												<li className="top-bar-menu-item">
 													<form action="/logout" method="post" className="top-bar-logout-form">
-														<button type="submit" className="top-bar-menu-link top-bar-menu-link-logout">
+														<button
+															type="submit"
+															className="top-bar-menu-link top-bar-menu-link-logout"
+														>
 															<i className="fas fa-right-from-bracket"></i>
 															<span className="top-bar-menu-link-label">{t("Log out")}</span>
 														</button>
@@ -331,9 +324,7 @@ export default async function RootLayout({
 					</header>
 					{looking ? (
 						<div className="impersonation-banner">
-							<span>
-								{t("Viewing as %s", user)}
-							</span>
+							<span>{t("Viewing as %s", user)}</span>
 							<form action={returnToAdminAction}>
 								<input type="hidden" name="token" value={String(data.token ?? "")} />
 								<button type="submit" className="link-button">
@@ -346,7 +337,12 @@ export default async function RootLayout({
 					<footer className="app-footer">
 						<div className="container">
 							<p>
-								<a href="https://hestiacp.com/" className="app-footer-link" target="_blank" rel="noopener">
+								<a
+									href="https://hestiacp.com/"
+									className="app-footer-link"
+									target="_blank"
+									rel="noopener"
+								>
 									Hestia Control Panel
 								</a>{" "}
 								v{String(data.VERSION ?? "")} · Next.js panel (HestiaNG)

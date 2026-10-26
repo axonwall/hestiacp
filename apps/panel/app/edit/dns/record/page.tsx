@@ -24,7 +24,9 @@ export default async function Page({
 			<div className="card">
 				<h1>{t("Edit DNS Record")}</h1>
 				<p className="error">{query.error ?? "Record not found."}</p>
-				<p><a href="/list/dns">{t("Back")}</a></p>
+				<p>
+					<a href="/list/dns">{t("Back")}</a>
+				</p>
 			</div>
 		);
 	}
@@ -44,18 +46,27 @@ export default async function Page({
 				<label htmlFor="type">{t("Type")}</label>
 				<select className="form-select" id="type" name="type" defaultValue={current.TYPE}>
 					{RECORD_TYPES.map((rt) => (
-						<option key={rt} value={rt}>{rt}</option>
+						<option key={rt} value={rt}>
+							{rt}
+						</option>
 					))}
 				</select>
 				<label htmlFor="value">{t("Value")}</label>
 				<input className="form-control" id="value" name="value" defaultValue={current.VALUE} />
 				<label htmlFor="priority">{t("Priority")}</label>
-				<input className="form-control" id="priority" name="priority" defaultValue={current.PRIORITY ?? ""} />
+				<input
+					className="form-control"
+					id="priority"
+					name="priority"
+					defaultValue={current.PRIORITY ?? ""}
+				/>
 				<label htmlFor="ttl">TTL</label>
 				<input className="form-control" id="ttl" name="ttl" defaultValue={current.TTL ?? ""} />
 				<label htmlFor="newId">{t("Record ID")}</label>
 				<input className="form-control" id="newId" name="newId" defaultValue={id} />
-				<button type="submit" className="button">{t("Save")}</button>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
 			</form>
 			<p>
 				<a href={`/edit/dns?domain=${encodeURIComponent(domain)}`}>{t("Back")}</a>

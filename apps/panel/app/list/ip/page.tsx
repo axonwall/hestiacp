@@ -22,12 +22,23 @@ export default async function Page() {
 			]}
 			rowActions={(key) => (
 				<>
-					<RowAction href={`/edit/ip?ip=${encodeURIComponent(key)}`} title={t("Edit")} icon="fa-pencil icon-orange" />
-					<RowAction href={`/delete/ip?ip=${encodeURIComponent(key)}`} title={t("Delete")} icon="fa-trash icon-red" />
+					<RowAction
+						href={`/edit/ip?ip=${encodeURIComponent(key)}`}
+						title={t("Edit")}
+						icon="fa-pencil icon-orange"
+					/>
+					<RowAction
+						href={`/delete/ip?ip=${encodeURIComponent(key)}`}
+						title={t("Delete")}
+						icon="fa-trash icon-red"
+					/>
 				</>
 			)}
 		>
-			<Link className="button button-secondary" href="/add/ip"><i className="fas fa-circle-plus icon-green"></i>{t("Add IP address")}</Link>
+			<Link className="button button-secondary" href="/add/ip">
+				<i className="fas fa-circle-plus icon-green"></i>
+				{t("Add IP address")}
+			</Link>
 		</ListView>
 	);
 }

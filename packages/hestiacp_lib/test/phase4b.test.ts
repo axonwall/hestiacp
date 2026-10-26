@@ -12,11 +12,7 @@ import {
 	type WebAppTarget,
 } from "../src/webapp";
 
-const FIXTURES = join(
-	dirname(fileURLToPath(import.meta.url)),
-	"fixtures",
-	"bin",
-);
+const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "bin");
 const LOG = "/tmp/hestiang-test-p4b-calls.log";
 const client = new HestiaClient({ binDir: FIXTURES, useSudo: false });
 const DOCROOT = "/home/demo/web/example.com/public_html";
@@ -151,22 +147,32 @@ describe("WebApp installer batch (all 22 ported)", () => {
 
 	it("ClassicPress: glob, wp config with cp_ prefix, XML-RPC off", async () => {
 		const { lines } = await runApp("ClassicPress");
-		expect(hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/ClassicPress-1.0/. ${DOCROOT}`)).toBe(true);
+		expect(
+			hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/ClassicPress-1.0/. ${DOCROOT}`),
+		).toBe(true);
 		expect(lines.some((l) => /--dbprefix=cp_[A-Za-z0-9]{5}_/.test(l))).toBe(true);
 		expect(hasLine(lines, "option update disable_xml_rpc 1")).toBe(true);
 	});
 
 	it("ConcreteCMS: c5:install via the extracted dir", async () => {
 		const { lines } = await runApp("ConcreteCMS");
-		expect(hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/concrete-cms-1.0/. ${DOCROOT}`)).toBe(true);
+		expect(
+			hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/concrete-cms-1.0/. ${DOCROOT}`),
+		).toBe(true);
 		expect(hasLine(lines, "concrete/bin/concrete c5:install")).toBe(true);
 	});
 
 	it("Dolibarr: conf perms 666 → posts → 400, versioned dir", async () => {
 		const { lines, posts } = await runApp("Dolibarr");
-		expect(hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/dolibarr-24.0.1/. ${DOCROOT}`)).toBe(true);
-		const i666 = lines.findIndex((l) => l.includes("v-change-fs-file-permission") && l.includes("666"));
-		const i400 = lines.findIndex((l) => l.includes("v-change-fs-file-permission") && l.includes("400"));
+		expect(hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/dolibarr-24.0.1/. ${DOCROOT}`)).toBe(
+			true,
+		);
+		const i666 = lines.findIndex(
+			(l) => l.includes("v-change-fs-file-permission") && l.includes("666"),
+		);
+		const i400 = lines.findIndex(
+			(l) => l.includes("v-change-fs-file-permission") && l.includes("400"),
+		);
 		expect(i666).toBeGreaterThanOrEqual(0);
 		expect(i400).toBeGreaterThan(i666);
 		expect(posts.map((p) => p.url)).toEqual([
@@ -180,7 +186,9 @@ describe("WebApp installer batch (all 22 ported)", () => {
 	it("Drupal: drush site-install with the mysql URL", async () => {
 		const { lines } = await runApp("Drupal");
 		expect(hasLine(lines, "drush/drush")).toBe(true);
-		expect(hasLine(lines, "--db-url=mysql://demo_app:db-secret@localhost:3306/demo_app")).toBe(true);
+		expect(hasLine(lines, "--db-url=mysql://demo_app:db-secret@localhost:3306/demo_app")).toBe(
+			true,
+		);
 		expect(hasLine(lines, "site-install standard")).toBe(true);
 	});
 
@@ -193,7 +201,9 @@ describe("WebApp installer batch (all 22 ported)", () => {
 
 	it("Grav: account yaml with a bcrypt hash, no database", async () => {
 		const { lines } = await runApp("Grav");
-		expect(hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/grav-admin/. ${DOCROOT}`)).toBe(true);
+		expect(hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/grav-admin/. ${DOCROOT}`)).toBe(
+			true,
+		);
 		expect(hasLine(lines, "hashed_password: '$2y$10$stubbedhash")).toBe(true);
 		expect(hasLine(lines, `user/accounts/appadmin.yaml`)).toBe(true);
 		expect(lines.some((l) => l.startsWith("v-add-database"))).toBe(false);
@@ -203,7 +213,9 @@ describe("WebApp installer batch (all 22 ported)", () => {
 		const { lines } = await runApp("Joomla");
 		expect(hasLine(lines, "installation/joomla.php install")).toBe(true);
 		expect(hasLine(lines, "--db-name=demo_app")).toBe(true);
-		expect(hasLine(lines, `v-move-fs-file demo ${DOCROOT}/htaccess.txt ${DOCROOT}/.htaccess`)).toBe(true);
+		expect(hasLine(lines, `v-move-fs-file demo ${DOCROOT}/htaccess.txt ${DOCROOT}/.htaccess`)).toBe(
+			true,
+		);
 	});
 
 	it("MediaWiki: install.php with empty scriptpath", async () => {
@@ -221,7 +233,9 @@ describe("WebApp installer batch (all 22 ported)", () => {
 
 	it("OpenCart: staged extract dir flow", async () => {
 		const { lines } = await runApp("OpenCart");
-		expect(hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/tmp-opencart/upload/. ${DOCROOT}`)).toBe(true);
+		expect(
+			hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/tmp-opencart/upload/. ${DOCROOT}`),
+		).toBe(true);
 		expect(hasLine(lines, "install/cli_install.php install")).toBe(true);
 		expect(hasLine(lines, `v-delete-fs-directory demo ${DOCROOT}/tmp-opencart`)).toBe(true);
 	});
@@ -240,14 +254,18 @@ describe("WebApp installer batch (all 22 ported)", () => {
 
 	it("QloApps: versioned dir copy + cli install", async () => {
 		const { lines } = await runApp("QloApps");
-		expect(hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/qloapps-1.7.0/. ${DOCROOT}`)).toBe(true);
+		expect(hasLine(lines, `v-copy-fs-directory demo ${DOCROOT}/qloapps-1.7.0/. ${DOCROOT}`)).toBe(
+			true,
+		);
 		expect(hasLine(lines, "--domain=example.com")).toBe(true);
 	});
 
 	it("Shopware: .env DSN rewrite, system install, locale + user", async () => {
 		const { lines } = await runApp("Shopware");
 		expect(hasLine(lines, "APP_URL=https://example.com")).toBe(true);
-		expect(hasLine(lines, "DATABASE_URL=mysql://demo_app:db-secret@localhost:3306/demo_app")).toBe(true);
+		expect(hasLine(lines, "DATABASE_URL=mysql://demo_app:db-secret@localhost:3306/demo_app")).toBe(
+			true,
+		);
 		expect(hasLine(lines, "bin/console system:install")).toBe(true);
 		expect(hasLine(lines, "translation:install -n --locales=fr-FR")).toBe(true);
 		expect(hasLine(lines, "bin/console user:create appadmin")).toBe(true);

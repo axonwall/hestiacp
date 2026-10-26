@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-user-backup (record double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "demo.2026-10-01_00-00-00.tar": {
         "BACKUP": "demo.2026-10-01_00-00-00.tar",

@@ -1,12 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	errorMessage,
-	hestia,
-	requireAdmin,
-} from "@/lib/panel";
+import { csrfValid, errorMessage, hestia, requireAdmin } from "@/lib/panel";
 
 const normPort = (raw: string) =>
 	raw.replace(/\s+/g, ",").replace(/,+/g, ",").replace(/^,|,$/g, "");
@@ -48,9 +43,7 @@ export async function editFirewallRuleAction(formData: FormData): Promise<void> 
 	redirect("/list/firewall?saved=1");
 }
 
-export async function deleteFirewallRuleAction(
-	formData: FormData,
-): Promise<void> {
+export async function deleteFirewallRuleAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	const rule = String(formData.get("rule") ?? "");
 	const back = `/delete/firewall?rule=${encodeURIComponent(rule)}`;
@@ -78,9 +71,7 @@ export async function addFirewallBanAction(formData: FormData): Promise<void> {
 	redirect("/list/firewall?saved=1");
 }
 
-export async function deleteFirewallBanAction(
-	formData: FormData,
-): Promise<void> {
+export async function deleteFirewallBanAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	if (!csrfValid(session, formData)) redirect("/list/firewall?error=csrf");
 	try {
@@ -94,9 +85,7 @@ export async function deleteFirewallBanAction(
 	redirect("/list/firewall?saved=1");
 }
 
-export async function addFirewallIpsetAction(
-	formData: FormData,
-): Promise<void> {
+export async function addFirewallIpsetAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	if (!csrfValid(session, formData)) redirect("/list/firewall?error=csrf");
 	try {
@@ -112,9 +101,7 @@ export async function addFirewallIpsetAction(
 	redirect("/list/firewall?saved=1");
 }
 
-export async function deleteFirewallIpsetAction(
-	formData: FormData,
-): Promise<void> {
+export async function deleteFirewallIpsetAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	if (!csrfValid(session, formData)) redirect("/list/firewall?error=csrf");
 	try {

@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /**
  * SSL for a mail domain (edit/mail SSL section): Let's Encrypt via the
@@ -17,9 +11,7 @@ import {
  * (existing), removal via v-delete-mail-domain-ssl. Mail restarts
  * after any change, as in PHP.
  */
-export async function editMailDomainSslAction(
-	formData: FormData,
-): Promise<void> {
+export async function editMailDomainSslAction(formData: FormData): Promise<void> {
 	const session = await requireSession();
 	const domain = String(formData.get("domain") ?? "");
 	const back = `/edit/mail?domain=${encodeURIComponent(domain)}`;

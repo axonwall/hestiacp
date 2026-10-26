@@ -10,7 +10,7 @@ panel knows about talking to a HestiaCP install lives here, so the app in
   command layer: user reads (`listUsers`, `listUser`, `listSysConfig`),
   auth (`verifyUserPassword`, `checkUserHash`), user administration
   (`addUser`, `changeUserPassword/Contact/Package/Language/Shell/Role/
-  Theme/Ns/ConfigValue`, `suspendUser`, `unsuspendUser`, `deleteUser`),
+Theme/Ns/ConfigValue`, `suspendUser`, `unsuspendUser`, `deleteUser`),
   packages (`listUserPackages`, `listUserPackage`, `addUserPackage`,
   `deleteUserPackage`, `serializeUserPackage`), and the sys enumerations
   the admin forms need (`listSysLanguages/Shells/Themes`). The client
@@ -21,7 +21,7 @@ panel knows about talking to a HestiaCP install lives here, so the app in
   validated against the `v-*` pattern, and optional `sudo` prefix matching
   the existing `hestiaweb` sudoers rule.
 - **`verifyUserPassword`** follows the PHP panel's own pattern for yescrypt:
-  the secret goes into a 0600 temp file under `/tmp` and the *path* is passed
+  the secret goes into a 0600 temp file under `/tmp` and the _path_ is passed
   to `v-check-user-password` — the secret never appears in argv.
 - **`PhpSessionStore`** (`src/php-session.ts`) — the Phase 1 session store:
   PHP-format session files (`sess_<id>`, 0600), cookie = the bare id
@@ -40,12 +40,12 @@ panel knows about talking to a HestiaCP install lives here, so the app in
 
 ## Configuration (environment)
 
-| Variable | Default | Meaning |
-|---|---|---|
-| `HESTIA_BIN` | `/usr/local/hestia/bin` | Directory containing the `v-*` commands |
-| `HESTIA_USE_SUDO` | `1` iff `HESTIA_BIN` is the production path | Prefix commands with `sudo` |
-| `HESTIA_SESSION_DIR` | `$TMPDIR/hestiang-sessions` | Session file storage |
-| `HESTIA_SESSION_TIMEOUT` | `1800` | Inactivity timeout, seconds |
+| Variable                 | Default                                     | Meaning                                 |
+| ------------------------ | ------------------------------------------- | --------------------------------------- |
+| `HESTIA_BIN`             | `/usr/local/hestia/bin`                     | Directory containing the `v-*` commands |
+| `HESTIA_USE_SUDO`        | `1` iff `HESTIA_BIN` is the production path | Prefix commands with `sudo`             |
+| `HESTIA_SESSION_DIR`     | `$TMPDIR/hestiang-sessions`                 | Session file storage                    |
+| `HESTIA_SESSION_TIMEOUT` | `1800`                                      | Inactivity timeout, seconds             |
 
 ## Tests
 

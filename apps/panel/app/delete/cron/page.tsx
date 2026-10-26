@@ -13,7 +13,9 @@ export default async function Page({
 	const token = String(session.data.token ?? "");
 	return (
 		<div>
-			<h1>{t("Delete Cron Job")} #{job}</h1>
+			<h1>
+				{t("Delete Cron Job")} #{job}
+			</h1>
 			{query.error === "csrf" ? (
 				<p className="error">Invalid form token. Please reload and try again.</p>
 			) : query.error === "confirm" ? (
@@ -22,7 +24,9 @@ export default async function Page({
 				<p className="error">{query.error}</p>
 			) : null}
 			<div className="card">
-				<p>This deletes cron job <strong>#{job}</strong>. There is no undo.</p>
+				<p>
+					This deletes cron job <strong>#{job}</strong>. There is no undo.
+				</p>
 				<form action={deleteCronJobAction}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="job" value={job} />

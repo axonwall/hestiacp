@@ -8,9 +8,7 @@ export interface ListColumn {
 	format?: (value: string, row: HestiaRow) => string;
 }
 
-export type RowsResult =
-	| { rows: Record<string, HestiaRow> }
-	| { error: string };
+export type RowsResult = { rows: Record<string, HestiaRow> } | { error: string };
 
 /**
  * Shared read-only table for the Phase 2 list views — the shape every
@@ -51,9 +49,7 @@ export function ListView({
 		return (
 			<div className="card">
 				<h1>{title}</h1>
-				<p className="error">
-					Could not reach the Hestia command layer: {result.error}
-				</p>
+				<p className="error">Could not reach the Hestia command layer: {result.error}</p>
 			</div>
 		);
 	}
@@ -94,11 +90,7 @@ export function ListView({
 								const text = col.format ? col.format(value, row) : value;
 								return (
 									<div className="units-table-cell" key={col.key}>
-										{i === 0 && rowHref ? (
-											<Link href={rowHref(key, row)}>{text}</Link>
-										) : (
-											text
-										)}
+										{i === 0 && rowHref ? <Link href={rowHref(key, row)}>{text}</Link> : text}
 									</div>
 								);
 							})}

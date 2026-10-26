@@ -1,11 +1,7 @@
 import { readFile, rm } from "node:fs/promises";
 import { afterAll, describe, expect, it } from "vitest";
 import type { HestiaConfig } from "../src/config";
-import {
-	PhpSessionStore,
-	parsePhpSession,
-	serializePhpSession,
-} from "../src/php-session";
+import { PhpSessionStore, parsePhpSession, serializePhpSession } from "../src/php-session";
 
 const config: HestiaConfig = {
 	binDir: "/nonexistent",
@@ -55,9 +51,7 @@ describe("PHP session serialization", () => {
 	});
 
 	it("serializes to the exact PHP byte format", () => {
-		expect(serializePhpSession({ user: "admin", n: 7 })).toBe(
-			'user|s:5:"admin";n|i:7;',
-		);
+		expect(serializePhpSession({ user: "admin", n: 7 })).toBe('user|s:5:"admin";n|i:7;');
 	});
 });
 
@@ -87,8 +81,6 @@ describe("PhpSessionStore", () => {
 	});
 
 	it("rejects path-shaped session ids", async () => {
-		await expect(store.get("../../etc/passwd")).rejects.toThrow(
-			/Invalid session id/,
-		);
+		await expect(store.get("../../etc/passwd")).rejects.toThrow(/Invalid session id/);
 	});
 });

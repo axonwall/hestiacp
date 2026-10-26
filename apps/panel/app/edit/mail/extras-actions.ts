@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /**
  * Webmail alias + SMTP relay for a mail domain (edit/mail sections).
@@ -17,9 +11,7 @@ import {
  * silently clobber the stored credential, so a settings change
  * without a password is refused instead.
  */
-export async function editMailDomainExtrasAction(
-	formData: FormData,
-): Promise<void> {
+export async function editMailDomainExtrasAction(formData: FormData): Promise<void> {
 	const session = await requireSession();
 	const domain = String(formData.get("domain") ?? "");
 	const back = `/edit/mail?domain=${encodeURIComponent(domain)}`;
@@ -39,8 +31,7 @@ export async function editMailDomainExtrasAction(
 		// U_SMTP_RELAY is 'true', not 'yes' (verified live 2026-10-25):
 		// checking only "yes" made the clear branch unreachable, so a
 		// relay could never be removed from the panel.
-		const currentlyOn =
-			current.U_SMTP_RELAY === "true" || current.U_SMTP_RELAY === "yes";
+		const currentlyOn = current.U_SMTP_RELAY === "true" || current.U_SMTP_RELAY === "yes";
 		if (!relayOn && currentlyOn) {
 			await hestia.deleteMailDomainSmtpRelay(user, domain);
 		} else if (relayOn) {
@@ -58,14 +49,7 @@ export async function editMailDomainExtrasAction(
 				if (!host || !relayUser || !secret) {
 					redirect(`${back}&error=relay`);
 				}
-				await hestia.addMailDomainSmtpRelay(
-					user,
-					domain,
-					host,
-					relayUser,
-					secret,
-					port,
-				);
+				await hestia.addMailDomainSmtpRelay(user, domain, host, relayUser, secret, port);
 			}
 		}
 	} catch (error) {

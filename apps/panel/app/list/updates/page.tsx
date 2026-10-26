@@ -12,7 +12,11 @@ export default async function Page() {
 				{ key: "PACKAGE", label: t("Package") },
 				{ key: "DESCR", label: t("Description") },
 				{ key: "VERSION", label: t("Version"), format: (v, row) => `${v} (${row.ARCH})` },
-				{ key: "UPDATED", label: t("Status"), format: (v) => (v === "no" ? t("Update available") : t("Up-to-date")) }
+				{
+					key: "UPDATED",
+					label: t("Status"),
+					format: (v) => (v === "no" ? t("Update available") : t("Up-to-date")),
+				},
 			]}
 		></ListView>
 	);

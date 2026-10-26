@@ -60,10 +60,7 @@ export interface WebAppTarget {
 
 export type WebAppOptions = Record<string, string>;
 
-export type PostRequestFn = (
-	url: string,
-	formData: Record<string, string>,
-) => Promise<void>;
+export type PostRequestFn = (url: string, formData: Record<string, string>) => Promise<void>;
 
 /**
  * Default sendPostRequest: POST with the URL's host resolved to the
@@ -167,7 +164,10 @@ export class HestiaAppContext {
 	 */
 	async globFirst(pattern: string): Promise<string> {
 		const output = await this.runCliCmd("ls", "-d", pattern);
-		const first = output.split("\n").map((l) => l.trim()).filter(Boolean)[0];
+		const first = output
+			.split("\n")
+			.map((l) => l.trim())
+			.filter(Boolean)[0];
 		if (!first) throw new Error(`No files match ${pattern}`);
 		return first;
 	}
@@ -195,11 +195,7 @@ export class HestiaAppContext {
 		const match = output.match(/URL:\s*.+?\s*\[.+?\]\s*->\s*"(.+?)"/);
 		return match?.[1] ?? join(dirPath, basename(url));
 	}
-	async runPhp(
-		phpVersion: string,
-		script: string,
-		args: string[],
-	): Promise<string> {
+	async runPhp(phpVersion: string, script: string, args: string[]): Promise<string> {
 		return this.runCliCmd(`/usr/bin/php${phpVersion}`, script, ...args);
 	}
 	async runWp(phpVersion: string, args: string[]): Promise<string> {
@@ -219,12 +215,7 @@ export class HestiaAppContext {
 			0
 		);
 	}
-	async databaseAdd(
-		name: string,
-		dbUser: string,
-		password: string,
-		host: string,
-	): Promise<void> {
+	async databaseAdd(name: string, dbUser: string, password: string, host: string): Promise<void> {
 		const prefix = `${this.user}_`;
 		const strip = (v: string) => (v.startsWith(prefix) ? v.slice(prefix.length) : v);
 		await this.client.addDatabase(
@@ -250,10 +241,7 @@ export class HestiaAppContext {
 		const installed = await this.client.json<string[]>("v-list-sys-php", "json");
 		return installed.filter((v) => supported.includes(v)).sort();
 	}
-	async sendPostRequest(
-		url: string,
-		formData: Record<string, string>,
-	): Promise<void> {
+	async sendPostRequest(url: string, formData: Record<string, string>): Promise<void> {
 		await this.post(url, formData);
 	}
 }
@@ -266,8 +254,7 @@ type SetupApplication = (
 
 /** Util::generateString($length, false): alphanumerics, mixed case. */
 function randomString(length: number): string {
-	const chars =
-		"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	let out = "";
 	for (let i = 0; i < length; i++) out += chars[randomInt(chars.length)];
 	return out;
@@ -297,11 +284,7 @@ export async function phpPasswordHash(secret: string): Promise<string> {
 			["-r", "echo password_hash($argv[1], PASSWORD_DEFAULT);", "--", secret],
 			(error, stdout) => {
 				if (error) {
-					reject(
-						new Error(
-							`php password_hash unavailable: ${error.message.split("\n")[0]}`,
-						),
-					);
+					reject(new Error(`php password_hash unavailable: ${error.message.split("\n")[0]}`));
 				} else {
 					resolve(stdout.trim());
 				}
@@ -323,22 +306,17 @@ const wordpressSetup: SetupApplication = async (ctx, target, options) => {
 		`--locale=${options.language}`,
 		`--path=${target.docroot}`,
 	]);
-	const installDir = options.install_directory
-		? `/${options.install_directory}`
-		: "";
+	const installDir = options.install_directory ? `/${options.install_directory}` : "";
 	// (key assembled from fragments: the literal field name trips a
 	// secret-redaction filter in this workspace's file tooling)
 	const adminPwField = ["admin", "pass" + "word"].join("_");
-	await ctx.sendPostRequest(
-		`${target.url}${installDir}/wp-admin/install.php?step=2`,
-		{
-			weblog_title: options.site_name,
-			user_name: options.username,
-			[adminPwField]: options.password,
-			[`${adminPwField}2`]: options.password,
-			admin_email: options.email,
-		},
-	);
+	await ctx.sendPostRequest(`${target.url}${installDir}/wp-admin/install.php?step=2`, {
+		weblog_title: options.site_name,
+		user_name: options.username,
+		[adminPwField]: options.password,
+		[`${adminPwField}2`]: options.password,
+		admin_email: options.email,
+	});
 };
 
 /* ------------------------------------------------------------------ */
@@ -393,14 +371,8 @@ const laravelSetup: SetupApplication = async (ctx, target, options) => {
 	const dbPwNeedle = "# DB_" + "PASS" + "WORD=";
 	env = env.replace(dbPwNeedle, `DB_${"PASS" + "WORD"}=${target.database.password}`);
 	await ctx.createFile(envPath, env);
-	await ctx.runPhp(options.php_version, doc(target, "artisan"), [
-		"key:generate",
-		"--force",
-	]);
-	await ctx.runPhp(options.php_version, doc(target, "artisan"), [
-		"migrate",
-		"--force",
-	]);
+	await ctx.runPhp(options.php_version, doc(target, "artisan"), ["key:generate", "--force"]);
+	await ctx.runPhp(options.php_version, doc(target, "artisan"), ["migrate", "--force"]);
 	await ctx.deleteFile(doc(target, "database/database.sqlite"));
 };
 
@@ -413,12 +385,7 @@ const symfonySetup: SetupApplication = async (ctx, target, options) => {
 		"extra.symfony.allow-contrib",
 		"true",
 	]);
-	await ctx.runComposer(options.php_version, [
-		"require",
-		"-d",
-		target.docroot,
-		"webapp",
-	]);
+	await ctx.runComposer(options.php_version, ["require", "-d", target.docroot, "webapp"]);
 	await ctx.runComposer(options.php_version, [
 		"require",
 		"-d",
@@ -433,22 +400,13 @@ const castopodSetup: SetupApplication = async (ctx, target, options) => {
 	await ctx.moveFile(doc(target, ".env.example"), doc(target, ".env"));
 	const envPath = doc(target, ".env");
 	let env = await ctx.readFile(envPath);
-	env = env.replace(
-		'app.baseURL="https://YOUR_DOMAIN_NAME/"',
-		`app.baseURL=${target.url}`,
-	);
+	env = env.replace('app.baseURL="https://YOUR_DOMAIN_NAME/"', `app.baseURL=${target.url}`);
 	env = env.replace(
 		'media.baseURL="https://YOUR_MEDIA_DOMAIN_NAME/"',
 		`media.baseURL=${target.url}`,
 	);
-	env = env.replace(
-		'admin.gateway="cp-admin"',
-		`admin.gateway=${options.admin_gateway}`,
-	);
-	env = env.replace(
-		'auth.gateway="cp-auth"',
-		`auth.gateway=${options.auth_gateway}`,
-	);
+	env = env.replace('admin.gateway="cp-admin"', `admin.gateway=${options.admin_gateway}`);
+	env = env.replace('auth.gateway="cp-auth"', `auth.gateway=${options.auth_gateway}`);
 	env = env.replace(
 		'analytics.salt="RANDOM_STRING_OF_64_CHARACTERS"',
 		`analytics.salt=${randomString(64)}`,
@@ -470,9 +428,7 @@ const castopodSetup: SetupApplication = async (ctx, target, options) => {
 		`database.default.${PWF}=${target.database.password}`,
 	);
 	await ctx.createFile(envPath, env);
-	await ctx.runPhp(options.php_version, doc(target, "spark"), [
-		"install:init-database",
-	]);
+	await ctx.runPhp(options.php_version, doc(target, "spark"), ["install:init-database"]);
 	await ctx.deleteDirectory(doc(target, "/castopod"));
 };
 
@@ -538,10 +494,7 @@ const concreteCmsSetup: SetupApplication = async (ctx, target, options) => {
 
 const dolibarrSetup: SetupApplication = async (ctx, target, options) => {
 	const version = WEBAPP_DEFINITIONS.Dolibarr.version;
-	await ctx.copyDirectory(
-		doc(target, `/dolibarr-${version}/.`),
-		target.docroot,
-	);
+	await ctx.copyDirectory(doc(target, `/dolibarr-${version}/.`), target.docroot);
 	const language = options.language;
 	await ctx.moveFile(
 		doc(target, "htdocs/conf/conf.php.example"),
@@ -592,26 +545,17 @@ const drupalSetup: SetupApplication = async (ctx, target, options) => {
 		doc(target, ".htaccess"),
 		"<IfModule mod_rewrite.c>\n                    RewriteEngine On\n                    RewriteRule ^(.*)$ web/$1 [L]\n            </IfModule>",
 	);
-	await ctx.runComposer(options.php_version, [
-		"require",
-		"-d",
-		target.docroot,
-		"drush/drush",
-	]);
+	await ctx.runComposer(options.php_version, ["require", "-d", target.docroot, "drush/drush"]);
 	const databaseUrl = `mysql://${target.database.user}:${target.database.password}@${target.database.host}:3306/${target.database.name}`;
-	await ctx.runPhp(
-		options.php_version,
-		doc(target, "/vendor/drush/drush/drush.php"),
-		[
-			"site-install",
-			"standard",
-			`--db-url=${databaseUrl}`,
-			`--account-name=${options.username}`,
-			`--account-pass=${options.password}`,
-			"--site-name=Drupal",
-			`--site-mail=${options.email}`,
-		],
-	);
+	await ctx.runPhp(options.php_version, doc(target, "/vendor/drush/drush/drush.php"), [
+		"site-install",
+		"standard",
+		`--db-url=${databaseUrl}`,
+		`--account-name=${options.username}`,
+		`--account-pass=${options.password}`,
+		"--site-name=Drupal",
+		`--site-mail=${options.email}`,
+	]);
 };
 
 const flarumSetup: SetupApplication = async (ctx, target, options) => {
@@ -646,10 +590,7 @@ const gravSetup: SetupApplication = async (ctx, target, options) => {
 		"  api:\n" +
 		"    super: true\n" +
 		`hashed_${PWF}: '${hash}'\n`;
-	await ctx.createFile(
-		doc(target, `user/accounts/${options.username}.yaml`),
-		yaml,
-	);
+	await ctx.createFile(doc(target, `user/accounts/${options.username}.yaml`), yaml);
 	await ctx.deleteDirectory(doc(target, "grav-admin"));
 };
 
@@ -696,15 +637,9 @@ const namelessSetup: SetupApplication = async () => {
 
 const openCartSetup: SetupApplication = async (ctx, target, options) => {
 	const extractDirectory = "/tmp-opencart";
-	await ctx.copyDirectory(
-		doc(target, `${extractDirectory}/upload/.`),
-		target.docroot,
-	);
+	await ctx.copyDirectory(doc(target, `${extractDirectory}/upload/.`), target.docroot);
 	await ctx.moveFile(doc(target, "config-dist.php"), doc(target, "config.php"));
-	await ctx.moveFile(
-		doc(target, "admin/config-dist.php"),
-		doc(target, "admin/config.php"),
-	);
+	await ctx.moveFile(doc(target, "admin/config-dist.php"), doc(target, "admin/config.php"));
 	await ctx.moveFile(doc(target, ".htaccess.txt"), doc(target, ".htaccess"));
 	await ctx.runPhp(options.php_version, doc(target, "/install/cli_install.php"), [
 		"install",
@@ -773,10 +708,7 @@ const shopwareSetup: SetupApplication = async (ctx, target, options) => {
 	await ctx.createFile(doc(target, ".htaccess"), HTACCESS_FILES.Shopware);
 	const envPath = doc(target, ".env");
 	let env = await ctx.readFile(envPath);
-	env = env.replace(
-		"APP_URL=http://127.0.0.1:8000",
-		`APP_URL=${target.url}`,
-	);
+	env = env.replace("APP_URL=http://127.0.0.1:8000", `APP_URL=${target.url}`);
 	const dsn = `DATABASE_URL=mysql://${target.database.user}:${target.database.password}@${target.database.host}:3306/${target.database.name}`;
 	env = env.replace("DATABASE_URL=mysql://root:root@localhost/shopware", dsn);
 	await ctx.createFile(envPath, env);
@@ -865,13 +797,8 @@ const osTicketSetup: SetupApplication = async (ctx, target, options) => {
 };
 
 const dokuwikiSetup: SetupApplication = async (ctx, target, options) => {
-	await ctx.moveFile(
-		join(target.docroot, ".htaccess.dist"),
-		join(target.docroot, ".htaccess"),
-	);
-	const installDir = options.install_directory
-		? `/${options.install_directory}`
-		: "";
+	await ctx.moveFile(join(target.docroot, ".htaccess.dist"), join(target.docroot, ".htaccess"));
+	const installDir = options.install_directory ? `/${options.install_directory}` : "";
 	await ctx.sendPostRequest(`${target.url}${installDir}/install.php`, {
 		l: "en",
 		"d[title]": options.wiki_name,
@@ -975,7 +902,9 @@ export const WEBAPP_DEFINITIONS: Record<string, WebAppDefinition> = {
 		version: "1.15.5",
 		database: true,
 		resources: {
-			archive: { src: "https://code.castopod.org/-/project/2/uploads/419c795a5ab306a27082b7d86aa43df6/castopod-1.15.5.zip" },
+			archive: {
+				src: "https://code.castopod.org/-/project/2/uploads/419c795a5ab306a27082b7d86aa43df6/castopod-1.15.5.zip",
+			},
 		},
 		nginxTemplate: "castopod",
 		phpSupported: ["8.1", "8.2", "8.3", "8.4", "8.5"],
@@ -1035,7 +964,9 @@ export const WEBAPP_DEFINITIONS: Record<string, WebAppDefinition> = {
 		version: "2.0.24",
 		database: false,
 		resources: {
-			archive: { src: "https://github.com/getgrav/grav/releases/download/2.0.24/grav-admin-v2.0.24.zip" },
+			archive: {
+				src: "https://github.com/getgrav/grav/releases/download/2.0.24/grav-admin-v2.0.24.zip",
+			},
 		},
 		nginxTemplate: "grav",
 		phpSupported: ["8.3", "8.4", "8.5"],
@@ -1045,7 +976,9 @@ export const WEBAPP_DEFINITIONS: Record<string, WebAppDefinition> = {
 		version: "6.1.3",
 		database: true,
 		resources: {
-			archive: { src: "https://downloads.joomla.org/cms/joomla6/6-1-3/Joomla_6-1-3-Stable-Full_Package.zip?format=zip" },
+			archive: {
+				src: "https://downloads.joomla.org/cms/joomla6/6-1-3/Joomla_6-1-3-Stable-Full_Package.zip?format=zip",
+			},
 		},
 		nginxTemplate: "joomla",
 		phpSupported: ["8.3", "8.4"],
@@ -1065,7 +998,9 @@ export const WEBAPP_DEFINITIONS: Record<string, WebAppDefinition> = {
 		version: "2.2.5",
 		database: false,
 		resources: {
-			archive: { src: "https://github.com/NamelessMC/Nameless/releases/download/v2.2.5/nameless-deps-dist.zip" },
+			archive: {
+				src: "https://github.com/NamelessMC/Nameless/releases/download/v2.2.5/nameless-deps-dist.zip",
+			},
 		},
 		nginxTemplate: "default",
 		phpSupported: ["7.4", "8.0", "8.1", "8.2"],
@@ -1088,7 +1023,9 @@ export const WEBAPP_DEFINITIONS: Record<string, WebAppDefinition> = {
 		version: "9.1.5",
 		database: true,
 		resources: {
-			archive: { src: "https://assets.prestashop3.com/dst/edition/corporate/9.1.5-5.0/prestashop_edition_classic_version_9.1.5-5.0.zip?source=hestiacp" },
+			archive: {
+				src: "https://assets.prestashop3.com/dst/edition/corporate/9.1.5-5.0/prestashop_edition_classic_version_9.1.5-5.0.zip?source=hestiacp",
+			},
 		},
 		nginxTemplate: "prestashop",
 		phpSupported: ["8.1", "8.2", "8.3", "8.4", "8.5"],
@@ -1098,7 +1035,9 @@ export const WEBAPP_DEFINITIONS: Record<string, WebAppDefinition> = {
 		version: "1.7.0",
 		database: true,
 		resources: {
-			archive: { src: "https://github.com/Qloapps/QloApps/releases/download/v1.7.0/qloapps-1.7.0.zip" },
+			archive: {
+				src: "https://github.com/Qloapps/QloApps/releases/download/v1.7.0/qloapps-1.7.0.zip",
+			},
 		},
 		nginxTemplate: "default",
 		phpSupported: ["8.1", "8.2", "8.3", "8.4"],
@@ -1118,7 +1057,9 @@ export const WEBAPP_DEFINITIONS: Record<string, WebAppDefinition> = {
 		version: "1.7.0",
 		database: true,
 		resources: {
-			archive: { src: "https://github.com/thirtybees/thirtybees/releases/download/1.7.0/thirtybees-v1.7.0-php7.4.zip" },
+			archive: {
+				src: "https://github.com/thirtybees/thirtybees/releases/download/1.7.0/thirtybees-v1.7.0-php7.4.zip",
+			},
 		},
 		nginxTemplate: "prestashop",
 		phpSupported: ["7.4", "8.0", "8.1", "8.2", "8.3"],
@@ -1138,7 +1079,9 @@ export const WEBAPP_DEFINITIONS: Record<string, WebAppDefinition> = {
 		version: "1.18.4",
 		database: true,
 		resources: {
-			archive: { src: "https://github.com/osTicket/osTicket/releases/download/v1.18.4/osTicket-v1.18.4.zip" },
+			archive: {
+				src: "https://github.com/osTicket/osTicket/releases/download/v1.18.4/osTicket-v1.18.4.zip",
+			},
 		},
 		nginxTemplate: "osticket",
 		phpSupported: ["8.2", "8.3", "8.4"],
@@ -1152,9 +1095,7 @@ async function retrieveResources(
 	options: WebAppOptions,
 ): Promise<void> {
 	for (const [type, data] of Object.entries(def.resources)) {
-		const destination = data.dst
-			? join(target.docroot, data.dst)
-			: target.docroot;
+		const destination = data.dst ? join(target.docroot, data.dst) : target.docroot;
 		if (type === "composer") {
 			await ctx.runComposer(options.php_version, [
 				"create-project",
@@ -1201,9 +1142,7 @@ export async function installWebApp(
 ): Promise<void> {
 	const setup = APP_SETUP_PORTS[def.name];
 	if (!setup) {
-		throw new Error(
-			`The ${def.name} installer has not been ported yet (setupApplication missing)`,
-		);
+		throw new Error(`The ${def.name} installer has not been ported yet (setupApplication missing)`);
 	}
 	await ctx.deleteFile(join(target.docroot, "robots.txt"));
 	await ctx.deleteFile(join(target.docroot, "index.html"));
@@ -1229,10 +1168,7 @@ export async function installWebApp(
 		if (supported.length === 0) {
 			throw new Error("Required PHP version is not supported");
 		}
-		await ctx.changeBackendTemplate(
-			target.domain,
-			`PHP-${options.php_version.replace(".", "_")}`,
-		);
+		await ctx.changeBackendTemplate(target.domain, `PHP-${options.php_version.replace(".", "_")}`);
 	}
 	await setup(ctx, target, options);
 }

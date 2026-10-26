@@ -21,13 +21,7 @@ import type { HestiaConfig } from "./config";
  *   null    N;
  *   array   a:<count>:{<serialized key><serialized value>...}
  */
-export type PhpValue =
-	| string
-	| number
-	| boolean
-	| null
-	| PhpValue[]
-	| { [key: string]: PhpValue };
+export type PhpValue = string | number | boolean | null | PhpValue[] | { [key: string]: PhpValue };
 
 export type PhpSessionData = Record<string, PhpValue>;
 
@@ -43,16 +37,12 @@ export function serializePhpValue(value: PhpValue): string {
 		return `s:${Buffer.byteLength(value, "utf8")}:"${value}";`;
 	}
 	if (Array.isArray(value)) {
-		const entries = value
-			.map((v, i) => serializePhpValue(i) + serializePhpValue(v))
-			.join("");
+		const entries = value.map((v, i) => serializePhpValue(i) + serializePhpValue(v)).join("");
 		return `a:${value.length}:{${entries}}`;
 	}
 	const keys = Object.keys(value);
 	const entries = keys
-		.map(
-			(k) => serializePhpValue(k) + serializePhpValue((value as Record<string, PhpValue>)[k]),
-		)
+		.map((k) => serializePhpValue(k) + serializePhpValue((value as Record<string, PhpValue>)[k]))
 		.join("");
 	return `a:${keys.length}:{${entries}}`;
 }
@@ -93,10 +83,7 @@ class Parser {
 			case "s": {
 				this.pos += 2; // 's:'
 				const lenEnd = this.buf.indexOf(":", this.pos);
-				const len = Number.parseInt(
-					this.buf.toString("ascii", this.pos, lenEnd),
-					10,
-				);
+				const len = Number.parseInt(this.buf.toString("ascii", this.pos, lenEnd), 10);
 				this.pos = lenEnd + 1;
 				this.expectChar('"');
 				const value = this.buf.toString("utf8", this.pos, this.pos + len);
@@ -107,10 +94,7 @@ class Parser {
 			case "a": {
 				this.pos += 2; // 'a:'
 				const lenEnd = this.buf.indexOf(":", this.pos);
-				const count = Number.parseInt(
-					this.buf.toString("ascii", this.pos, lenEnd),
-					10,
-				);
+				const count = Number.parseInt(this.buf.toString("ascii", this.pos, lenEnd), 10);
 				this.pos = lenEnd + 1;
 				this.expectChar("{");
 				const entries: [PhpValue, PhpValue][] = [];
@@ -128,9 +112,7 @@ class Parser {
 				return obj;
 			}
 			default:
-				throw new Error(
-					`Unsupported PHP serialized type '${type}' at offset ${this.pos}`,
-				);
+				throw new Error(`Unsupported PHP serialized type '${type}' at offset ${this.pos}`);
 		}
 	}
 
@@ -215,9 +197,7 @@ export class PhpSessionStore {
 		}
 		const now = Math.floor(Date.now() / 1000);
 		const lastActivity = Number(data.LAST_ACTIVITY ?? 0);
-		const timeout =
-			Number(data.INACTIVE_SESSION_TIMEOUT ?? 0) ||
-			this.config.sessionTimeoutSeconds;
+		const timeout = Number(data.INACTIVE_SESSION_TIMEOUT ?? 0) || this.config.sessionTimeoutSeconds;
 		if (lastActivity > 0 && now - lastActivity > timeout) {
 			await this.destroy(id);
 			return null;

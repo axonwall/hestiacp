@@ -30,7 +30,7 @@
 	top: 100%;
 	z-index: 60;
 }
-.top-bar-menu[open ] .top-bar-menu-panel {
+.top-bar-menu[open] .top-bar-menu-panel {
 	display: block;
 }
 .top-bar-menu .top-bar-menu-link {

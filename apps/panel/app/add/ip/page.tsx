@@ -21,7 +21,13 @@ export default async function Page({
 				<label htmlFor="ipAddr">{t("IP")}</label>
 				<input className="form-control" id="ipAddr" name="ip" required />
 				<label htmlFor="ipMask">{t("Netmask")}</label>
-				<input className="form-control" id="ipMask" name="netmask" required defaultValue="255.255.255.0" />
+				<input
+					className="form-control"
+					id="ipMask"
+					name="netmask"
+					required
+					defaultValue="255.255.255.0"
+				/>
 				<label htmlFor="ipIface">{t("Interface")}</label>
 				<input className="form-control" id="ipIface" name="iface" required defaultValue="eth0" />
 				<label htmlFor="ipOwner">{t("Owner")}</label>
@@ -33,8 +39,7 @@ export default async function Page({
 					))}
 				</select>
 				<label>
-					<input type="checkbox" name="shared" value="yes" defaultChecked />{" "}
-					{t("Shared")}
+					<input type="checkbox" name="shared" value="yes" defaultChecked /> {t("Shared")}
 				</label>
 				<label htmlFor="ipName">{t("Name")}</label>
 				<input className="form-control" id="ipName" name="name" />

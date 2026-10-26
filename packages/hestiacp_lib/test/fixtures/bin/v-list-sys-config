@@ -5,7 +5,7 @@ if [ -n "$HESTIA_FIXTURE_CONFIG" ] && [ -f "$HESTIA_FIXTURE_CONFIG" ]; then
 	cat "$HESTIA_FIXTURE_CONFIG"
 	exit 0
 fi
-cat <<'JSON'
+cat << 'JSON'
 {
     "config": {
         "VERSION": "1.10.5",

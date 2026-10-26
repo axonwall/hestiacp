@@ -11,15 +11,15 @@ export default async function Page({
 	const query = await searchParams;
 	const user = effectiveUser(session);
 	const database = query.database ?? "";
-	const record = database
-		? await hestia.listDatabase(user, database).catch(() => null)
-		: null;
+	const record = database ? await hestia.listDatabase(user, database).catch(() => null) : null;
 	if (!record) {
 		return (
 			<div className="card">
 				<h1>{t("Edit Database")}</h1>
 				<p className="error">{query.error ?? "Database not found."}</p>
-				<p><a href="/list/db">{t("Back")}</a></p>
+				<p>
+					<a href="/list/db">{t("Back")}</a>
+				</p>
 			</div>
 		);
 	}
@@ -44,9 +44,19 @@ export default async function Page({
 					{t("User")} ({user}_…)
 				</label>
 				<input className="form-control" id="dbuser" name="dbuser" defaultValue={suffix} />
-				<label htmlFor="secret">{t("New password")} ({t("leave empty to keep")})</label>
-				<input className="form-control" id="secret" name="secret" type="password" autoComplete="new-password" />
-				<button type="submit" className="button">{t("Save")}</button>
+				<label htmlFor="secret">
+					{t("New password")} ({t("leave empty to keep")})
+				</label>
+				<input
+					className="form-control"
+					id="secret"
+					name="secret"
+					type="password"
+					autoComplete="new-password"
+				/>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
 			</form>
 			<p>
 				<a href="/list/db">{t("Back")}</a> ·{" "}

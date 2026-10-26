@@ -14,7 +14,7 @@ export default async function Page() {
 				{ key: "TIME", label: t("Time") },
 				{ key: "CATEGORY", label: t("Category") },
 				{ key: "LEVEL", label: t("Level") },
-				{ key: "MESSAGE", label: t("Message") }
+				{ key: "MESSAGE", label: t("Message") },
 			]}
 		></ListView>
 	);

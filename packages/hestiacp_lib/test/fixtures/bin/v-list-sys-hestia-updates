@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-sys-hestia-updates (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "hestia": {
         "VERSION": "1.10.5-1+ubuntu24.04",

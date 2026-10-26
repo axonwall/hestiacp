@@ -1,11 +1,5 @@
 import Link from "next/link";
-import {
-	effectiveUser,
-	getT,
-	hestia,
-	loadRows,
-	requireSession,
-} from "@/lib/panel";
+import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
 import { RowAction } from "@/components/RowAction";
 import { scheduleBackupAction } from "./actions";

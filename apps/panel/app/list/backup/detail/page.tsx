@@ -64,11 +64,8 @@ export default async function Page({
 				<Link href={`/edit/backup/restore?backup=${encodeURIComponent(backup)}`}>
 					{t("Restore")}
 				</Link>{" "}
-				·{" "}
-				<a href={`/download/backup?backup=${encodeURIComponent(backup)}`}>
-					{t("Download")}
-				</a>{" "}
-				· <Link href="/list/backup">← {t("Backups")}</Link>
+				· <a href={`/download/backup?backup=${encodeURIComponent(backup)}`}>{t("Download")}</a> ·{" "}
+				<Link href="/list/backup">← {t("Backups")}</Link>
 			</p>
 		</div>
 	);

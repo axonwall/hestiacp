@@ -4,11 +4,7 @@ import { describe, expect, it } from "vitest";
 import { HestiaClient } from "../src/client";
 import type { HestiaConfig } from "../src/config";
 
-const fixturesBin = join(
-	dirname(fileURLToPath(import.meta.url)),
-	"fixtures",
-	"bin",
-);
+const fixturesBin = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "bin");
 const client = new HestiaClient({
 	binDir: fixturesBin,
 	useSudo: false,

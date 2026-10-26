@@ -12,7 +12,10 @@ BUNDLE="${1:?usage: smoke-bundle.sh <bundle-dir> [port]}"
 PORT="${2:-3210}"
 BIN="${HESTIA_BIN:?set HESTIA_BIN to a v-* command directory}"
 SERVER="$BUNDLE/apps/panel/server.js"
-[ -f "$SERVER" ] || { echo "ERROR: $SERVER missing — not a panel bundle" >&2; exit 1; }
+[ -f "$SERVER" ] || {
+	echo "ERROR: $SERVER missing — not a panel bundle" >&2
+	exit 1
+}
 
 WORK="$(mktemp -d)"
 trap 'kill ${SRV:-} 2> /dev/null; rm -rf "$WORK"' EXIT
@@ -38,9 +41,15 @@ for i in $(seq 1 40); do
 done
 
 curl -sf --max-time 5 "http://127.0.0.1:$PORT/api/health" | grep -q '"status":"ok"' \
-	|| { echo "ERROR: /api/health did not report ok" >&2; exit 1; }
+	|| {
+		echo "ERROR: /api/health did not report ok" >&2
+		exit 1
+	}
 curl -sf --max-time 5 "http://127.0.0.1:$PORT/login" | grep -qi "login" \
-	|| { echo "ERROR: /login did not render" >&2; exit 1; }
+	|| {
+		echo "ERROR: /login did not render" >&2
+		exit 1
+	}
 
 if [ -n "${SMOKE_USER:-}" ] && [ -n "${SMOKE_SECRET:-}" ]; then
 	# Credential check needs the panel's server-action round trip;

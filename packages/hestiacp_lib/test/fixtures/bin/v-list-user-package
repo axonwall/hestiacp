@@ -1,8 +1,8 @@
 #!/bin/bash
 # Fixture: v-list-user-package NAME json — reuse the packages fixture.
 case "$1" in
-default|small)
-	python3 - "$1" <<'PY'
+	default | small)
+		python3 - "$1" << 'PY'
 import json,sys
 # re-emit the single package from the canned set below
 data = {
@@ -11,9 +11,9 @@ data = {
 }
 print(json.dumps({sys.argv[1]: data[sys.argv[1]]}))
 PY
-	;;
-*)
-	echo "Error: package not found" >&2
-	exit 3
-	;;
+		;;
+	*)
+		echo "Error: package not found" >&2
+		exit 3
+		;;
 esac

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-sys-services (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "nginx": {
         "SERVICE": "nginx",

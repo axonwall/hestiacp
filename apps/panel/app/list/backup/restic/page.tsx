@@ -1,13 +1,7 @@
 import Link from "next/link";
 import { ListView } from "@/components/ListView";
 import { RowAction, RowActionButton } from "@/components/RowAction";
-import {
-	effectiveUser,
-	getT,
-	hestia,
-	loadRows,
-	requireSession,
-} from "@/lib/panel";
+import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
 import { scheduleResticBackupAction } from "./actions";
 
 /**
@@ -41,8 +35,16 @@ export default async function ResticBackupsPage() {
 			]}
 			rowActions={(id) => (
 				<>
-					<RowAction href={`/list/backup/restic/detail?snapshot=${encodeURIComponent(id)}`} title={`${t("Detail")} / ${t("Restore")}`} icon="fa-magnifying-glass icon-lightblue" />
-					<RowAction href={`/delete/backup/restic?snapshot=${encodeURIComponent(id)}`} title={t("Delete")} icon="fa-trash icon-red" />
+					<RowAction
+						href={`/list/backup/restic/detail?snapshot=${encodeURIComponent(id)}`}
+						title={`${t("Detail")} / ${t("Restore")}`}
+						icon="fa-magnifying-glass icon-lightblue"
+					/>
+					<RowAction
+						href={`/delete/backup/restic?snapshot=${encodeURIComponent(id)}`}
+						title={t("Delete")}
+						icon="fa-trash icon-red"
+					/>
 				</>
 			)}
 		>
@@ -51,7 +53,9 @@ export default async function ResticBackupsPage() {
 			</p>
 			<form action={scheduleResticBackupAction} style={{ display: "inline" }}>
 				<input type="hidden" name="token" value={token} />
-				<button type="submit" className="button button-secondary"><i className="fas fa-circle-plus icon-green"></i>Create incremental backup</button>
+				<button type="submit" className="button button-secondary">
+					<i className="fas fa-circle-plus icon-green"></i>Create incremental backup
+				</button>
 			</form>
 		</ListView>
 	);

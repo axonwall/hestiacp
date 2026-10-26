@@ -1,15 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-	effectiveUser,
-	getT,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
-import {
-	restoreResticFullAction,
-	restoreResticObjectAction,
-} from "./actions";
+import { effectiveUser, getT, hestia, requireSession } from "@/lib/panel";
+import { restoreResticFullAction, restoreResticObjectAction } from "./actions";
 
 /**
  * One restic snapshot (web/list/backup/incremental?snapshot=): the
@@ -66,9 +58,7 @@ export default async function ResticDetailPage({
 				</button>
 			</form>
 			<p>
-				<a
-					href={`/list/backup/restic/browse?snapshot=${encodeURIComponent(snapshot)}`}
-				>
+				<a href={`/list/backup/restic/browse?snapshot=${encodeURIComponent(snapshot)}`}>
 					Browse files →
 				</a>
 			</p>

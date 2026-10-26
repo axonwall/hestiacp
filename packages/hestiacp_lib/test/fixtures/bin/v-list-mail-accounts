@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-mail-accounts (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "info": {
         "ALIAS": "",

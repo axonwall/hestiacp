@@ -77,11 +77,7 @@ export class HestiaClient {
 
 	async listUser(user: string): Promise<HestiaUser> {
 		assertUsername(user);
-		const data = await this.json<Record<string, HestiaUser>>(
-			"v-list-user",
-			user,
-			"json",
-		);
+		const data = await this.json<Record<string, HestiaUser>>("v-list-user", user, "json");
 		const record = data[user];
 		if (!record) {
 			throw new Error(`v-list-user returned no record for ${user}`);
@@ -99,10 +95,7 @@ export class HestiaClient {
 	 * or id, values being flat string records. The Phase 2 list pages
 	 * render these directly; typed wrappers below name each view's call.
 	 */
-	async listRows(
-		command: string,
-		...args: string[]
-	): Promise<Record<string, HestiaRow>> {
+	async listRows(command: string, ...args: string[]): Promise<Record<string, HestiaRow>> {
 		return this.json<Record<string, HestiaRow>>(command, ...args, "json");
 	}
 
@@ -200,16 +193,8 @@ export class HestiaClient {
 	 * ================================================================== */
 
 	/** Fetch one record from a singular v-list-* command. */
-	private async listOne(
-		command: string,
-		key: string,
-		...args: string[]
-	): Promise<HestiaRow> {
-		const data = await this.json<Record<string, HestiaRow>>(
-			command,
-			...args,
-			"json",
-		);
+	private async listOne(command: string, key: string, ...args: string[]): Promise<HestiaRow> {
+		const data = await this.json<Record<string, HestiaRow>>(command, ...args, "json");
 		const record = data[key];
 		if (!record) throw new Error(`${command} returned no record for ${key}`);
 		return record;
@@ -229,13 +214,7 @@ export class HestiaClient {
 	}
 	listMailAccount(user: string, domain: string, account: string) {
 		assertUsername(user);
-		return this.listOne(
-			"v-list-mail-account",
-			account,
-			user,
-			domain,
-			account,
-		);
+		return this.listOne("v-list-mail-account", account, user, domain, account);
 	}
 	listDatabase(user: string, database: string) {
 		assertUsername(user);
@@ -260,14 +239,10 @@ export class HestiaClient {
 		return normalizeStringList(await this.json("v-list-web-templates", "json"));
 	}
 	async listWebTemplatesBackend(): Promise<string[]> {
-		return normalizeStringList(
-			await this.json("v-list-web-templates-backend", "json"),
-		);
+		return normalizeStringList(await this.json("v-list-web-templates-backend", "json"));
 	}
 	async listWebTemplatesProxy(): Promise<string[]> {
-		return normalizeStringList(
-			await this.json("v-list-web-templates-proxy", "json"),
-		);
+		return normalizeStringList(await this.json("v-list-web-templates-proxy", "json"));
 	}
 	async listDnsTemplates(): Promise<string[]> {
 		return normalizeStringList(await this.json("v-list-dns-templates", "json"));
@@ -281,24 +256,12 @@ export class HestiaClient {
 	 *  the array index "0" instead of "localhost" (found live 2026-10-25).
 	 */
 	async listDatabaseHosts(): Promise<Record<string, HestiaRow>> {
-		return normalizeKeyedRows(
-			await this.json("v-list-database-hosts", "json"),
-			"HOST",
-		);
+		return normalizeKeyedRows(await this.json("v-list-database-hosts", "json"), "HOST");
 	}
 	/** Autoreply text is a plain-text command, not JSON. */
-	async listMailAccountAutoreply(
-		user: string,
-		domain: string,
-		account: string,
-	): Promise<string> {
+	async listMailAccountAutoreply(user: string, domain: string, account: string): Promise<string> {
 		assertUsername(user);
-		const result = await this.raw(
-			"v-list-mail-account-autoreply",
-			user,
-			domain,
-			account,
-		);
+		const result = await this.raw("v-list-mail-account-autoreply", user, domain, account);
 		return result.code === 0 ? result.stdout.replace(/\n$/, "") : "";
 	}
 
@@ -340,23 +303,13 @@ export class HestiaClient {
 		}
 	}
 	/** IP change; also moves the DNS zone when one exists (edit/web). */
-	async changeWebDomainIp(
-		user: string,
-		domain: string,
-		ip: string,
-	): Promise<void> {
+	async changeWebDomainIp(user: string, domain: string, ip: string): Promise<void> {
 		assertUsername(user);
 		await this.runChecked("v-change-web-domain-ip", user, domain, ip, "no");
 		const dns = await this.listDnsDomain(user, domain).catch(() => null);
 		if (dns) {
 			const publicIp = await this.publicIpFor(user, ip);
-			await this.runChecked(
-				"v-change-dns-domain-ip",
-				user,
-				domain,
-				publicIp,
-				"no",
-			);
+			await this.runChecked("v-change-dns-domain-ip", user, domain, publicIp, "no");
 		}
 	}
 	async changeWebDomainTpl(user: string, domain: string, tpl: string) {
@@ -368,37 +321,13 @@ export class HestiaClient {
 		await this.runChecked("v-change-web-domain-backend-tpl", user, domain, tpl);
 	}
 	/** Proxy enable (add) / template+ext change, per edit/web. */
-	async addWebDomainProxy(
-		user: string,
-		domain: string,
-		tpl: string,
-		ext: string,
-	) {
+	async addWebDomainProxy(user: string, domain: string, tpl: string, ext: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-add-web-domain-proxy",
-			user,
-			domain,
-			tpl,
-			ext,
-			"no",
-		);
+		await this.runChecked("v-add-web-domain-proxy", user, domain, tpl, ext, "no");
 	}
-	async changeWebDomainProxyTpl(
-		user: string,
-		domain: string,
-		tpl: string,
-		ext: string,
-	) {
+	async changeWebDomainProxyTpl(user: string, domain: string, tpl: string, ext: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-change-web-domain-proxy-tpl",
-			user,
-			domain,
-			tpl,
-			ext,
-			"no",
-		);
+		await this.runChecked("v-change-web-domain-proxy-tpl", user, domain, tpl, ext, "no");
 	}
 	async deleteWebDomainProxy(user: string, domain: string) {
 		assertUsername(user);
@@ -410,13 +339,7 @@ export class HestiaClient {
 	}
 	async deleteWebDomainAlias(user: string, domain: string, alias: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-delete-web-domain-alias",
-			user,
-			domain,
-			alias,
-			"no",
-		);
+		await this.runChecked("v-delete-web-domain-alias", user, domain, alias, "no");
 	}
 	async addLetsEncryptDomain(
 		user: string,
@@ -435,11 +358,7 @@ export class HestiaClient {
 			keyAlgo,
 		);
 	}
-	async deleteLetsEncryptDomain(
-		user: string,
-		domain: string,
-		mailDomain = false,
-	) {
+	async deleteLetsEncryptDomain(user: string, domain: string, mailDomain = false) {
 		assertUsername(user);
 		// The mail variant carries a trailing 'yes' (the mail flag).
 		await this.runChecked(
@@ -479,12 +398,7 @@ export class HestiaClient {
 		await this.runChecked("v-delete-fastcgi-cache", user, domain);
 	}
 	/** The add/change/delete branch of edit/web's stats select. */
-	async setWebDomainStats(
-		user: string,
-		domain: string,
-		current: string,
-		next: string,
-	) {
+	async setWebDomainStats(user: string, domain: string, current: string, next: string) {
 		assertUsername(user);
 		if (!next) {
 			if (current) {
@@ -560,12 +474,7 @@ export class HestiaClient {
 	}
 	async setDnsDomainDnssec(user: string, domain: string, on: boolean) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-change-dns-domain-dnssec",
-			user,
-			domain,
-			on ? "yes" : "no",
-		);
+		await this.runChecked("v-change-dns-domain-dnssec", user, domain, on ? "yes" : "no");
 	}
 	async restartDns() {
 		await this.runChecked("v-restart-dns");
@@ -629,12 +538,7 @@ export class HestiaClient {
 			ttl,
 		);
 	}
-	async changeDnsRecordId(
-		user: string,
-		domain: string,
-		oldId: string,
-		newId: string,
-	) {
+	async changeDnsRecordId(user: string, domain: string, oldId: string, newId: string) {
 		assertUsername(user);
 		await this.runChecked("v-change-dns-record-id", user, domain, oldId, newId);
 	}
@@ -716,12 +620,7 @@ export class HestiaClient {
 	}
 	async changeMailDomainCatchall(user: string, domain: string, email: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-change-mail-domain-catchall",
-			user,
-			domain,
-			email,
-		);
+		await this.runChecked("v-change-mail-domain-catchall", user, domain, email);
 	}
 	async deleteMailDomainCatchall(user: string, domain: string) {
 		assertUsername(user);
@@ -729,12 +628,7 @@ export class HestiaClient {
 	}
 	async changeMailDomainRateLimit(user: string, domain: string, rate: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-change-mail-domain-rate-limit",
-			user,
-			domain,
-			rate || "system",
-		);
+		await this.runChecked("v-change-mail-domain-rate-limit", user, domain, rate || "system");
 	}
 	async suspendMailDomain(user: string, domain: string) {
 		assertUsername(user);
@@ -757,54 +651,20 @@ export class HestiaClient {
 	) {
 		assertUsername(user);
 		await this.withStagedFile(`${secret}\n`, (path) =>
-			this.runChecked(
-				"v-add-mail-account",
-				user,
-				domain,
-				account,
-				path,
-				quota || "0",
-			),
+			this.runChecked("v-add-mail-account", user, domain, account, path, quota || "0"),
 		);
 	}
-	async changeMailAccountPassword(
-		user: string,
-		domain: string,
-		account: string,
-		secret: string,
-	) {
+	async changeMailAccountPassword(user: string, domain: string, account: string, secret: string) {
 		assertUsername(user);
 		await this.withStagedFile(`${secret}\n`, (path) =>
-			this.runChecked(
-				"v-change-mail-account-password",
-				user,
-				domain,
-				account,
-				path,
-			),
+			this.runChecked("v-change-mail-account-password", user, domain, account, path),
 		);
 	}
-	async changeMailAccountQuota(
-		user: string,
-		domain: string,
-		account: string,
-		quota: string,
-	) {
+	async changeMailAccountQuota(user: string, domain: string, account: string, quota: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-change-mail-account-quota",
-			user,
-			domain,
-			account,
-			quota || "0",
-		);
+		await this.runChecked("v-change-mail-account-quota", user, domain, account, quota || "0");
 	}
-	async changeMailAccountRateLimit(
-		user: string,
-		domain: string,
-		account: string,
-		rate: string,
-	) {
+	async changeMailAccountRateLimit(user: string, domain: string, account: string, rate: string) {
 		assertUsername(user);
 		await this.runChecked(
 			"v-change-mail-account-rate-limit",
@@ -814,66 +674,23 @@ export class HestiaClient {
 			rate || "system",
 		);
 	}
-	async addMailAccountAlias(
-		user: string,
-		domain: string,
-		account: string,
-		alias: string,
-	) {
+	async addMailAccountAlias(user: string, domain: string, account: string, alias: string) {
 		assertUsername(user);
 		await this.runChecked("v-add-mail-account-alias", user, domain, account, alias);
 	}
-	async deleteMailAccountAlias(
-		user: string,
-		domain: string,
-		account: string,
-		alias: string,
-	) {
+	async deleteMailAccountAlias(user: string, domain: string, account: string, alias: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-delete-mail-account-alias",
-			user,
-			domain,
-			account,
-			alias,
-		);
+		await this.runChecked("v-delete-mail-account-alias", user, domain, account, alias);
 	}
-	async addMailAccountForward(
-		user: string,
-		domain: string,
-		account: string,
-		forward: string,
-	) {
+	async addMailAccountForward(user: string, domain: string, account: string, forward: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-add-mail-account-forward",
-			user,
-			domain,
-			account,
-			forward,
-		);
+		await this.runChecked("v-add-mail-account-forward", user, domain, account, forward);
 	}
-	async deleteMailAccountForward(
-		user: string,
-		domain: string,
-		account: string,
-		forward: string,
-	) {
+	async deleteMailAccountForward(user: string, domain: string, account: string, forward: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-delete-mail-account-forward",
-			user,
-			domain,
-			account,
-			forward,
-		);
+		await this.runChecked("v-delete-mail-account-forward", user, domain, account, forward);
 	}
-	async setMailAccountFwdOnly(
-		user: string,
-		domain: string,
-		account: string,
-		on: boolean,
-	) {
+	async setMailAccountFwdOnly(user: string, domain: string, account: string, on: boolean) {
 		assertUsername(user);
 		await this.runChecked(
 			on ? "v-add-mail-account-fwd-only" : "v-delete-mail-account-fwd-only",
@@ -882,29 +699,13 @@ export class HestiaClient {
 			account,
 		);
 	}
-	async addMailAccountAutoreply(
-		user: string,
-		domain: string,
-		account: string,
-		message: string,
-	) {
+	async addMailAccountAutoreply(user: string, domain: string, account: string, message: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-add-mail-account-autoreply",
-			user,
-			domain,
-			account,
-			message,
-		);
+		await this.runChecked("v-add-mail-account-autoreply", user, domain, account, message);
 	}
 	async deleteMailAccountAutoreply(user: string, domain: string, account: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-delete-mail-account-autoreply",
-			user,
-			domain,
-			account,
-		);
+		await this.runChecked("v-delete-mail-account-autoreply", user, domain, account);
 	}
 	async suspendMailAccount(user: string, domain: string, account: string) {
 		assertUsername(user);
@@ -932,16 +733,7 @@ export class HestiaClient {
 	) {
 		assertUsername(user);
 		await this.withStagedFile(`${secret}\n`, (path) =>
-			this.runChecked(
-				"v-add-database",
-				user,
-				database,
-				dbuser,
-				path,
-				type,
-				host,
-				charset,
-			),
+			this.runChecked("v-add-database", user, database, dbuser, path, type, host, charset),
 		);
 	}
 	async changeDatabaseUser(user: string, database: string, dbuser: string) {
@@ -979,16 +771,7 @@ export class HestiaClient {
 		cmd: string,
 	) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-add-cron-job",
-			user,
-			min,
-			hour,
-			day,
-			month,
-			wday,
-			cmd,
-		);
+		await this.runChecked("v-add-cron-job", user, min, hour, day, month, wday, cmd);
 	}
 	async changeCronJob(
 		user: string,
@@ -1001,17 +784,7 @@ export class HestiaClient {
 		cmd: string,
 	) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-change-cron-job",
-			user,
-			job,
-			min,
-			hour,
-			day,
-			month,
-			wday,
-			cmd,
-		);
+		await this.runChecked("v-change-cron-job", user, job, min, hour, day, month, wday, cmd);
 	}
 	async suspendCronJob(user: string, job: string) {
 		assertUsername(user);
@@ -1122,14 +895,7 @@ export class HestiaClient {
 	) {
 		assertUsername(user);
 		await this.withStagedFile(`${secret}\n`, (file) =>
-			this.runChecked(
-				"v-add-web-domain-ftp",
-				user,
-				domain,
-				ftpUserSuffix,
-				file,
-				path,
-			),
+			this.runChecked("v-add-web-domain-ftp", user, domain, ftpUserSuffix, file, path),
 		);
 	}
 	async changeWebDomainFtpPassword(
@@ -1140,29 +906,12 @@ export class HestiaClient {
 	) {
 		assertUsername(user);
 		await this.withStagedFile(`${secret}\n`, (file) =>
-			this.runChecked(
-				"v-change-web-domain-ftp-password",
-				user,
-				domain,
-				ftpUserFull,
-				file,
-			),
+			this.runChecked("v-change-web-domain-ftp-password", user, domain, ftpUserFull, file),
 		);
 	}
-	async changeWebDomainFtpPath(
-		user: string,
-		domain: string,
-		ftpUserFull: string,
-		path: string,
-	) {
+	async changeWebDomainFtpPath(user: string, domain: string, ftpUserFull: string, path: string) {
 		assertUsername(user);
-		await this.runChecked(
-			"v-change-web-domain-ftp-path",
-			user,
-			domain,
-			ftpUserFull,
-			path,
-		);
+		await this.runChecked("v-change-web-domain-ftp-path", user, domain, ftpUserFull, path);
 	}
 	async deleteWebDomainFtp(user: string, domain: string, ftpUserFull: string) {
 		assertUsername(user);
@@ -1208,21 +957,10 @@ export class HestiaClient {
 
 	/* Web stats authorization: a single auth user per domain in 1.10.5.
 	 * The same add command sets the user and (re)sets its password. */
-	async addWebDomainStatsUser(
-		user: string,
-		domain: string,
-		statsUser: string,
-		secret: string,
-	) {
+	async addWebDomainStatsUser(user: string, domain: string, statsUser: string, secret: string) {
 		assertUsername(user);
 		await this.withStagedFile(`${secret}\n`, (file) =>
-			this.runChecked(
-				"v-add-web-domain-stats-user",
-				user,
-				domain,
-				statsUser,
-				file,
-			),
+			this.runChecked("v-add-web-domain-stats-user", user, domain, statsUser, file),
 		);
 	}
 	async deleteWebDomainStatsUser(user: string, domain: string) {
@@ -1288,9 +1026,7 @@ export class HestiaClient {
 	 *  entries, {} when empty) — returning it raw made the exclusions
 	 *  page's .split throw (500 on every visit, found live 2026-10-25).
 	 *  Normalize objects back to CSV strings (key, or key:detail). */
-	async listUserBackupExclusions(
-		user: string,
-	): Promise<Record<string, string>> {
+	async listUserBackupExclusions(user: string): Promise<Record<string, string>> {
 		assertUsername(user);
 		const parsed = await this.json<Record<string, unknown>>(
 			"v-list-user-backup-exclusions",
@@ -1303,9 +1039,7 @@ export class HestiaClient {
 				out[system] = value;
 			} else if (value && typeof value === "object") {
 				out[system] = Object.entries(value as Record<string, unknown>)
-					.map(([k, detail]) =>
-						detail ? `${k}:${String(detail)}` : k,
-					)
+					.map(([k, detail]) => (detail ? `${k}:${String(detail)}` : k))
 					.join(",");
 			} else {
 				out[system] = "";
@@ -1317,10 +1051,7 @@ export class HestiaClient {
 	 *  CRON is included: the update script rewrites all six lines, so
 	 *  omitting it silently wiped any CRON='*' exclusion on every save
 	 *  (verified live 2026-10-25). */
-	async updateUserBackupExclusions(
-		user: string,
-		exclusions: Record<string, string>,
-	) {
+	async updateUserBackupExclusions(user: string, exclusions: Record<string, string>) {
 		assertUsername(user);
 		const body =
 			["WEB", "DNS", "MAIL", "DB", "CRON", "USER"]
@@ -1343,14 +1074,7 @@ export class HestiaClient {
 		protocol: string,
 		comment: string,
 	) {
-		await this.runChecked(
-			"v-add-firewall-rule",
-			action,
-			ip,
-			port,
-			protocol,
-			comment,
-		);
+		await this.runChecked("v-add-firewall-rule", action, ip, port, protocol, comment);
 	}
 	async changeFirewallRule(
 		rule: string,
@@ -1360,15 +1084,7 @@ export class HestiaClient {
 		protocol: string,
 		comment: string,
 	) {
-		await this.runChecked(
-			"v-change-firewall-rule",
-			rule,
-			action,
-			ip,
-			port,
-			protocol,
-			comment,
-		);
+		await this.runChecked("v-change-firewall-rule", rule, action, ip, port, protocol, comment);
 	}
 	async deleteFirewallRule(rule: string) {
 		await this.runChecked("v-delete-firewall-rule", rule);
@@ -1383,19 +1099,8 @@ export class HestiaClient {
 	async deleteFirewallBan(ip: string, chain: string) {
 		await this.runChecked("v-delete-firewall-ban", ip, chain);
 	}
-	async addFirewallIpset(
-		name: string,
-		source: string,
-		ipVersion: string,
-		autoupdate: string,
-	) {
-		await this.runChecked(
-			"v-add-firewall-ipset",
-			name,
-			source,
-			ipVersion,
-			autoupdate,
-		);
+	async addFirewallIpset(name: string, source: string, ipVersion: string, autoupdate: string) {
+		await this.runChecked("v-add-firewall-ipset", name, source, ipVersion, autoupdate);
 	}
 	async deleteFirewallIpset(name: string) {
 		await this.runChecked("v-delete-firewall-ipset", name);
@@ -1415,16 +1120,7 @@ export class HestiaClient {
 		name: string,
 		nat: string,
 	) {
-		await this.runChecked(
-			"v-add-sys-ip",
-			ip,
-			netmask,
-			iface,
-			owner,
-			status,
-			name,
-			nat,
-		);
+		await this.runChecked("v-add-sys-ip", ip, netmask, iface, owner, status, name, nat);
 	}
 	async changeSysIpStatus(ip: string, status: string) {
 		await this.runChecked("v-change-sys-ip-status", ip, status);
@@ -1476,18 +1172,17 @@ export class HestiaClient {
 		await this.runChecked("v-change-sys-timezone", timezone);
 	}
 	async changeSysLanguage(language: string, updateUsers = false) {
-		await this.runChecked(
-			"v-change-sys-language",
-			language,
-			...(updateUsers ? ["yes"] : []),
-		);
+		await this.runChecked("v-change-sys-language", language, ...(updateUsers ? ["yes"] : []));
 	}
 	async changeSysConfigValue(key: string, value: string) {
 		await this.runChecked("v-change-sys-config-value", key, value);
 	}
 	async getSysTimezones(): Promise<string[]> {
 		const result = await this.raw("v-get-sys-timezones");
-		return result.stdout.split("\n").map((s) => s.trim()).filter(Boolean);
+		return result.stdout
+			.split("\n")
+			.map((s) => s.trim())
+			.filter(Boolean);
 	}
 	/** Read a service config file through the engine (plain text). */
 	async openFsConfig(path: string): Promise<string> {
@@ -1502,11 +1197,7 @@ export class HestiaClient {
 			// failures (missing file, bad path) print "Error: ..." and
 			// exit 1/2/3/10, never 127 with file content.
 			const body = result.stdout;
-			if (
-				result.code === 127 &&
-				body.trim() !== "" &&
-				!body.trimStart().startsWith("Error:")
-			) {
+			if (result.code === 127 && body.trim() !== "" && !body.trimStart().startsWith("Error:")) {
 				return body;
 			}
 			throw new Error(
@@ -1520,18 +1211,9 @@ export class HestiaClient {
 	 * v-change-sys-service-config — the archetype behind all ~22
 	 * web/edit/server/<service> pages.
 	 */
-	async changeSysServiceConfig(
-		service: string,
-		contents: string,
-		restart: boolean,
-	) {
+	async changeSysServiceConfig(service: string, contents: string, restart: boolean) {
 		await this.withStagedFile(contents, (file) =>
-			this.runChecked(
-				"v-change-sys-service-config",
-				file,
-				service,
-				restart ? "yes" : "no",
-			),
+			this.runChecked("v-change-sys-service-config", file, service, restart ? "yes" : "no"),
 		);
 	}
 	async startService(service: string) {
@@ -1555,15 +1237,7 @@ export class HestiaClient {
 		port: string,
 	) {
 		await this.withStagedFile(`${secret}\n`, (file) =>
-			this.runChecked(
-				"v-add-backup-host",
-				type,
-				host,
-				username,
-				file,
-				path,
-				port,
-			),
+			this.runChecked("v-add-backup-host", type, host, username, file, path, port),
 		);
 	}
 	async deleteBackupHost(type: string) {
@@ -1603,27 +1277,17 @@ export class HestiaClient {
 	/** Per-user object search: v-search-user-object. */
 	async searchUserObjects(user: string, query: string): Promise<HestiaRow[]> {
 		assertUsername(user);
-		return normalizeRowList(
-			await this.json("v-search-user-object", user, query, "json"),
-		);
+		return normalizeRowList(await this.json("v-search-user-object", user, query, "json"));
 	}
 	/** Restic snapshots for a user (a JSON array, newest last upstream). */
 	async listUserBackupsRestic(user: string): Promise<HestiaRow[]> {
 		assertUsername(user);
-		const data = await this.json<unknown>(
-			"v-list-user-backups-restic",
-			user,
-			"json",
-		);
+		const data = await this.json<unknown>("v-list-user-backups-restic", user, "json");
 		return Array.isArray(data) ? (data as HestiaRow[]) : [];
 	}
 	async listUserBackupRestic(user: string, snapshot: string) {
 		assertUsername(user);
-		const rows = await this.listRows(
-			"v-list-user-backup-restic",
-			user,
-			snapshot,
-		);
+		const rows = await this.listRows("v-list-user-backup-restic", user, snapshot);
 		return rows[snapshot];
 	}
 	async scheduleUserBackupRestic(user: string) {
@@ -1637,12 +1301,7 @@ export class HestiaClient {
 	 */
 	async listUserFilesRestic(user: string, snapshot: string, folder: string) {
 		assertUsername(user);
-		const result = await this.raw(
-			"v-list-user-files-restic",
-			user,
-			snapshot,
-			folder,
-		);
+		const result = await this.raw("v-list-user-files-restic", user, snapshot, folder);
 		if (result.code !== 0) {
 			throw new Error(
 				`v-list-user-files-restic failed (${result.code}): ${result.stderr.trim() || result.stdout.trim()}`,
@@ -1657,21 +1316,10 @@ export class HestiaClient {
 	 * Schedule a restic restore: full snapshot, or one typed object
 	 * (web/schedule/restore/incremental's two shapes).
 	 */
-	async scheduleUserRestoreRestic(
-		user: string,
-		snapshot: string,
-		type?: string,
-		object?: string,
-	) {
+	async scheduleUserRestoreRestic(user: string, snapshot: string, type?: string, object?: string) {
 		assertUsername(user);
 		if (type && object) {
-			await this.runChecked(
-				"v-schedule-user-restore-restic",
-				user,
-				snapshot,
-				type,
-				object,
-			);
+			await this.runChecked("v-schedule-user-restore-restic", user, snapshot, type, object);
 		} else if (type) {
 			// e.g. cron restores pass the type with no object argument
 			await this.runChecked("v-schedule-user-restore-restic", user, snapshot, type);
@@ -1691,10 +1339,7 @@ export class HestiaClient {
 	 * argument for secrets and definitions; func/main.sh only treats ^/tmp/
 	 * paths as file references, so staging anywhere else is refused.
 	 */
-	async withStagedFile<T>(
-		contents: string,
-		fn: (path: string) => Promise<T>,
-	): Promise<T> {
+	async withStagedFile<T>(contents: string, fn: (path: string) => Promise<T>): Promise<T> {
 		if (!tmpdir().startsWith("/tmp")) {
 			throw new Error("withStagedFile requires os.tmpdir() under /tmp");
 		}
@@ -1714,11 +1359,7 @@ export class HestiaClient {
 	 * v-check-user-password (is_password_valid swaps in the file contents).
 	 * The password therefore never appears in argv.
 	 */
-	async verifyUserPassword(
-		user: string,
-		secret: string,
-		ip = "127.0.0.1",
-	): Promise<boolean> {
+	async verifyUserPassword(user: string, secret: string, ip = "127.0.0.1"): Promise<boolean> {
 		assertUsername(user);
 		const result = await this.withStagedFile(`${secret}\n`, (path) =>
 			this.raw("v-check-user-password", user, path, ip),
@@ -1731,11 +1372,7 @@ export class HestiaClient {
 	 * hash staged to a file (is_hash_valid). This is the legacy API's
 	 * `hash` authentication mode.
 	 */
-	async checkUserHash(
-		user: string,
-		hash: string,
-		ip = "127.0.0.1",
-	): Promise<boolean> {
+	async checkUserHash(user: string, hash: string, ip = "127.0.0.1"): Promise<boolean> {
 		assertUsername(user);
 		const result = await this.withStagedFile(`${hash}\n`, (path) =>
 			this.raw("v-check-user-hash", user, path, ip),
@@ -1753,22 +1390,13 @@ export class HestiaClient {
 	async checkApiKey(hash: string, ip = "127.0.0.1"): Promise<boolean> {
 		const name = hash.split("/").pop() ?? "";
 		if (!name) return false;
-		const keyPath = join(
-			dirname(this.config.binDir),
-			"data",
-			"keys",
-			name,
-		);
+		const keyPath = join(dirname(this.config.binDir), "data", "keys", name);
 		const result = await this.raw("v-check-api-key", keyPath, ip);
 		return result.code === 0;
 	}
 
 	/** The spike's one edit: change a user's full name (v-change-user-name USER FIRST [LAST]). */
-	async changeUserName(
-		user: string,
-		firstName: string,
-		lastName?: string,
-	): Promise<void> {
+	async changeUserName(user: string, firstName: string, lastName?: string): Promise<void> {
 		assertUsername(user);
 		const args = [user, firstName, ...(lastName ? [lastName] : [])];
 		await this.runChecked("v-change-user-name", ...args);
@@ -1794,14 +1422,7 @@ export class HestiaClient {
 	async addUser(opts: AddUserOptions): Promise<void> {
 		assertUsername(opts.user);
 		await this.withStagedFile(`${opts.secret}\n`, (path) =>
-			this.runChecked(
-				"v-add-user",
-				opts.user,
-				path,
-				opts.email,
-				opts.package,
-				opts.name,
-			),
+			this.runChecked("v-add-user", opts.user, path, opts.email, opts.package, opts.name),
 		);
 		if (opts.language) {
 			await this.changeUserLanguage(opts.user, opts.language);
@@ -1862,11 +1483,7 @@ export class HestiaClient {
 		await this.runChecked("v-change-user-ns", user, ...servers);
 	}
 
-	async changeUserConfigValue(
-		user: string,
-		key: string,
-		value: string,
-	): Promise<void> {
+	async changeUserConfigValue(user: string, key: string, value: string): Promise<void> {
 		assertUsername(user);
 		await this.runChecked("v-change-user-config-value", user, key, value);
 	}
@@ -1956,10 +1573,7 @@ export class HestiaClient {
 	// ---- Packages (Phase 1) ----
 
 	async listUserPackages(): Promise<Record<string, HestiaPackage>> {
-		return this.json<Record<string, HestiaPackage>>(
-			"v-list-user-packages",
-			"json",
-		);
+		return this.json<Record<string, HestiaPackage>>("v-list-user-packages", "json");
 	}
 
 	async listUserPackage(name: string): Promise<HestiaPackage> {
@@ -1976,17 +1590,10 @@ export class HestiaClient {
 	 * serialized to the KEY='value' file format the bash layer reads,
 	 * staged, and handed to v-add-user-package by path.
 	 */
-	async addUserPackage(
-		name: string,
-		fields: Record<string, string>,
-		force = false,
-	): Promise<void> {
+	async addUserPackage(name: string, fields: Record<string, string>, force = false): Promise<void> {
 		const contents = serializeUserPackage(fields);
 		await this.withStagedFile(contents, (path) =>
-			this.runChecked(
-				"v-add-user-package",
-				...[path, name, ...(force ? ["yes"] : [])],
-			),
+			this.runChecked("v-add-user-package", ...[path, name, ...(force ? ["yes"] : [])]),
 		);
 	}
 
@@ -2113,10 +1720,7 @@ function normalizeRowList(data: unknown): HestiaRow[] {
 }
 
 /** Array-of-rows enumeration -> map keyed by the given field; keyed objects pass through. */
-function normalizeKeyedRows(
-	data: unknown,
-	keyField: string,
-): Record<string, HestiaRow> {
+function normalizeKeyedRows(data: unknown, keyField: string): Record<string, HestiaRow> {
 	if (Array.isArray(data)) {
 		const out: Record<string, HestiaRow> = {};
 		for (const row of data as HestiaRow[]) {

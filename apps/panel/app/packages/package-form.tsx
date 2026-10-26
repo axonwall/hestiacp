@@ -21,7 +21,8 @@ export function PackageFormFields({
 			{USER_PACKAGE_FIELDS.map((field) => (
 				<div key={field}>
 					<label htmlFor={`f-${field}`}>{field}</label>
-					<input className="form-control"
+					<input
+						className="form-control"
 						id={`f-${field}`}
 						name={field}
 						defaultValue={values[field] ?? ""}
@@ -35,9 +36,7 @@ export function PackageFormFields({
 	);
 }
 
-export function readPackageFields(
-	formData: FormData,
-): Record<string, string> {
+export function readPackageFields(formData: FormData): Record<string, string> {
 	const fields: Record<string, string> = {};
 	for (const field of USER_PACKAGE_FIELDS) {
 		fields[field] = String(formData.get(field) ?? "").trim();

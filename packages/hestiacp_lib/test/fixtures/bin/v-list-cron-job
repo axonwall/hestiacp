@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-cron-job (singular/enumeration double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "1": {
         "MIN": "0",

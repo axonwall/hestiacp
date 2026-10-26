@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 function backTo(formData: FormData, notice?: string): string {
 	const snapshot = formData.get("snapshot")?.toString() ?? "";
@@ -23,12 +17,7 @@ export async function restoreResticFileAction(formData: FormData) {
 	const snapshot = formData.get("snapshot")?.toString() ?? "";
 	const path = formData.get("path")?.toString() ?? "";
 	try {
-		await hestia.scheduleUserRestoreRestic(
-			effectiveUser(session),
-			snapshot,
-			"file",
-			path,
-		);
+		await hestia.scheduleUserRestoreRestic(effectiveUser(session), snapshot, "file", path);
 	} catch (error) {
 		redirect(`${backTo(formData)}&error=${encodeURIComponent(errorMessage(error))}`);
 	}

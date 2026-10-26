@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /**
  * Edit a mail domain (web/edit/mail), changed-only: antispam /
@@ -36,17 +30,12 @@ export async function editMailDomainAction(formData: FormData): Promise<void> {
 
 		// DKIM: off->delete; selector change while on -> delete + re-add
 		const dkim = formData.get("dkim") === "yes";
-		const selector =
-			String(formData.get("dkimSelector") ?? "").trim() || "mail";
+		const selector = String(formData.get("dkimSelector") ?? "").trim() || "mail";
 		if (!dkim && current.DKIM === "yes") {
 			await hestia.deleteMailDomainDkim(user, domain);
 		} else if (dkim && current.DKIM !== "yes") {
 			await hestia.addMailDomainDkim(user, domain, selector);
-		} else if (
-			dkim &&
-			current.DKIM === "yes" &&
-			selector !== (current.DKIM_SELECTOR || "mail")
-		) {
+		} else if (dkim && current.DKIM === "yes" && selector !== (current.DKIM_SELECTOR || "mail")) {
 			await hestia.deleteMailDomainDkim(user, domain);
 			await hestia.addMailDomainDkim(user, domain, selector);
 		}

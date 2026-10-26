@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-web-domain-ssl (ssl record double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "example.com": {
         "CRT": "WEBCRT-PEM",

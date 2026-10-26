@@ -15,7 +15,7 @@ export default async function Page() {
 				{ key: "U_BANDWIDTH", label: t("Bandwidth"), format: (v) => `${v} MB` },
 				{ key: "U_WEB_DOMAINS", label: t("Web Domains") },
 				{ key: "U_DATABASES", label: t("Databases") },
-				{ key: "U_CRON_JOBS", label: t("Cron Jobs") }
+				{ key: "U_CRON_JOBS", label: t("Cron Jobs") },
 			]}
 		></ListView>
 	);

@@ -21,7 +21,7 @@ it is **one pattern repeated**, plus a short tail.
 ## The one pattern: stage a file, hand its path to a `v-*` command
 
 Almost everything is temp-file staging: write content to a file under
-`/tmp`, pass the *path* as an argument to a `v-*` command, delete the file.
+`/tmp`, pass the _path_ as an argument to a `v-*` command, delete the file.
 The bash layer — not the panel — owns whatever the file describes. That is
 exactly the pattern the spike's `verifyUserPassword` already implements, so
 each category below collapses into a single `@hestiacp/lib` helper.
@@ -151,7 +151,7 @@ uses `posix_getpwnam` — Node has no equivalent for arbitrary users; parse
   via an SFTP key it auto-provisions at
   `/home/<user>/.ssh/hst-filemanager-key` (trashed after 30 min).
 - **Implication:** FileGator does not have its own login — the PHP session
-  *is* its auth. A Next panel with its own session format silently breaks
+  _is_ its auth. A Next panel with its own session format silently breaks
   `/fm/` at cutover unless the session layer is bridge-compatible (below).
 
 ### Web terminal — same contract, smaller surface
@@ -181,7 +181,7 @@ implementation, not its design):
 
 Plain links from the DB list page to `//<host>/phpmyadmin/` and
 `/phppgadmin/` (or the `DB_PGA_ALIAS` custom alias), `target=_blank`,
-served by the *user* web stack. **No SSO, no token** — users authenticate
+served by the _user_ web stack. **No SSO, no token** — users authenticate
 with DB credentials. Phase 3 just reproduces the link construction.
 
 ### Webmail (Roundcube / SnappyMail) — trivial

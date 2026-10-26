@@ -30,11 +30,7 @@ export default async function AddPackagePage({
 				<form action={addPackageAction}>
 					<label htmlFor="name">Package name</label>
 					<input className="form-control" id="name" name="name" required autoComplete="off" />
-					<PackageFormFields
-						values={defaults}
-						token={token}
-						submitLabel="Create package"
-					/>
+					<PackageFormFields values={defaults} token={token} submitLabel="Create package" />
 				</form>
 			</div>
 			<p>

@@ -17,14 +17,18 @@ export default async function Page({
 			<form action={addMailDomainAction}>
 				<input type="hidden" name="token" value={token} />
 				<label htmlFor="domain">{t("Domain")}</label>
-				<input className="form-control" id="domain" name="domain" required placeholder="example.com" />
+				<input
+					className="form-control"
+					id="domain"
+					name="domain"
+					required
+					placeholder="example.com"
+				/>
 				<label>
-					<input type="checkbox" name="antispam" value="yes" defaultChecked />{" "}
-					{t("Antispam")}
+					<input type="checkbox" name="antispam" value="yes" defaultChecked /> {t("Antispam")}
 				</label>
 				<label>
-					<input type="checkbox" name="antivirus" value="yes" defaultChecked />{" "}
-					{t("Antivirus")}
+					<input type="checkbox" name="antivirus" value="yes" defaultChecked /> {t("Antivirus")}
 				</label>
 				<label>
 					<input type="checkbox" name="dkim" value="yes" defaultChecked /> DKIM
@@ -32,8 +36,7 @@ export default async function Page({
 				<label htmlFor="dkimSelector">{t("DKIM selector")}</label>
 				<input className="form-control" id="dkimSelector" name="dkimSelector" defaultValue="mail" />
 				<label>
-					<input type="checkbox" name="reject" value="yes" />{" "}
-					{t("Reject spam")}
+					<input type="checkbox" name="reject" value="yes" /> {t("Reject spam")}
 				</label>
 				<label htmlFor="webmail">{t("Webmail alias")}</label>
 				<input className="form-control" id="webmail" name="webmail" placeholder="webmail" />
@@ -47,8 +50,16 @@ export default async function Page({
 				<label htmlFor="relayUser">{t("Relay user")}</label>
 				<input className="form-control" id="relayUser" name="relayUser" />
 				<label htmlFor="relayPass">{t("Relay password")}</label>
-				<input className="form-control" id="relayPass" name="relayPass" type="password" autoComplete="new-password" />
-				<button type="submit" className="button">{t("Add")}</button>
+				<input
+					className="form-control"
+					id="relayPass"
+					name="relayPass"
+					type="password"
+					autoComplete="new-password"
+				/>
+				<button type="submit" className="button">
+					{t("Add")}
+				</button>
 			</form>
 		</div>
 	);

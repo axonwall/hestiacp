@@ -13,23 +13,21 @@ export default async function Page({
 	const query = await searchParams;
 	const user = effectiveUser(session);
 	const domain = query.domain ?? "";
-	const record = domain
-		? await hestia.listMailDomain(user, domain).catch(() => null)
-		: null;
+	const record = domain ? await hestia.listMailDomain(user, domain).catch(() => null) : null;
 	if (!record) {
 		return (
 			<div className="card">
 				<h1>{t("Edit Mail Domain")}</h1>
 				<p className="error">{query.error ?? "Domain not found."}</p>
-				<p><a href="/list/mail">{t("Back")}</a></p>
+				<p>
+					<a href="/list/mail">{t("Back")}</a>
+				</p>
 			</div>
 		);
 	}
 	const isAdmin = session.data.userContext === "admin" && !session.data.look;
 	const sslRecord =
-		record.SSL === "yes"
-			? await hestia.listMailDomainSsl(user, domain).catch(() => null)
-			: null;
+		record.SSL === "yes" ? await hestia.listMailDomainSsl(user, domain).catch(() => null) : null;
 	const token = String(session.data.token ?? "");
 	return (
 		<div className="card">
@@ -42,93 +40,191 @@ export default async function Page({
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="domain" value={domain} />
 				<label>
-					<input type="checkbox" name="antispam" value="yes" defaultChecked={record.ANTISPAM === "yes"} />{" "}
+					<input
+						type="checkbox"
+						name="antispam"
+						value="yes"
+						defaultChecked={record.ANTISPAM === "yes"}
+					/>{" "}
 					{t("Antispam")}
 				</label>
 				<label>
-					<input type="checkbox" name="antivirus" value="yes" defaultChecked={record.ANTIVIRUS === "yes"} />{" "}
+					<input
+						type="checkbox"
+						name="antivirus"
+						value="yes"
+						defaultChecked={record.ANTIVIRUS === "yes"}
+					/>{" "}
 					{t("Antivirus")}
 				</label>
 				<label>
-					<input type="checkbox" name="dkim" value="yes" defaultChecked={record.DKIM === "yes"} /> DKIM
+					<input type="checkbox" name="dkim" value="yes" defaultChecked={record.DKIM === "yes"} />{" "}
+					DKIM
 				</label>
 				<label htmlFor="dkimSelector">{t("DKIM selector")}</label>
-				<input className="form-control" id="dkimSelector" name="dkimSelector" defaultValue={record.DKIM_SELECTOR ?? "mail"} />
+				<input
+					className="form-control"
+					id="dkimSelector"
+					name="dkimSelector"
+					defaultValue={record.DKIM_SELECTOR ?? "mail"}
+				/>
 				<label>
-					<input type="checkbox" name="reject" value="yes" defaultChecked={record.REJECT === "yes"} />{" "}
+					<input
+						type="checkbox"
+						name="reject"
+						value="yes"
+						defaultChecked={record.REJECT === "yes"}
+					/>{" "}
 					{t("Reject spam")}
 				</label>
 				<label htmlFor="catchall">{t("Catchall")}</label>
-				<input className="form-control" id="catchall" name="catchall" defaultValue={record.CATCHALL ?? ""} placeholder="admin@example.com" />
+				<input
+					className="form-control"
+					id="catchall"
+					name="catchall"
+					defaultValue={record.CATCHALL ?? ""}
+					placeholder="admin@example.com"
+				/>
 				{isAdmin ? (
 					<>
 						<label htmlFor="rate">{t("Rate limit")}</label>
-						<input className="form-control" id="rate" name="rate" defaultValue={record.RATE_LIMIT ?? ""} />
+						<input
+							className="form-control"
+							id="rate"
+							name="rate"
+							defaultValue={record.RATE_LIMIT ?? ""}
+						/>
 					</>
 				) : null}
-				<button type="submit" className="button">{t("Save")}</button>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
 			</form>
 			<p>
 				<a href="/list/mail">{t("Back")}</a> ·{" "}
 				<a href={`/list/mail/accounts?domain=${encodeURIComponent(domain)}`}>
 					{t("Mail Accounts")}
 				</a>{" "}
-				·{" "}
-				<a href={`/delete/mail?domain=${encodeURIComponent(domain)}`}>{t("Delete")}</a>
+				· <a href={`/delete/mail?domain=${encodeURIComponent(domain)}`}>{t("Delete")}</a>
 			</p>
-			<h2>{t("Webmail")} + {t("SMTP Relay")}</h2>
+			<h2>
+				{t("Webmail")} + {t("SMTP Relay")}
+			</h2>
 			{query.error === "relay" ? (
-				<p className="error">
-					Changing relay settings requires the relay password.
-				</p>
+				<p className="error">Changing relay settings requires the relay password.</p>
 			) : null}
 			<form action={editMailDomainExtrasAction}>
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="domain" value={domain} />
 				<label htmlFor="webmail">{t("Webmail alias")}</label>
-				<input className="form-control" id="webmail" name="webmail" defaultValue={record.WEBMAIL ?? ""} placeholder="webmail" />
+				<input
+					className="form-control"
+					id="webmail"
+					name="webmail"
+					defaultValue={record.WEBMAIL ?? ""}
+					placeholder="webmail"
+				/>
 				<label>
-					<input type="checkbox" name="relay" value="yes" defaultChecked={record.U_SMTP_RELAY === "true" || record.U_SMTP_RELAY === "yes"} />{" "}
+					<input
+						type="checkbox"
+						name="relay"
+						value="yes"
+						defaultChecked={record.U_SMTP_RELAY === "true" || record.U_SMTP_RELAY === "yes"}
+					/>{" "}
 					{t("SMTP Relay")}
 				</label>
 				<label htmlFor="relayHost">{t("Relay host")}</label>
-				<input className="form-control" id="relayHost" name="relayHost" defaultValue={record.U_SMTP_RELAY_HOST ?? ""} />
+				<input
+					className="form-control"
+					id="relayHost"
+					name="relayHost"
+					defaultValue={record.U_SMTP_RELAY_HOST ?? ""}
+				/>
 				<label htmlFor="relayPort">{t("Relay port")}</label>
-				<input className="form-control" id="relayPort" name="relayPort" defaultValue={record.U_SMTP_RELAY_PORT ?? ""} placeholder="587" />
+				<input
+					className="form-control"
+					id="relayPort"
+					name="relayPort"
+					defaultValue={record.U_SMTP_RELAY_PORT ?? ""}
+					placeholder="587"
+				/>
 				<label htmlFor="relayUser">{t("Relay user")}</label>
-				<input className="form-control" id="relayUser" name="relayUser" defaultValue={record.U_SMTP_RELAY_USERNAME ?? ""} />
+				<input
+					className="form-control"
+					id="relayUser"
+					name="relayUser"
+					defaultValue={record.U_SMTP_RELAY_USERNAME ?? ""}
+				/>
 				<label htmlFor="relayPass">{t("Relay password")}</label>
-				<input className="form-control" id="relayPass" name="relayPass" type="password" autoComplete="new-password" />
-				<button type="submit" className="button">{t("Save")}</button>
+				<input
+					className="form-control"
+					id="relayPass"
+					name="relayPass"
+					type="password"
+					autoComplete="new-password"
+				/>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
 			</form>
 			<h2>SSL {t("Certificate")}</h2>
 			{sslRecord ? (
 				<p>
-					{sslRecord.SUBJECT} · {sslRecord.ISSUER} · {sslRecord.NOT_BEFORE} →{" "}
-					{sslRecord.NOT_AFTER}
+					{sslRecord.SUBJECT} · {sslRecord.ISSUER} · {sslRecord.NOT_BEFORE} → {sslRecord.NOT_AFTER}
 				</p>
 			) : null}
 			<form action={editMailDomainSslAction}>
 				<input type="hidden" name="token" value={token} />
 				<input type="hidden" name="domain" value={domain} />
 				<label>
-					<input type="checkbox" name="letsencrypt" value="yes" defaultChecked={record.LETSENCRYPT === "yes"} />{" "}
+					<input
+						type="checkbox"
+						name="letsencrypt"
+						value="yes"
+						defaultChecked={record.LETSENCRYPT === "yes"}
+					/>{" "}
 					Let&apos;s Encrypt
 				</label>
 				<label htmlFor="mSslKeyAlgo">{t("SSL key algorithm")}</label>
-				<input className="form-control" id="mSslKeyAlgo" name="sslKeyAlgo" defaultValue={record.SSL_KEY_ALGO ?? ""} placeholder="RSA3072 / EC384" />
+				<input
+					className="form-control"
+					id="mSslKeyAlgo"
+					name="sslKeyAlgo"
+					defaultValue={record.SSL_KEY_ALGO ?? ""}
+					placeholder="RSA3072 / EC384"
+				/>
 				{record.SSL === "yes" && record.LETSENCRYPT !== "yes" ? (
 					<label>
 						<input type="checkbox" name="removeSsl" value="yes" /> {t("Remove SSL certificate")}
 					</label>
 				) : null}
 				<label htmlFor="mSslCrt">{t("Certificate")}</label>
-				<textarea className="form-control" id="mSslCrt" name="crt" rows={4} defaultValue={sslRecord?.CRT ?? ""} />
+				<textarea
+					className="form-control"
+					id="mSslCrt"
+					name="crt"
+					rows={4}
+					defaultValue={sslRecord?.CRT ?? ""}
+				/>
 				<label htmlFor="mSslKey">{t("Key")}</label>
-				<textarea className="form-control" id="mSslKey" name="key" rows={4} defaultValue={sslRecord?.KEY ?? ""} />
+				<textarea
+					className="form-control"
+					id="mSslKey"
+					name="key"
+					rows={4}
+					defaultValue={sslRecord?.KEY ?? ""}
+				/>
 				<label htmlFor="mSslCa">{t("CA chain")}</label>
-				<textarea className="form-control" id="mSslCa" name="ca" rows={3} defaultValue={sslRecord?.CA ?? ""} />
-				<button type="submit" className="button">{t("Save")}</button>
+				<textarea
+					className="form-control"
+					id="mSslCa"
+					name="ca"
+					rows={3}
+					defaultValue={sslRecord?.CA ?? ""}
+				/>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
 			</form>
 		</div>
 	);

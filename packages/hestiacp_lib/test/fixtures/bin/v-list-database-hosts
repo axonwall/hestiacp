@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-database-hosts (real shape: an ARRAY of host rows)
-cat <<'JSON'
+cat << 'JSON'
 [
     {
         "HOST": "localhost",

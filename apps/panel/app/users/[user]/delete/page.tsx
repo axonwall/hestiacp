@@ -23,24 +23,22 @@ export default async function DeleteUserPage({
 			) : query.error === "confirm" ? (
 				<p className="error">Please tick the confirmation box first.</p>
 			) : query.error === "protected" ? (
-				<p className="error">
-					Your own account and the root user cannot be deleted here.
-				</p>
+				<p className="error">Your own account and the root user cannot be deleted here.</p>
 			) : query.error ? (
 				<p className="error">{query.error}</p>
 			) : null}
 			<div className="card">
 				<p>
 					This permanently deletes the account
-					{record ? ` (${record.NAME}, package ${record.PACKAGE})` : ""} with
-					all of its web, DNS, mail and database content. There is no undo.
+					{record ? ` (${record.NAME}, package ${record.PACKAGE})` : ""} with all of its web, DNS,
+					mail and database content. There is no undo.
 				</p>
 				<form action={deleteUserAction}>
 					<input type="hidden" name="user" value={username} />
 					<input type="hidden" name="token" value={token} />
 					<label>
-						<input type="checkbox" name="confirm" value="yes" /> I understand
-						this deletes {username} permanently
+						<input type="checkbox" name="confirm" value="yes" /> I understand this deletes{" "}
+						{username} permanently
 					</label>
 					<button type="submit" className="button">
 						Delete user
@@ -48,9 +46,7 @@ export default async function DeleteUserPage({
 				</form>
 			</div>
 			<p>
-				<Link href={`/users/${encodeURIComponent(username)}`}>
-					Back to user
-				</Link>
+				<Link href={`/users/${encodeURIComponent(username)}`}>Back to user</Link>
 			</p>
 		</div>
 	);

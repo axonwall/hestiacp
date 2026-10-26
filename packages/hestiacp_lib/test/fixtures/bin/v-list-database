@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-database (singular/enumeration double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "demo_main": {
         "DATABASE": "demo_main",

@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /** Suspend/unsuspend a web domain from the list, mirroring the PHP bulk endpoints. */
 export async function toggleWebDomainAction(formData: FormData): Promise<void> {

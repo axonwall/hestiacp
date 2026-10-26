@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /**
  * Custom SSL certificate for a web domain (edit/web SSL section): the
@@ -15,9 +9,7 @@ import {
  * dir for v-change-web-domain-sslcert, exactly as the PHP page stages
  * them. Runs only when a field actually changed.
  */
-export async function editWebDomainSslAction(
-	formData: FormData,
-): Promise<void> {
+export async function editWebDomainSslAction(formData: FormData): Promise<void> {
 	const session = await requireSession();
 	const domain = String(formData.get("domain") ?? "");
 	const back = `/edit/web?domain=${encodeURIComponent(domain)}`;
@@ -28,9 +20,7 @@ export async function editWebDomainSslAction(
 	const key = norm(String(formData.get("key") ?? ""));
 	const ca = norm(String(formData.get("ca") ?? ""));
 	try {
-		const current = await hestia
-			.listWebDomainSsl(user, domain)
-			.catch(() => null);
+		const current = await hestia.listWebDomainSsl(user, domain).catch(() => null);
 		const changed =
 			!current || crt !== current.CRT || key !== current.KEY || ca !== (current.CA ?? "");
 		if (changed) {

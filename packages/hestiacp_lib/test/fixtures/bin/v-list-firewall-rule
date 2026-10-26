@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-firewall-rule (record double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "1": {
         "RULE": "1",

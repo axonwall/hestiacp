@@ -27,14 +27,11 @@ export default async function AddWebAppPage({
 			<div className="card">
 				<h1>{app}</h1>
 				<p>
-					This installer has not been ported yet — its setupApplication
-					still exists only in the PHP tree. Ported so far:{" "}
-					{Object.keys(WEBAPP_DEFINITIONS).join(", ")}.
+					This installer has not been ported yet — its setupApplication still exists only in the PHP
+					tree. Ported so far: {Object.keys(WEBAPP_DEFINITIONS).join(", ")}.
 				</p>
 				<p>
-					<Link href={`/list/webapps?domain=${encodeURIComponent(domain)}`}>
-						← Catalog
-					</Link>
+					<Link href={`/list/webapps?domain=${encodeURIComponent(domain)}`}>← Catalog</Link>
 				</p>
 			</div>
 		);
@@ -57,13 +54,9 @@ export default async function AddWebAppPage({
 				<h1>
 					Install {app} on {domain}
 				</h1>
-				<p className="error">
-					Unable to install {app}, required php version is not available.
-				</p>
+				<p className="error">Unable to install {app}, required php version is not available.</p>
 				<p>
-					<Link href={`/list/webapps?domain=${encodeURIComponent(domain)}`}>
-						← Catalog
-					</Link>
+					<Link href={`/list/webapps?domain=${encodeURIComponent(domain)}`}>← Catalog</Link>
 				</p>
 			</div>
 		);
@@ -84,7 +77,12 @@ export default async function AddWebAppPage({
 					field.type === "select" ? (
 						<div key={field.key}>
 							<label htmlFor={`f-${field.key}`}>{field.key}</label>
-							<select className="form-select" id={`f-${field.key}`} name={field.key} defaultValue={field.value ?? ""}>
+							<select
+								className="form-select"
+								id={`f-${field.key}`}
+								name={field.key}
+								defaultValue={field.value ?? ""}
+							>
 								{(field.options ?? []).map((o) => (
 									<option key={o.value} value={o.value}>
 										{o.label}
@@ -95,7 +93,8 @@ export default async function AddWebAppPage({
 					) : (
 						<div key={field.key}>
 							<label htmlFor={`f-${field.key}`}>{field.key}</label>
-							<input className="form-control"
+							<input
+								className="form-control"
 								id={`f-${field.key}`}
 								name={field.key}
 								type={field.type === "password" ? "password" : "text"}
@@ -111,7 +110,12 @@ export default async function AddWebAppPage({
 				</div>
 				<div>
 					<label htmlFor="f-php">PHP version</label>
-					<select className="form-select" id="f-php" name="php_version" defaultValue={phpChoices[phpChoices.length - 1] ?? ""}>
+					<select
+						className="form-select"
+						id="f-php"
+						name="php_version"
+						defaultValue={phpChoices[phpChoices.length - 1] ?? ""}
+					>
 						{phpChoices.map((v) => (
 							<option key={v} value={v}>
 								{v}
@@ -123,31 +127,49 @@ export default async function AddWebAppPage({
 					<fieldset>
 						<legend>Database</legend>
 						<label>
-							<input type="checkbox" name="database_create" value="yes" defaultChecked />{" "}
-							Create a database for the app
+							<input type="checkbox" name="database_create" value="yes" defaultChecked /> Create a
+							database for the app
 						</label>
 						<div>
 							<label htmlFor="f-dbname">Database name (suffix)</label>
-							<input className="form-control" id="f-dbname" name="database_name" defaultValue={slug} />
+							<input
+								className="form-control"
+								id="f-dbname"
+								name="database_name"
+								defaultValue={slug}
+							/>
 						</div>
 						<div>
 							<label htmlFor="f-dbuser">Database user (suffix)</label>
-							<input className="form-control" id="f-dbuser" name="database_user" defaultValue={slug} />
+							<input
+								className="form-control"
+								id="f-dbuser"
+								name="database_user"
+								defaultValue={slug}
+							/>
 						</div>
 						<div>
 							<label htmlFor="f-dbpass">Database password</label>
-							<input className="form-control" id="f-dbpass" name="database_secret" type="password" autoComplete="new-password" />
+							<input
+								className="form-control"
+								id="f-dbpass"
+								name="database_secret"
+								type="password"
+								autoComplete="new-password"
+							/>
 						</div>
 						<div>
 							<label htmlFor="f-dbhost">Database host</label>
-							<input className="form-control" id="f-dbhost" name="database_host" defaultValue="localhost" />
+							<input
+								className="form-control"
+								id="f-dbhost"
+								name="database_host"
+								defaultValue="localhost"
+							/>
 						</div>
 					</fieldset>
 				) : null}
-				<p>
-					The install runs as a background job for {user}; progress shows
-					on the jobs page.
-				</p>
+				<p>The install runs as a background job for {user}; progress shows on the jobs page.</p>
 				<button type="submit" className="button">
 					Install
 				</button>{" "}

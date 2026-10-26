@@ -30,27 +30,42 @@ export default async function Page({
 				</label>
 				<input className="form-control" id="dbuser" name="dbuser" required />
 				<label htmlFor="secret">{t("Password")}</label>
-				<input className="form-control" id="secret" name="secret" type="password" required autoComplete="new-password" />
+				<input
+					className="form-control"
+					id="secret"
+					name="secret"
+					type="password"
+					required
+					autoComplete="new-password"
+				/>
 				<label htmlFor="host">{t("Host")}</label>
 				<select className="form-select" id="host" name="host">
 					{hostNames.map((h) => (
-						<option key={h} value={h}>{h}</option>
+						<option key={h} value={h}>
+							{h}
+						</option>
 					))}
 				</select>
 				<label htmlFor="type">{t("Type")}</label>
 				<select className="form-select" id="type" name="type">
 					{[...new Set(Object.values(hosts).map((h) => h.TYPE))].map((ty) => (
-						<option key={ty} value={ty}>{ty}</option>
+						<option key={ty} value={ty}>
+							{ty}
+						</option>
 					))}
 					{hostNames.length === 0 ? <option value="mysql">mysql</option> : null}
 				</select>
 				<label htmlFor="charset">{t("Charset")}</label>
 				<select className="form-select" id="charset" name="charset">
 					{charsets.map((cs) => (
-						<option key={cs} value={cs}>{cs}</option>
+						<option key={cs} value={cs}>
+							{cs}
+						</option>
 					))}
 				</select>
-				<button type="submit" className="button">{t("Add")}</button>
+				<button type="submit" className="button">
+					{t("Add")}
+				</button>
 			</form>
 		</div>
 	);

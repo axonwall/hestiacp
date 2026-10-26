@@ -90,9 +90,7 @@ export class SessionStore {
 	async get(id: string): Promise<PanelSession | null> {
 		let stored: StoredSession;
 		try {
-			stored = JSON.parse(
-				await readFile(this.pathFor(id), "utf8"),
-			) as StoredSession;
+			stored = JSON.parse(await readFile(this.pathFor(id), "utf8")) as StoredSession;
 		} catch {
 			return null;
 		}

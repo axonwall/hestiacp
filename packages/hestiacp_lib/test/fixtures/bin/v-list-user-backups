@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-user-backups (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "demo.2026-10-20_05-00-00.tar": {
         "TYPE": "local",

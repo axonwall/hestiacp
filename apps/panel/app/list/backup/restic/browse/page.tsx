@@ -1,15 +1,7 @@
 import { notFound } from "next/navigation";
 import type { ResticFileEntry } from "@hestiacp/lib";
-import {
-	effectiveUser,
-	getT,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
-import {
-	restoreResticFileAction,
-	restoreResticSelectedAction,
-} from "./actions";
+import { effectiveUser, getT, hestia, requireSession } from "@/lib/panel";
+import { restoreResticFileAction, restoreResticSelectedAction } from "./actions";
 
 const TYPE_LABELS: Record<string, string> = {
 	dir: "Directory",
@@ -60,9 +52,7 @@ export default async function ResticBrowsePage({
 				{t("Files")} — {snapshot}
 			</h1>
 			<p className="muted">{folder}</p>
-			{error || loadError ? (
-				<p className="error">{error ?? loadError}</p>
-			) : null}
+			{error || loadError ? <p className="error">{error ?? loadError}</p> : null}
 			{notice === "scheduled" ? <p>{t("Restore scheduled")}</p> : null}
 			<p>
 				<a href={`/list/backup/restic/detail?snapshot=${encodeURIComponent(snapshot)}`}>
@@ -87,25 +77,13 @@ export default async function ResticBrowsePage({
 				</thead>
 				<tbody>
 					{entries.map((file) => {
-						const navigable =
-							file.type === "dir" && !file.path.startsWith(`${home}/conf`);
+						const navigable = file.type === "dir" && !file.path.startsWith(`${home}/conf`);
 						return (
 							<tr key={file.path}>
 								<td>
-									<input
-										type="checkbox"
-										name="files"
-										value={file.path}
-										form="bulk-restore"
-									/>
+									<input type="checkbox" name="files" value={file.path} form="bulk-restore" />
 								</td>
-								<td>
-									{navigable ? (
-										<a href={browseUrl(file.path)}>{file.name}</a>
-									) : (
-										file.name
-									)}
-								</td>
+								<td>{navigable ? <a href={browseUrl(file.path)}>{file.name}</a> : file.name}</td>
 								<td>{TYPE_LABELS[file.type] ?? "Unknown"}</td>
 								<td>{(file.mtime ?? "").slice(0, 19).replace("T", " ")}</td>
 								<td>

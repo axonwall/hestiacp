@@ -23,12 +23,10 @@ export default async function TwofaPage({
 			<form action={twofaAction}>
 				<h1 className="login-title">{t("Two-factor authentication")}</h1>
 				<p>
-					Enter the 6-digit code from your authenticator app for{" "}
-					{String(session.data.pending_user)}.
+					Enter the 6-digit code from your authenticator app for {String(session.data.pending_user)}
+					.
 				</p>
-				{query.error ? (
-					<p className="error">{t("Invalid or missing 2FA token")}</p>
-				) : null}
+				{query.error ? <p className="error">{t("Invalid or missing 2FA token")}</p> : null}
 				<div className="u-mb20">
 					<label htmlFor="twofa" className="form-label">
 						{t("Authentication code")}

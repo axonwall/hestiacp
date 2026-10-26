@@ -17,15 +17,15 @@ export default async function Page({
 	const query = await searchParams;
 	const user = effectiveUser(session);
 	const domain = query.domain ?? "";
-	const record = domain
-		? await hestia.listDnsDomain(user, domain).catch(() => null)
-		: null;
+	const record = domain ? await hestia.listDnsDomain(user, domain).catch(() => null) : null;
 	if (!record) {
 		return (
 			<div className="card">
 				<h1>{t("Edit DNS Zone")}</h1>
 				<p className="error">{query.error ?? "Zone not found."}</p>
-				<p><a href="/list/dns">{t("Back")}</a></p>
+				<p>
+					<a href="/list/dns">{t("Back")}</a>
+				</p>
 			</div>
 		);
 	}
@@ -49,27 +49,44 @@ export default async function Page({
 					<label htmlFor="ip">{t("IP Address")}</label>
 					<select className="form-select" id="ip" name="ip" defaultValue={record.IP}>
 						{Object.keys(ips).map((ip) => (
-							<option key={ip} value={ip}>{ip}</option>
+							<option key={ip} value={ip}>
+								{ip}
+							</option>
 						))}
 						{!ips[record.IP] ? <option value={record.IP}>{record.IP}</option> : null}
 					</select>
 					<label htmlFor="template">{t("Template")}</label>
 					<select className="form-select" id="template" name="template" defaultValue={record.TPL}>
 						{templates.map((tpl) => (
-							<option key={tpl} value={tpl}>{tpl}</option>
+							<option key={tpl} value={tpl}>
+								{tpl}
+							</option>
 						))}
 					</select>
 					<label htmlFor="soa">SOA</label>
 					<input className="form-control" id="soa" name="soa" defaultValue={record.SOA} />
 					<label htmlFor="exp">{t("Expiration")}</label>
-					<input className="form-control" id="exp" name="exp" type="date" defaultValue={record.EXP} />
+					<input
+						className="form-control"
+						id="exp"
+						name="exp"
+						type="date"
+						defaultValue={record.EXP}
+					/>
 					<label htmlFor="ttl">TTL</label>
 					<input className="form-control" id="ttl" name="ttl" defaultValue={record.TTL} />
 					<label>
-						<input type="checkbox" name="dnssec" value="yes" defaultChecked={record.DNSSEC === "yes"} />{" "}
+						<input
+							type="checkbox"
+							name="dnssec"
+							value="yes"
+							defaultChecked={record.DNSSEC === "yes"}
+						/>{" "}
 						DNSSEC
 					</label>
-					<button type="submit" className="button">{t("Save")}</button>
+					<button type="submit" className="button">
+						{t("Save")}
+					</button>
 				</form>
 				<p>
 					<a href="/list/dns">{t("Back")}</a> ·{" "}
@@ -110,7 +127,12 @@ export default async function Page({
 											name="op"
 											value={rec.SUSPENDED === "yes" ? "unsuspend" : "suspend"}
 										/>
-										<RowActionButton title={rec.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")} icon={rec.SUSPENDED === "yes" ? "fa-play icon-green" : "fa-pause icon-highlight"} />
+										<RowActionButton
+											title={rec.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")}
+											icon={
+												rec.SUSPENDED === "yes" ? "fa-play icon-green" : "fa-pause icon-highlight"
+											}
+										/>
 									</form>{" "}
 									<Link
 										href={`/delete/dns/record?domain=${encodeURIComponent(domain)}&id=${encodeURIComponent(id)}`}
@@ -136,7 +158,9 @@ export default async function Page({
 					<label htmlFor="rtype">{t("Type")}</label>
 					<select className="form-select" id="rtype" name="type">
 						{RECORD_TYPES.map((rt) => (
-							<option key={rt} value={rt}>{rt}</option>
+							<option key={rt} value={rt}>
+								{rt}
+							</option>
 						))}
 					</select>
 					<label htmlFor="rvalue">{t("Value")}</label>
@@ -145,7 +169,9 @@ export default async function Page({
 					<input className="form-control" id="rpriority" name="priority" />
 					<label htmlFor="rttl">TTL</label>
 					<input className="form-control" id="rttl" name="ttl" />
-					<button type="submit" className="button">{t("Add")}</button>
+					<button type="submit" className="button">
+						{t("Add")}
+					</button>
 				</form>
 			</div>
 		</div>

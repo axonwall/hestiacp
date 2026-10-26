@@ -14,7 +14,7 @@ export default async function Page() {
 				{ key: "NOTICE", label: t("Notice") },
 				{ key: "TYPE", label: t("Type") },
 				{ key: "ACK", label: t("Ack") },
-				{ key: "DATE", label: t("Date") }
+				{ key: "DATE", label: t("Date") },
 			]}
 		></ListView>
 	);

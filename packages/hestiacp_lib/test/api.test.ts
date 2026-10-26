@@ -6,11 +6,7 @@ import { handleApiRequest } from "../src/api";
 import { HestiaClient } from "../src/client";
 import type { HestiaConfig } from "../src/config";
 
-const fixturesBin = join(
-	dirname(fileURLToPath(import.meta.url)),
-	"fixtures",
-	"bin",
-);
+const fixturesBin = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "bin");
 
 const config: HestiaConfig = {
 	binDir: fixturesBin,

@@ -1,12 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	errorMessage,
-	hestia,
-	requireAdmin,
-} from "@/lib/panel";
+import { csrfValid, errorMessage, hestia, requireAdmin } from "@/lib/panel";
 
 /** Start / stop / restart a system service from /list/server. */
 export async function serviceControlAction(formData: FormData): Promise<void> {

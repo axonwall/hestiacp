@@ -12,9 +12,8 @@ export default async function TerminalPage() {
 		<div className="card">
 			<h1>Web terminal</h1>
 			<p>
-				The terminal UI lands in Phase 4. Session compatibility is already
-				in place: the terminal server authenticates against the same
-				PHP-format session files this panel writes.
+				The terminal UI lands in Phase 4. Session compatibility is already in place: the terminal
+				server authenticates against the same PHP-format session files this panel writes.
 			</p>
 		</div>
 	);

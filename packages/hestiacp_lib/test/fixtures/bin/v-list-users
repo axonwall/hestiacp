@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture for the HestiaNG spike: canned v-list-users output.
-cat <<'JSON'
+cat << 'JSON'
 {
     "admin": {
         "NAME": "Administrator",

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-search-user-object (real shape: keyed object, not an array)
-cat <<'JSON'
+cat << 'JSON'
 {
     "1": {
         "TYPE": "mail",

@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	hestia,
-	requireAdmin,
-	requireSession,
-	sessions,
-} from "@/lib/panel";
+import { csrfValid, hestia, requireAdmin, requireSession, sessions } from "@/lib/panel";
 
 /**
  * Login-as (impersonation), mirroring web/login's loginas handling:
@@ -33,12 +27,7 @@ export async function loginAsAction(formData: FormData): Promise<void> {
 	const admin = String(session.data.user);
 	session.data.look = target;
 	await sessions.set(session.id, session.data);
-	await hestia.logAction(
-		admin,
-		"Info",
-		"Security",
-		`Logged in as another user (User: ${target})`,
-	);
+	await hestia.logAction(admin, "Info", "Security", `Logged in as another user (User: ${target})`);
 	await hestia.logAction(
 		"system",
 		"Warning",
@@ -49,9 +38,7 @@ export async function loginAsAction(formData: FormData): Promise<void> {
 }
 
 /** End impersonation: clear `look` and go back to the admin's user list. */
-export async function returnToAdminAction(
-	formData: FormData,
-): Promise<void> {
+export async function returnToAdminAction(formData: FormData): Promise<void> {
 	const session = await requireSession();
 	if (!csrfValid(session, formData)) {
 		redirect("/users?error=csrf");

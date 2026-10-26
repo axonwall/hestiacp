@@ -1,12 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, hestia, requireSession } from "@/lib/panel";
 
 function target(formData: FormData): string {
 	const snapshot = formData.get("snapshot")?.toString() ?? "";

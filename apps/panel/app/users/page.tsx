@@ -42,7 +42,8 @@ export default async function UsersPage({
 			{query.error ? <p className="error">{query.error}</p> : null}
 			{isAdmin ? (
 				<p>
-					<Link className="button button-secondary" href="/add/user"><i className="fas fa-circle-plus icon-green"></i>
+					<Link className="button button-secondary" href="/add/user">
+						<i className="fas fa-circle-plus icon-green"></i>
 						{t("Add User")}
 					</Link>
 				</p>
@@ -69,9 +70,7 @@ export default async function UsersPage({
 						return (
 							<tr key={name}>
 								<td>
-									<Link href={`/users/${encodeURIComponent(name)}`}>
-										{name}
-									</Link>
+									<Link href={`/users/${encodeURIComponent(name)}`}>{name}</Link>
 								</td>
 								<td>{u.NAME}</td>
 								<td>{u.PACKAGE}</td>
@@ -83,30 +82,30 @@ export default async function UsersPage({
 								<td>{u.SUSPENDED}</td>
 								{isAdmin ? (
 									<td>
-										<form
-											action={toggleSuspendAction}
-											style={{ display: "inline" }}
-										>
+										<form action={toggleSuspendAction} style={{ display: "inline" }}>
 											<input type="hidden" name="user" value={name} />
 											<input type="hidden" name="token" value={token} />
-											<input
-												type="hidden"
-												name="op"
-												value={suspended ? "unsuspend" : "suspend"}
+											<input type="hidden" name="op" value={suspended ? "unsuspend" : "suspend"} />
+											<RowActionButton
+												title={suspended ? t("Unsuspend") : t("Suspend")}
+												icon={suspended ? "fa-play icon-green" : "fa-pause icon-highlight"}
 											/>
-											<RowActionButton title={suspended ? t("Unsuspend") : t("Suspend")} icon={suspended ? "fa-play icon-green" : "fa-pause icon-highlight"} />
 										</form>
 										{name !== session.data.user ? (
-											<form
-												action={loginAsAction}
-												style={{ display: "inline" }}
-											>
+											<form action={loginAsAction} style={{ display: "inline" }}>
 												<input type="hidden" name="user" value={name} />
 												<input type="hidden" name="token" value={token} />
-												<RowActionButton title={t("Log In As")} icon="fa-right-to-bracket icon-green" />
+												<RowActionButton
+													title={t("Log In As")}
+													icon="fa-right-to-bracket icon-green"
+												/>
 											</form>
 										) : null}{" "}
-										<RowAction href={`/users/${encodeURIComponent(name)}/delete`} title={t("Delete")} icon="fa-trash icon-red" />
+										<RowAction
+											href={`/users/${encodeURIComponent(name)}/delete`}
+											title={t("Delete")}
+											icon="fa-trash icon-red"
+										/>
 									</td>
 								) : null}
 							</tr>

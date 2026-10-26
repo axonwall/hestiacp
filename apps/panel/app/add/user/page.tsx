@@ -31,7 +31,8 @@ export default async function AddUserPage({
 					<label htmlFor="user">Username</label>
 					<input className="form-control" id="user" name="user" required autoComplete="off" />
 					<label htmlFor="secret">Password</label>
-					<input className="form-control"
+					<input
+						className="form-control"
 						id="secret"
 						name="secret"
 						type="password"
@@ -64,8 +65,7 @@ export default async function AddUserPage({
 						<option value="admin">Administrator</option>
 					</select>
 					<label>
-						<input type="checkbox" name="loginDisabled" value="yes" /> Disable
-						login
+						<input type="checkbox" name="loginDisabled" value="yes" /> Disable login
 					</label>
 					<button type="submit" className="button">
 						Create user

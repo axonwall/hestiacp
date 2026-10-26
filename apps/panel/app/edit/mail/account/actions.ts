@@ -1,16 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 function splitList(raw: string): string[] {
-	return raw.split(/[\s,]+/).map((s) => s.trim()).filter(Boolean);
+	return raw
+		.split(/[\s,]+/)
+		.map((s) => s.trim())
+		.filter(Boolean);
 }
 
 /**

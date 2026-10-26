@@ -11,9 +11,7 @@ export default async function Page({
 	const t = await getT();
 	const query = await searchParams;
 	const rule = query.rule ?? "";
-	const record = rule
-		? await hestia.listFirewallRule(rule).catch(() => undefined)
-		: undefined;
+	const record = rule ? await hestia.listFirewallRule(rule).catch(() => undefined) : undefined;
 	const token = String(session.data.token ?? "");
 	if (!record) {
 		return (
@@ -43,15 +41,31 @@ export default async function Page({
 				<label htmlFor="fwIp">{t("IP / CIDR")}</label>
 				<input className="form-control" id="fwIp" name="ip" required defaultValue={record.IP} />
 				<label htmlFor="fwPort">{t("Port")}</label>
-				<input className="form-control" id="fwPort" name="port" required defaultValue={record.PORT} />
+				<input
+					className="form-control"
+					id="fwPort"
+					name="port"
+					required
+					defaultValue={record.PORT}
+				/>
 				<label htmlFor="fwProtocol">{t("Protocol")}</label>
-				<select className="form-select" id="fwProtocol" name="protocol" defaultValue={record.PROTOCOL}>
+				<select
+					className="form-select"
+					id="fwProtocol"
+					name="protocol"
+					defaultValue={record.PROTOCOL}
+				>
 					<option value="TCP">TCP</option>
 					<option value="UDP">UDP</option>
 					<option value="ICMP">ICMP</option>
 				</select>
 				<label htmlFor="fwComment">{t("Comment")}</label>
-				<input className="form-control" id="fwComment" name="comment" defaultValue={record.COMMENT ?? ""} />
+				<input
+					className="form-control"
+					id="fwComment"
+					name="comment"
+					defaultValue={record.COMMENT ?? ""}
+				/>
 				<button type="submit" className="button">
 					{t("Save")}
 				</button>

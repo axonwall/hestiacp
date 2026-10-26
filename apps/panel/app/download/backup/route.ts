@@ -21,16 +21,18 @@ export async function GET(request: Request) {
 	}
 	const admin = session.data.userContext === "admin";
 	const user = effectiveUser(session);
-	if (!admin && !backup.startsWith(`${String(session.data.user)}.`) && !backup.startsWith(`${user}.`)) {
+	if (
+		!admin &&
+		!backup.startsWith(`${String(session.data.user)}.`) &&
+		!backup.startsWith(`${user}.`)
+	) {
 		return new Response("Forbidden", { status: 403 });
 	}
 	const dir = process.env.HESTIA_BACKUP_DIR ?? "/backup";
 	const path = join(dir, backup);
 	const info = await stat(path).catch(() => null);
 	if (!info?.isFile()) {
-		await hestia
-			.scheduleUserBackupDownload(user, backup)
-			.catch(() => undefined);
+		await hestia.scheduleUserBackupDownload(user, backup).catch(() => undefined);
 		return Response.redirect(new URL("/list/backup?notice=scheduled", url), 303);
 	}
 	const stream = Readable.toWeb(createReadStream(path)) as ReadableStream;

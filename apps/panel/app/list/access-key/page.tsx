@@ -13,7 +13,7 @@ export default async function Page() {
 				{ key: "ACCESS_KEY_ID", label: t("Access Keys") },
 				{ key: "COMMENT", label: t("Comment") },
 				{ key: "DATE", label: t("Date") },
-				{ key: "TIME", label: t("Time") }
+				{ key: "TIME", label: t("Time") },
 			]}
 		></ListView>
 	);

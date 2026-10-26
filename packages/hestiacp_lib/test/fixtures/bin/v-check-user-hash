@@ -3,7 +3,7 @@
 # file's first line is the fixture hash for the fixture admin.
 user="$1"
 hash_file="$2"
-hash_input=$(head -n 1 "$hash_file" 2>/dev/null)
+hash_input=$(head -n 1 "$hash_file" 2> /dev/null)
 if [ "$user" = "admin" ] && [ "$hash_input" = "fixture-hash-value" ]; then
 	exit 0
 fi

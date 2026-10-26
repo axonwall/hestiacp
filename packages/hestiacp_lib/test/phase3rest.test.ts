@@ -4,11 +4,7 @@ import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
 import { HestiaClient } from "../src/client";
 
-const FIXTURES = join(
-	dirname(fileURLToPath(import.meta.url)),
-	"fixtures",
-	"bin",
-);
+const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "bin");
 const LOG = "/tmp/hestiang-test-rest-calls.log";
 const client = new HestiaClient({ binDir: FIXTURES, useSudo: false });
 
@@ -32,7 +28,12 @@ describe("Phase 3 remainder wrappers", () => {
 		await client.scheduleUserBackup("demo");
 		await client.scheduleUserRestore("demo", "demo.2026-10-01_00-00-00.tar");
 		await client.scheduleUserRestore("demo", "demo.2026-10-01_00-00-00.tar", {
-			web: "example.com", dns: "no", mail: "no", db: "no", cron: "yes", udir: "no",
+			web: "example.com",
+			dns: "no",
+			mail: "no",
+			db: "no",
+			cron: "yes",
+			udir: "no",
 		});
 		await client.deleteUserBackup("demo", "demo.2026-10-01_00-00-00.tar");
 		await client.updateUserBackupExclusions("demo", { WEB: "public_html/cache" });
@@ -43,9 +44,7 @@ describe("Phase 3 remainder wrappers", () => {
 		expect(lines[0]).not.toContain("stats-secret");
 		expect(lines[1]).toBe("v-delete-web-domain-stats-user demo example.com");
 		expect(lines[2]).toBe("v-schedule-user-backup demo");
-		expect(lines[3]).toBe(
-			"v-schedule-user-restore demo demo.2026-10-01_00-00-00.tar",
-		);
+		expect(lines[3]).toBe("v-schedule-user-restore demo demo.2026-10-01_00-00-00.tar");
 		expect(lines[4]).toBe(
 			"v-schedule-user-restore demo demo.2026-10-01_00-00-00.tar example.com no no no yes no",
 		);
@@ -97,7 +96,14 @@ describe("Phase 3 remainder wrappers", () => {
 		await client.changeSysConfigValue("BACKUP_MODE", "zstd");
 		await client.changeSysServiceConfig("nginx", "worker_processes 1;\n", true);
 		await client.restartService("nginx");
-		await client.addBackupHost("sftp", "backup.example.net", "bkup", "host-secret", "/backups", "22");
+		await client.addBackupHost(
+			"sftp",
+			"backup.example.net",
+			"bkup",
+			"host-secret",
+			"/backups",
+			"22",
+		);
 		await client.deleteBackupHost("sftp");
 		await client.addBackupHostRestic("sftp:bkup@backup.example.net:/repo", "5", "7", "4", "6", "2");
 		const lines = (await calls()).slice(before);
@@ -115,13 +121,9 @@ describe("Phase 3 remainder wrappers", () => {
 		);
 		expect(lines[7]).not.toContain("host-secret");
 		expect(lines[8]).toBe("v-delete-backup-host sftp");
-		expect(lines[9]).toBe(
-			"v-add-backup-host-restic sftp:bkup@backup.example.net:/repo 5 7 4 6 2",
-		);
+		expect(lines[9]).toBe("v-add-backup-host-restic sftp:bkup@backup.example.net:/repo 5 7 4 6 2");
 		expect(await client.getSysTimezones()).toContain("America/Chicago");
-		expect(await client.openFsConfig("/etc/nginx/nginx.conf")).toContain(
-			"fixture config contents",
-		);
+		expect(await client.openFsConfig("/etc/nginx/nginx.conf")).toContain("fixture config contents");
 		const hosts = await client.listBackupHosts();
 		expect(hosts.sftp.HOST).toBe("backup.example.net");
 	});

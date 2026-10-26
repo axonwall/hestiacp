@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-mail-account (singular/enumeration double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "info": {
         "ALIAS": "postmaster",

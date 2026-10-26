@@ -26,9 +26,8 @@ export default async function DeletePackagePage({
 			) : null}
 			<div className="card">
 				<p>
-					Deletes the package definition. Users currently on this package
-					keep their existing resources, but the command refuses while the
-					package is still assigned.
+					Deletes the package definition. Users currently on this package keep their existing
+					resources, but the command refuses while the package is still assigned.
 				</p>
 				<form action={deletePackageAction}>
 					<input type="hidden" name="name" value={packageName} />
@@ -42,9 +41,7 @@ export default async function DeletePackagePage({
 				</form>
 			</div>
 			<p>
-				<Link href={`/packages/${encodeURIComponent(packageName)}`}>
-					Back to package
-				</Link>
+				<Link href={`/packages/${encodeURIComponent(packageName)}`}>Back to package</Link>
 			</p>
 		</div>
 	);

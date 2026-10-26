@@ -109,10 +109,7 @@ export async function requireSession(): Promise<ShellSession> {
 		await sessions.destroy(session.id);
 		redirect("/login");
 	}
-	if (
-		userRecord.SUSPENDED === "yes" &&
-		session.data.POLICY_USER_VIEW_SUSPENDED !== "yes"
-	) {
+	if (userRecord.SUSPENDED === "yes" && session.data.POLICY_USER_VIEW_SUSPENDED !== "yes") {
 		await sessions.destroy(session.id);
 		redirect("/login");
 	}
@@ -124,14 +121,8 @@ export async function requireSession(): Promise<ShellSession> {
 	const ip = clientIp(await headers());
 	if (!session.data.user_combined_ip) {
 		session.data.user_combined_ip = ip;
-	} else if (
-		session.data.DISABLE_IP_CHECK !== "yes" &&
-		session.data.user_combined_ip !== ip
-	) {
-		await hestia.logUserLogout(
-			String(session.data.user),
-			String(session.data.token ?? ""),
-		);
+	} else if (session.data.DISABLE_IP_CHECK !== "yes" && session.data.user_combined_ip !== ip) {
+		await hestia.logUserLogout(String(session.data.user), String(session.data.token ?? ""));
 		await sessions.destroy(session.id);
 		redirect("/login");
 	}
@@ -213,9 +204,5 @@ export function newCsrfToken(): string {
 /** Verify a mutating form's token against the session token (prevent_csrf.php). */
 export function csrfValid(session: ShellSession, formData: FormData): boolean {
 	const token = formData.get("token");
-	return (
-		typeof token === "string" &&
-		token.length > 0 &&
-		token === session.data.token
-	);
+	return typeof token === "string" && token.length > 0 && token === session.data.token;
 }

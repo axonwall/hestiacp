@@ -1,10 +1,4 @@
-import {
-	effectiveUser,
-	getT,
-	hestia,
-	loadRows,
-	requireSession,
-} from "@/lib/panel";
+import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
 
 /**

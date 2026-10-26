@@ -5,11 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { HestiaClient } from "../src/client.js";
 import type { HestiaConfig } from "../src/config.js";
 
-const fixturesBin = join(
-	dirname(fileURLToPath(import.meta.url)),
-	"fixtures",
-	"bin",
-);
+const fixturesBin = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "bin");
 const callLog = "/tmp/hestiang-fixture-calls.log";
 
 const config: HestiaConfig = {
@@ -45,22 +41,14 @@ describe("HestiaClient against fixture v-* commands", () => {
 	});
 
 	it("rejects invalid usernames before spawning anything", async () => {
-		await expect(client.listUser("../etc")).rejects.toThrow(
-			/Invalid username/,
-		);
+		await expect(client.listUser("../etc")).rejects.toThrow(/Invalid username/);
 		await expect(client.listUser("-rf")).rejects.toThrow(/Invalid username/);
 	});
 
 	it("verifies the fixture password via the /tmp secret-file pattern", async () => {
-		await expect(
-			client.verifyUserPassword("admin", "spike-fixture-secret"),
-		).resolves.toBe(true);
-		await expect(client.verifyUserPassword("admin", "wrong")).resolves.toBe(
-			false,
-		);
-		await expect(
-			client.verifyUserPassword("demo", "spike-fixture-secret"),
-		).resolves.toBe(false);
+		await expect(client.verifyUserPassword("admin", "spike-fixture-secret")).resolves.toBe(true);
+		await expect(client.verifyUserPassword("admin", "wrong")).resolves.toBe(false);
+		await expect(client.verifyUserPassword("demo", "spike-fixture-secret")).resolves.toBe(false);
 	});
 
 	it("records the spike edit at the command layer", async () => {

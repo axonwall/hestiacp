@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-sys-rrd (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "1": {
         "TYPE": "la",

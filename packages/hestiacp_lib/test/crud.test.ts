@@ -5,11 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { HestiaClient } from "../src/client";
 import type { HestiaConfig } from "../src/config";
 
-const fixturesBin = join(
-	dirname(fileURLToPath(import.meta.url)),
-	"fixtures",
-	"bin",
-);
+const fixturesBin = join(dirname(fileURLToPath(import.meta.url)), "fixtures", "bin");
 const LOG = "/tmp/hestiang-test-crud-calls.log";
 process.env.HESTIA_FIXTURE_LOG = LOG;
 
@@ -34,26 +30,18 @@ beforeAll(async () => {
 
 describe("Phase 3 CRUD wrappers", () => {
 	it("reads singular records and enumerations", async () => {
-		expect((await client.listWebDomain("demo", "example.com")).TPL).toBe(
-			"default",
-		);
-		expect((await client.listDnsDomain("demo", "example.com")).SOA).toBe(
-			"ns1.example.com",
-		);
-		expect(
-			(await client.listMailDomain("demo", "example.com")).DKIM_SELECTOR,
-		).toBe("mail");
-		expect((await client.listMailAccount("demo", "example.com", "info")).ALIAS).toBe(
-			"postmaster",
-		);
+		expect((await client.listWebDomain("demo", "example.com")).TPL).toBe("default");
+		expect((await client.listDnsDomain("demo", "example.com")).SOA).toBe("ns1.example.com");
+		expect((await client.listMailDomain("demo", "example.com")).DKIM_SELECTOR).toBe("mail");
+		expect((await client.listMailAccount("demo", "example.com", "info")).ALIAS).toBe("postmaster");
 		expect((await client.listDatabase("demo", "demo_main")).TYPE).toBe("mysql");
 		expect((await client.listCronJob("demo", "1")).CMD).toBe("/usr/bin/backup.sh");
 		expect(await client.listWebTemplates()).toEqual(["default", "caching"]);
 		expect(await client.listDnsTemplates()).toEqual(["default", "child-ns"]);
 		expect(Object.keys(await client.listDatabaseHosts())).toEqual(["localhost"]);
-		expect(
-			await client.listMailAccountAutoreply("demo", "example.com", "info"),
-		).toBe("I am out of office.");
+		expect(await client.listMailAccountAutoreply("demo", "example.com", "info")).toBe(
+			"I am out of office.",
+		);
 		// NAT resolution (web/add semantics)
 		expect(await client.publicIpFor("demo", "203.0.113.10")).toBe("198.51.100.23");
 		expect(await client.publicIpFor("demo", "192.0.2.1")).toBe("192.0.2.1");
@@ -66,9 +54,7 @@ describe("Phase 3 CRUD wrappers", () => {
 			mail: true,
 		});
 		const lines = (await calls()).slice(before);
-		expect(lines[0]).toBe(
-			"v-add-web-domain demo new.example.com 203.0.113.10 yes",
-		);
+		expect(lines[0]).toBe("v-add-web-domain demo new.example.com 203.0.113.10 yes");
 		// DNS zone gets the NAT (public) IP and PHP's eight blank NS slots
 		expect(lines[1]).toBe(
 			"v-add-dns-domain demo new.example.com 198.51.100.23" + " ".repeat(9) + "no",
@@ -99,8 +85,23 @@ describe("Phase 3 CRUD wrappers", () => {
 
 	it("runs DNS domain + record flows, then restarts on request", async () => {
 		const before = (await calls()).length;
-		await client.addDnsDomain("demo", "zone.example.com", "203.0.113.10", ["ns1.example.com", "ns2.example.com"], true);
-		await client.changeDnsRecord("demo", "example.com", "2", "www", "A", "203.0.113.10", "", "3600");
+		await client.addDnsDomain(
+			"demo",
+			"zone.example.com",
+			"203.0.113.10",
+			["ns1.example.com", "ns2.example.com"],
+			true,
+		);
+		await client.changeDnsRecord(
+			"demo",
+			"example.com",
+			"2",
+			"www",
+			"A",
+			"203.0.113.10",
+			"",
+			"3600",
+		);
 		await client.suspendDnsRecord("demo", "example.com", "3");
 		await client.restartDns();
 		const lines = (await calls()).slice(before);
@@ -109,9 +110,7 @@ describe("Phase 3 CRUD wrappers", () => {
 				" ".repeat(7) +
 				"no yes",
 		);
-		expect(lines[1]).toBe(
-			"v-change-dns-record demo example.com 2 www A 203.0.113.10  yes 3600",
-		);
+		expect(lines[1]).toBe("v-change-dns-record demo example.com 2 www A 203.0.113.10  yes 3600");
 		expect(lines[2]).toBe("v-suspend-dns-record demo example.com 3");
 		expect(lines[3]).toBe("v-restart-dns");
 	});
@@ -128,18 +127,14 @@ describe("Phase 3 CRUD wrappers", () => {
 		await client.changeMailAccountQuota("demo", "example.com", "info", "");
 		await client.deleteMailAccountForward("demo", "example.com", "info", ":blackhole:");
 		const lines = (await calls()).slice(before);
-		expect(lines[0]).toBe(
-			"v-add-mail-domain demo mail.example.com yes no yes 2048   mail",
-		);
+		expect(lines[0]).toBe("v-add-mail-domain demo mail.example.com yes no yes 2048   mail");
 		// Secret is staged: argv carries a /tmp path, never the secret
 		expect(lines[1]).toMatch(
 			/^v-add-mail-account demo example\.com newbox \/tmp\/hestiang-stage-[^ ]+\/staged 250$/,
 		);
 		expect(lines[1]).not.toContain("s3cret-fixture");
 		expect(lines[2]).toBe("v-change-mail-account-quota demo example.com info 0");
-		expect(lines[3]).toBe(
-			"v-delete-mail-account-forward demo example.com info :blackhole:",
-		);
+		expect(lines[3]).toBe("v-delete-mail-account-forward demo example.com info :blackhole:");
 	});
 
 	it("stages certificates, FTP, webmail, relay and mail SSL (extras)", async () => {
@@ -177,9 +172,7 @@ describe("Phase 3 CRUD wrappers", () => {
 			/^v-add-web-domain-ftp demo example\.com ftp2 \/tmp\/hestiang-stage-\S+\/staged \/home\/demo\/ftp$/,
 		);
 		expect(lines[2]).not.toContain("ftp-secret");
-		expect(lines[3]).toBe(
-			"v-change-web-domain-ftp-path demo example.com demo_ftp1 /new/path",
-		);
+		expect(lines[3]).toBe("v-change-web-domain-ftp-path demo example.com demo_ftp1 /new/path");
 		expect(lines[4]).toBe("v-add-mail-domain-webmail demo example.com webmail yes");
 		expect(lines[5]).toMatch(
 			/^v-add-mail-domain-smtp-relay demo example\.com smtp\.example\.net relayuser \/tmp\/hestiang-stage-\S+\/staged 587$/,
@@ -192,14 +185,20 @@ describe("Phase 3 CRUD wrappers", () => {
 			// (the harness trims the file's trailing space from the last arg)
 			"v-add-letsencrypt-domain demo example.com" + " ".repeat(3) + "yes",
 		);
-		expect((await client.listWebDomainSsl("demo", "example.com")).SUBJECT).toBe(
-			"CN=example.com",
-		);
+		expect((await client.listWebDomainSsl("demo", "example.com")).SUBJECT).toBe("CN=example.com");
 	});
 
 	it("runs database and cron flows", async () => {
 		const before = (await calls()).length;
-		await client.addDatabase("demo", "shop", "shopuser", "db-secret-fixture", "mysql", "localhost", "utf8mb4");
+		await client.addDatabase(
+			"demo",
+			"shop",
+			"shopuser",
+			"db-secret-fixture",
+			"mysql",
+			"localhost",
+			"utf8mb4",
+		);
 		await client.changeDatabaseUser("demo", "demo_main", "demo_new");
 		await client.addCronJob("demo", "30", "4", "*", "*", "1-5", "/usr/bin/report.sh");
 		await client.deleteCronJob("demo", "2");

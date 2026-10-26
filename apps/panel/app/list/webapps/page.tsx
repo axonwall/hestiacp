@@ -27,9 +27,7 @@ export default async function WebAppsPage({
 				<ul>
 					{Object.keys(domains).map((d) => (
 						<li key={d}>
-							<Link href={`/list/webapps?domain=${encodeURIComponent(d)}`}>
-								{d}
-							</Link>
+							<Link href={`/list/webapps?domain=${encodeURIComponent(d)}`}>{d}</Link>
 						</li>
 					))}
 				</ul>

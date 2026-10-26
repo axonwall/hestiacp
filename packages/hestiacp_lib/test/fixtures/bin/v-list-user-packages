@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-user-packages json
-cat <<'JSON'
+cat << 'JSON'
 {
     "default": {
         "WEB_TEMPLATE": "default",

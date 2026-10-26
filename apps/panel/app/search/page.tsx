@@ -30,9 +30,7 @@ export default async function SearchPage({
 	if (q) {
 		try {
 			if (session.data.userContext === "admin" && !session.data.look) {
-				results = u
-					? await hestia.searchUserObjects(u, q)
-					: await hestia.searchObjects(q);
+				results = u ? await hestia.searchUserObjects(u, q) : await hestia.searchObjects(q);
 			} else {
 				results = await hestia.searchUserObjects(me, q);
 			}
@@ -44,7 +42,13 @@ export default async function SearchPage({
 		<div className="card">
 			<h1>{t("Search")}</h1>
 			<form method="get" className="inline-form">
-				<input className="form-control" name="q" defaultValue={q} placeholder={t("Search")} aria-label={t("Search")} />
+				<input
+					className="form-control"
+					name="q"
+					defaultValue={q}
+					placeholder={t("Search")}
+					aria-label={t("Search")}
+				/>
 				<button type="submit" className="button">
 					{t("Search")}
 				</button>
@@ -59,11 +63,7 @@ export default async function SearchPage({
 							const link = EDIT_LINKS[row.TYPE?.toLowerCase() ?? ""];
 							return (
 								<li key={`${row.USER ?? ""}-${row.TYPE}-${row.KEY}`}>
-									{link ? (
-										<Link href={link(row.KEY)}>{row.RESULT}</Link>
-									) : (
-										row.RESULT
-									)}{" "}
+									{link ? <Link href={link(row.KEY)}>{row.RESULT}</Link> : row.RESULT}{" "}
 									<small>
 										{row.TYPE}
 										{row.USER && row.USER !== me ? ` · ${row.USER}` : ""}

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-sys-info json (wrapped record, as the real script emits)
-cat <<'JSON'
+cat << 'JSON'
 {
     "sysinfo": {
         "HOSTNAME": "panel.example.test",

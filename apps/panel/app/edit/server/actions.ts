@@ -1,20 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	errorMessage,
-	hestia,
-	requireAdmin,
-} from "@/lib/panel";
+import { csrfValid, errorMessage, hestia, requireAdmin } from "@/lib/panel";
 
 /**
  * Basic server settings (web/edit/server, the fields with dedicated
  * commands or plain config values): changed-only, like everywhere.
  */
-export async function editServerSettingsAction(
-	formData: FormData,
-): Promise<void> {
+export async function editServerSettingsAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
 	try {
@@ -56,9 +49,7 @@ export async function editServerSettingsAction(
  * are add/delete command pairs (firewall, file manager, web terminal,
  * disk quota).
  */
-export async function editServerFeaturesAction(
-	formData: FormData,
-): Promise<void> {
+export async function editServerFeaturesAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
 	try {
@@ -123,9 +114,7 @@ export async function addBackupHostAction(formData: FormData): Promise<void> {
 	redirect("/edit/server?saved=1");
 }
 
-export async function deleteBackupHostAction(
-	formData: FormData,
-): Promise<void> {
+export async function deleteBackupHostAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
 	try {
@@ -136,9 +125,7 @@ export async function deleteBackupHostAction(
 	redirect("/edit/server?saved=1");
 }
 
-export async function saveBackupHostResticAction(
-	formData: FormData,
-): Promise<void> {
+export async function saveBackupHostResticAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
 	try {
@@ -163,9 +150,7 @@ export async function saveBackupHostResticAction(
 }
 
 /** Save a service config file (the web/edit/server/<service> archetype). */
-export async function saveServiceConfigAction(
-	formData: FormData,
-): Promise<void> {
+export async function saveServiceConfigAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	const service = String(formData.get("service") ?? "");
 	const back = `/edit/server/service?service=${encodeURIComponent(service)}`;

@@ -14,7 +14,9 @@ export default async function Page({
 	const token = String(session.data.token ?? "");
 	return (
 		<div>
-			<h1>{t("Delete Mail Account")} {account}@{domain}</h1>
+			<h1>
+				{t("Delete Mail Account")} {account}@{domain}
+			</h1>
 			{query.error === "csrf" ? (
 				<p className="error">Invalid form token. Please reload and try again.</p>
 			) : query.error === "confirm" ? (
@@ -23,7 +25,13 @@ export default async function Page({
 				<p className="error">{query.error}</p>
 			) : null}
 			<div className="card">
-				<p>This permanently deletes the mailbox <strong>{account}@{domain}</strong> and all stored mail. There is no undo.</p>
+				<p>
+					This permanently deletes the mailbox{" "}
+					<strong>
+						{account}@{domain}
+					</strong>{" "}
+					and all stored mail. There is no undo.
+				</p>
 				<form action={deleteMailAccountAction}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="domain" value={domain} />

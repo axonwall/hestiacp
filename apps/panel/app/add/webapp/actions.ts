@@ -8,12 +8,7 @@ import {
 	startJob,
 	type WebAppTarget,
 } from "@hestiacp/lib";
-import {
-	csrfValid,
-	effectiveUser,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, hestia, requireSession } from "@/lib/panel";
 import { jobStore } from "@/lib/jobs";
 import { catalogEntry } from "@/lib/webapps";
 
@@ -36,11 +31,12 @@ export async function installWebAppAction(formData: FormData) {
 	}
 	const options: Record<string, string> = {};
 	for (const field of entry.form) {
-		options[field.key] =
-			formData.get(field.key)?.toString() ?? field.value ?? "";
+		options[field.key] = formData.get(field.key)?.toString() ?? field.value ?? "";
 	}
-	const installDir = (formData.get("install_directory")?.toString() ?? "")
-		.replace(/^\/+|\/+$/g, "");
+	const installDir = (formData.get("install_directory")?.toString() ?? "").replace(
+		/^\/+|\/+$/g,
+		"",
+	);
 	options.install_directory = installDir;
 	options.php_version = formData.get("php_version")?.toString() ?? "";
 	options.__webSystem = String(session.data.WEB_SYSTEM ?? "nginx");
@@ -76,13 +72,8 @@ export async function installWebAppAction(formData: FormData) {
 	};
 	// (assigned via a fragment-built key: the literal assignment trips
 	// the workspace file tooling's secret-redaction filter)
-	target.database["pass" + "word" as "password"] = dbSecret;
-	const ctx = new HestiaAppContext(
-		hestia,
-		user,
-		undefined,
-		record?.IP || "127.0.0.1",
-	);
+	target.database[("pass" + "word") as "password"] = dbSecret;
+	const ctx = new HestiaAppContext(hestia, user, undefined, record?.IP || "127.0.0.1");
 	const job = await startJob(
 		jobStore(),
 		`Install ${app} on ${domain}`,

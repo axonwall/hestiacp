@@ -1,10 +1,7 @@
 import { getT, hestia, loadRows, requireAdmin } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
 import { RowActionButton } from "@/components/RowAction";
-import {
-	addFirewallIpsetAction,
-	deleteFirewallIpsetAction,
-} from "../actions";
+import { addFirewallIpsetAction, deleteFirewallIpsetAction } from "../actions";
 
 export default async function Page() {
 	const session = await requireAdmin();
@@ -34,7 +31,8 @@ export default async function Page() {
 				<label htmlFor="setName">{t("Add IP set")}</label>
 				<input className="form-control" id="setName" name="name" required placeholder="blocklist" />
 				<label htmlFor="setSource">{t("Source")}</label>
-				<input className="form-control"
+				<input
+					className="form-control"
 					id="setSource"
 					name="source"
 					required
@@ -46,8 +44,7 @@ export default async function Page() {
 					<option value="v6">IPv6</option>
 				</select>
 				<label>
-					<input type="checkbox" name="autoupdate" value="yes" />{" "}
-					{t("Autoupdate")}
+					<input type="checkbox" name="autoupdate" value="yes" /> {t("Autoupdate")}
 				</label>
 				<button type="submit" className="button">
 					{t("Add")}

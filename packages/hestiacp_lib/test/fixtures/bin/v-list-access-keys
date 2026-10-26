@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fixture: v-list-access-keys (read-only list double)
-cat <<'JSON'
+cat << 'JSON'
 {
     "fixturekey1": {
         "ACCESS_KEY_ID": "fixturekey1",

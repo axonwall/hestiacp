@@ -2,5 +2,5 @@
 # Fixture: v-change-user-name USER FIRST [LAST] — records the call so tests
 # and the live spike can prove the edit reached the command layer.
 log="${HESTIA_FIXTURE_CALL_LOG:-/tmp/hestiang-fixture-calls.log}"
-echo "v-change-user-name $*" >>"$log"
+echo "v-change-user-name $*" >> "$log"
 exit 0

@@ -23,10 +23,13 @@ ADMIN_PASSWORD="${ADMIN_PASSWORD:-$(head -c 18 /dev/urandom | base64 | tr -d '/+
 WORK=/root/hestiang-test
 mkdir -p "$WORK"
 
-[ "$(id -u)" = "0" ] || { echo "run as root" >&2; exit 1; }
+[ "$(id -u)" = "0" ] || {
+	echo "run as root" >&2
+	exit 1
+}
 . /etc/os-release
 case "$ID:$VERSION_ID" in
-	debian:12|ubuntu:22.04|ubuntu:24.04) ;;
+	debian:12 | ubuntu:22.04 | ubuntu:24.04) ;;
 	*) echo "WARN: untested OS $PRETTY_NAME — Hestia supports Debian 12 / Ubuntu LTS" >&2 ;;
 esac
 
@@ -38,27 +41,26 @@ fi
 export HESTIA=/usr/local/hestia
 export PATH="$PATH:/usr/local/hestia/bin"
 if [ "${SKIP_INSTALL:-0}" != "1" ]; then
-export DEBIAN_FRONTEND=noninteractiveapt-get update -qq && apt-get install -y -qq curl wget git jq > /dev/null
-cd "$WORK"
-[ -f hst-install.sh ] || wget -q https://raw.githubusercontent.com/hestiacp/hestiacp/main/install/hst-install.sh
-# Lean profile: no multiphp / clamav / spamassassin / quota; DNS, mail
-# and the web terminal stay on so every panel surface exists. `yes`
-# feeds the installer's continue prompt — --force alone does not skip
-# it, and with stdin closed it aborts after the component list.
-yes | bash hst-install.sh \
-	--hostname "$HOSTNAME_FQDN" \
-	--email "$ADMIN_EMAIL" \
-	--username admin \
-	--password "$ADMIN_PASSWORD" \
-	--port 8083 \
-	--api yes \
-	--multiphp no \
-	--clamav no \
-	--spamassassin no \
-	--quota no \
-	--webterminal yes \
-	--force
-
+	export DEBIAN_FRONTEND=noninteractiveapt-get update -qq && apt-get install -y -qq curl wget git jq > /dev/null
+	cd "$WORK"
+	[ -f hst-install.sh ] || wget -q https://raw.githubusercontent.com/hestiacp/hestiacp/main/install/hst-install.sh
+	# Lean profile: no multiphp / clamav / spamassassin / quota; DNS, mail
+	# and the web terminal stay on so every panel surface exists. `yes`
+	# feeds the installer's continue prompt — --force alone does not skip
+	# it, and with stdin closed it aborts after the component list.
+	yes | bash hst-install.sh \
+		--hostname "$HOSTNAME_FQDN" \
+		--email "$ADMIN_EMAIL" \
+		--username admin \
+		--password "$ADMIN_PASSWORD" \
+		--port 8083 \
+		--api yes \
+		--multiphp no \
+		--clamav no \
+		--spamassassin no \
+		--quota no \
+		--webterminal yes \
+		--force
 
 fi
 
@@ -72,7 +74,10 @@ fi
 v-change-sys-config-value API_ALLOWED_IP 'allow-all' > /dev/null
 v-change-sys-config-value DNS_CLUSTER 'yes' > /dev/null
 API_HASH="$(v-generate-api-key admin 2> /dev/null | tail -1)"
-[ -n "$API_HASH" ] || { echo "could not generate the admin API hash" >&2; exit 1; }
+[ -n "$API_HASH" ] || {
+	echo "could not generate the admin API hash" >&2
+	exit 1
+}
 # Access-key permissions are named profiles in $HESTIA/data/api, not
 # raw commands. sync-dns-cluster matches what api.bats exercises: the
 # key may list users (the DNS sync flow) but must NOT hold v-add-user
@@ -80,8 +85,11 @@ API_HASH="$(v-generate-api-key admin 2> /dev/null | tail -1)"
 ACCESS_OUT="$(v-add-access-key admin sync-dns-cluster api-test 2> /dev/null)"
 ACCESS_ID="$(echo "$ACCESS_OUT" | sed -n 's/^ACCESS_KEY_ID:[[:space:]]*//p')"
 ACCESS_SECRET="$(echo "$ACCESS_OUT" | sed -n 's/^SECRET_ACCESS_KEY:[[:space:]]*//p')"
-[ -n "$ACCESS_ID" ] && [ -n "$ACCESS_SECRET" ] || { echo "could not create the test access key" >&2; exit 1; }
-cat > /tmp/hestia-api-env.sh <<EOF
+[ -n "$ACCESS_ID" ] && [ -n "$ACCESS_SECRET" ] || {
+	echo "could not create the test access key" >&2
+	exit 1
+}
+cat > /tmp/hestia-api-env.sh << EOF
 server="$HOSTNAME_FQDN"
 port="8083"
 apikey="$API_HASH"
@@ -103,8 +111,8 @@ git submodule update --init test/test_helper > /dev/null 2>&1 || true
 export BATS="$WORK/hestiacp/test/test_helper/bats-core/bin/bats"
 
 echo "==> [4/6] BASELINE: api.bats against the PHP panel"
-"$BATS" test/api.bats 2>&1 | tee "$WORK/api-baseline.log" || \
-	echo "!! baseline had failures — see $WORK/api-baseline.log"
+"$BATS" test/api.bats 2>&1 | tee "$WORK/api-baseline.log" \
+	|| echo "!! baseline had failures — see $WORK/api-baseline.log"
 
 if [ "${SKIP_FLIP:-0}" = "1" ]; then
 	echo "SKIP_FLIP=1 — box ready at https://$HOSTNAME_FQDN:8083 (PHP panel)"
@@ -135,7 +143,7 @@ echo
 echo "==> [6/6] Flip the vhost + CUTOVER: api.bats against the Next panel"
 NGINX_CONF="$(find /usr/local/hestia/nginx -name nginx.conf | head -1)"
 cp "$NGINX_CONF" "$NGINX_CONF.pre-hestiang"
-python3 - "$NGINX_CONF" /usr/local/hestia/web-next/nginx-vhost.conf <<'PYEOF'
+python3 - "$NGINX_CONF" /usr/local/hestia/web-next/nginx-vhost.conf << 'PYEOF'
 import re, sys
 conf_path, vhost_path = sys.argv[1], sys.argv[2]
 conf = open(conf_path).read()
@@ -155,8 +163,8 @@ PYEOF
 # The panel nginx binary is hestia-nginx, not nginx.
 "$(command -v hestia-nginx || echo /usr/local/hestia/nginx/sbin/hestia-nginx)" -t -c "$NGINX_CONF"
 systemctl reload hestia || /usr/local/hestia/bin/v-restart-service hestia || true
-"$BATS" test/api.bats 2>&1 | tee "$WORK/api-cutover.log" || \
-	echo "!! cutover run had failures — see $WORK/api-cutover.log"
+"$BATS" test/api.bats 2>&1 | tee "$WORK/api-cutover.log" \
+	|| echo "!! cutover run had failures — see $WORK/api-cutover.log"
 
 echo
 echo "DONE. Panel: https://$HOSTNAME_FQDN:8083  admin / $ADMIN_PASSWORD"

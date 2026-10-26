@@ -1,13 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {
-	csrfValid,
-	effectiveUser,
-	errorMessage,
-	hestia,
-	requireSession,
-} from "@/lib/panel";
+import { csrfValid, effectiveUser, errorMessage, hestia, requireSession } from "@/lib/panel";
 
 /** Create a mail domain (web/add/mail): v-add-mail-domain with the
  *  feature toggles, plus the reject-spam flag when ticked. */
@@ -15,7 +9,9 @@ export async function addMailDomainAction(formData: FormData): Promise<void> {
 	const session = await requireSession();
 	if (!csrfValid(session, formData)) redirect("/add/mail?error=csrf");
 	const user = effectiveUser(session);
-	const domain = String(formData.get("domain") ?? "").trim().toLowerCase();
+	const domain = String(formData.get("domain") ?? "")
+		.trim()
+		.toLowerCase();
 	if (!domain) redirect("/add/mail?error=missing");
 	const antispam = formData.get("antispam") === "yes";
 	try {
