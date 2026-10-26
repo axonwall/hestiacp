@@ -1,0 +1,26 @@
+#!/bin/bash
+# Fixture: v-list-user-auth-log USER json
+cat << 'JSON'
+{
+    "1": {
+        "ACTION": "login",
+        "ACTIVE": "yes",
+        "STATUS": "success",
+        "DATE": "2026-10-26",
+        "TIME": "09:15:00",
+        "IP": "203.0.113.50",
+        "SESSION": "abc123",
+        "USER_AGENT": "Mozilla/5.0 (X11; Linux x86_64) Firefox"
+    },
+    "2": {
+        "ACTION": "login",
+        "ACTIVE": "no",
+        "STATUS": "failed",
+        "DATE": "2026-10-25",
+        "TIME": "22:40:11",
+        "IP": "198.51.100.7",
+        "SESSION": "def456",
+        "USER_AGENT": "curl/8.0"
+    }
+}
+JSON

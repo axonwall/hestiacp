@@ -194,6 +194,12 @@ export class HestiaClient {
 		assertUsername(user);
 		return this.listRows("v-list-user-log", user);
 	}
+
+	/** Login history (PHP /list/log/auth/). */
+	listUserAuthLog(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-user-auth-log", user);
+	}
 	listUserNotifications(user: string) {
 		assertUsername(user);
 		return this.listRows("v-list-user-notifications", user);
@@ -1291,6 +1297,12 @@ export class HestiaClient {
 	async deleteUserLog(user: string) {
 		assertUsername(user);
 		await this.runChecked("v-delete-user-log", user);
+	}
+
+	/** Delete a user's auth log (PHP /delete/log/auth/). */
+	async deleteUserAuthLog(user: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-user-auth-log", user);
 	}
 	async acknowledgeUserNotification(user: string, notification: string) {
 		assertUsername(user);
