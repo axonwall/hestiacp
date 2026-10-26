@@ -8,6 +8,7 @@ cat << 'JSON'
         "NAME": "",
         "INTERFACE": "eth0",
         "NAT": "",
+        "U_WEB_DOMAINS": "2",
         "NETMASK": "255.255.255.0"
     }
 }

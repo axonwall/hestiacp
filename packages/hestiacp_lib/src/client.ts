@@ -423,6 +423,14 @@ export class HestiaClient {
 		assertUsername(user);
 		await this.runChecked("v-delete-web-domain", user, domain, "yes");
 	}
+	async rebuildWebDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-web-domain", user, domain);
+	}
+	async purgeNginxCache(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-purge-nginx-cache", user, domain);
+	}
 	async restartWeb() {
 		await this.runChecked("v-restart-web");
 	}
@@ -490,6 +498,10 @@ export class HestiaClient {
 	async deleteDnsDomain(user: string, domain: string) {
 		assertUsername(user);
 		await this.runChecked("v-delete-dns-domain", user, domain);
+	}
+	async rebuildDnsDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-dns-domain", user, domain);
 	}
 	async addDnsRecord(
 		user: string,
@@ -642,6 +654,10 @@ export class HestiaClient {
 		assertUsername(user);
 		await this.runChecked("v-delete-mail-domain", user, domain);
 	}
+	async rebuildMailDomain(user: string, domain: string) {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-mail-domain", user, domain);
+	}
 	async addMailAccount(
 		user: string,
 		domain: string,
@@ -758,6 +774,10 @@ export class HestiaClient {
 		assertUsername(user);
 		await this.runChecked("v-delete-database", user, database);
 	}
+	async rebuildDatabase(user: string, database: string) {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-database", user, database);
+	}
 
 	/* ---- Cron jobs ---- */
 
@@ -797,6 +817,24 @@ export class HestiaClient {
 	async deleteCronJob(user: string, job: string) {
 		assertUsername(user);
 		await this.runChecked("v-delete-cron-job", user, job);
+	}
+	async addCronReports(user: string) {
+		assertUsername(user);
+		await this.runChecked("v-add-cron-reports", user);
+	}
+	async deleteCronReports(user: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-cron-reports", user);
+	}
+	async addCronHestiaAutoupdate() {
+		await this.runChecked("v-add-cron-hestia-autoupdate");
+	}
+	async deleteCronHestiaAutoupdate() {
+		await this.runChecked("v-delete-cron-hestia-autoupdate");
+	}
+	async sysHestiaAutoupdate(): Promise<string> {
+		const result = await this.raw("v-list-sys-hestia-autoupdate", "plain");
+		return result.stdout.trim();
 	}
 
 	/* ---- Phase 3 extras: cert staging, FTP, mail webmail/relay/SSL ---- */
@@ -1089,6 +1127,15 @@ export class HestiaClient {
 	async deleteFirewallRule(rule: string) {
 		await this.runChecked("v-delete-firewall-rule", rule);
 	}
+	async suspendFirewallRule(rule: string) {
+		await this.runChecked("v-suspend-firewall-rule", rule);
+	}
+	async unsuspendFirewallRule(rule: string) {
+		await this.runChecked("v-unsuspend-firewall-rule", rule);
+	}
+	async moveFirewallRule(rule: string, direction: string) {
+		await this.runChecked("v-move-firewall-rule", rule, direction);
+	}
 	async listFirewallRule(rule: string) {
 		const rows = await this.listRows("v-list-firewall-rule", rule);
 		return rows[rule];
@@ -1136,6 +1183,31 @@ export class HestiaClient {
 	}
 	async deleteSysIp(ip: string) {
 		await this.runChecked("v-delete-sys-ip", ip);
+	}
+	async updateSysIp() {
+		await this.runChecked("v-update-sys-ip");
+	}
+
+	/* ---- Access keys, SSH keys, logs, notifications ---- */
+
+	async deleteAccessKey(keyId: string) {
+		await this.runChecked("v-delete-access-key", keyId);
+	}
+	async deleteUserSshKey(user: string, key: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-user-ssh-key", user, key);
+	}
+	async deleteUserLog(user: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-user-log", user);
+	}
+	async acknowledgeUserNotification(user: string, notification: string) {
+		assertUsername(user);
+		await this.runChecked("v-acknowledge-user-notification", user, notification);
+	}
+	async deleteUserNotification(user: string, notification: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-user-notification", user, notification);
 	}
 
 	/* System feature toggles (edit/server): each is an add/delete pair. */

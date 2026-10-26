@@ -65,3 +65,20 @@ export async function deleteSysIpAction(formData: FormData): Promise<void> {
 	}
 	redirect("/list/ip?saved=1");
 }
+
+/** Bulk sys-IP action (PHP /bulk/ip/): "reread IP" (once) + Delete. */
+export async function bulkIpAction(formData: FormData): Promise<void> {
+	const session = await requireAdmin();
+	if (!csrfValid(session, formData)) redirect("/list/ip?error=csrf");
+	const ips = formData.getAll("ip[]").map(String).filter(Boolean);
+	const action = String(formData.get("action") ?? "");
+	try {
+		if (action === "reread") await hestia.updateSysIp();
+		else if (action === "delete") {
+			for (const ip of ips) await hestia.deleteSysIp(ip);
+		}
+	} catch (error) {
+		redirect(`/list/ip?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/list/ip?saved=1");
+}

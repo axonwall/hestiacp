@@ -20,3 +20,30 @@ export async function toggleDatabaseAction(formData: FormData): Promise<void> {
 	}
 	redirect("/list/db?saved=1");
 }
+
+/** Bulk database action (PHP /bulk/db/): rebuild/suspend/unsuspend are
+ * admin-only there; delete is open. */
+export async function bulkDbAction(formData: FormData): Promise<void> {
+	const session = await requireSession();
+	if (!csrfValid(session, formData)) redirect("/list/db?error=csrf");
+	const user = effectiveUser(session);
+	const op = String(formData.get("action") ?? "");
+	const databases = formData.getAll("database[]").map(String).filter(Boolean);
+	if (
+		(op === "rebuild" || op === "suspend" || op === "unsuspend") &&
+		session.data.userContext !== "admin"
+	) {
+		redirect("/list/db?error=forbidden");
+	}
+	try {
+		for (const database of databases) {
+			if (op === "rebuild") await hestia.rebuildDatabase(user, database);
+			else if (op === "suspend") await hestia.suspendDatabase(user, database);
+			else if (op === "unsuspend") await hestia.unsuspendDatabase(user, database);
+			else if (op === "delete") await hestia.deleteDatabase(user, database);
+		}
+	} catch (error) {
+		redirect(`/list/db?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/list/db?saved=1");
+}

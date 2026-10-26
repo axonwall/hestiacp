@@ -6,6 +6,7 @@ cat << 'JSON'
         "SOURCE": "https://example.test/blocklist.ipset",
         "AUTOUPDATE": "yes",
         "IP_VERSION": "v4",
+        "TIME": "04:05:06",
         "DATE": "2026-10-01"
     }
 }

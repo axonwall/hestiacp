@@ -20,3 +20,26 @@ export async function toggleMailDomainAction(formData: FormData): Promise<void> 
 	}
 	redirect("/list/mail?saved=1");
 }
+
+/** Bulk mail-domain action (PHP /bulk/mail/): rebuild/suspend/unsuspend/delete. */
+export async function bulkMailAction(formData: FormData): Promise<void> {
+	const session = await requireSession();
+	if (!csrfValid(session, formData)) redirect("/list/mail?error=csrf");
+	const user = effectiveUser(session);
+	const op = String(formData.get("action") ?? "");
+	const domains = formData.getAll("domain[]").map(String).filter(Boolean);
+	if (op === "rebuild" && session.data.userContext !== "admin") {
+		redirect("/list/mail?error=forbidden");
+	}
+	try {
+		for (const domain of domains) {
+			if (op === "rebuild") await hestia.rebuildMailDomain(user, domain);
+			else if (op === "suspend") await hestia.suspendMailDomain(user, domain);
+			else if (op === "unsuspend") await hestia.unsuspendMailDomain(user, domain);
+			else if (op === "delete") await hestia.deleteMailDomain(user, domain);
+		}
+	} catch (error) {
+		redirect(`/list/mail?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/list/mail?saved=1");
+}
