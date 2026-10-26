@@ -3,14 +3,15 @@ import { humanizeTime } from "@hestiacp/lib";
 import { getT, hestia, loadRows, requireAdmin } from "@/lib/panel";
 import { ListView } from "@/components/ListView";
 import { RowAction, RowActionButton } from "@/components/RowAction";
+import ConfirmLink from "@/components/ConfirmLink";
 import { bulkServiceAction, serviceControlAction } from "./actions";
 
 /**
  * Server overview (admin): the v-list-sys-info record as a summary
  * card plus the services table (web/templates/pages/list_services.php).
- * Task Monitor (/list/rrd) and system Restart (/restart/system/) are
- * omitted: neither route exists in Next yet. The Next-only sysinfo
- * card above the table is kept.
+ * The Next-only sysinfo card above the table is kept. The Restart
+ * button confirms via a native dialog (PHP uses a styled dialog;
+ * the panel has no modal infrastructure).
  */
 export default async function Page() {
 	const session = await requireAdmin();
@@ -138,6 +139,10 @@ export default async function Page() {
 					<i className="fas fa-gear icon-maroon"></i>
 					{t("Configure")}
 				</Link>
+				<Link className="button button-secondary" href="/list/rrd">
+					<i className="fas fa-chart-area icon-blue"></i>
+					{t("Task Monitor")}
+				</Link>
 				<Link className="button button-secondary" href="/list/updates">
 					<i className="fas fa-arrows-rotate icon-green"></i>
 					{t("Updates")}
@@ -152,6 +157,17 @@ export default async function Page() {
 					<i className="fas fa-binoculars icon-orange"></i>
 					{t("Logs")}
 				</Link>
+				{info?.HOSTNAME ? (
+					<ConfirmLink
+						className="button button-secondary button-danger"
+						href={`/restart/system?hostname=${encodeURIComponent(info.HOSTNAME)}&token=${encodeURIComponent(token)}&system_reset_token=${Math.floor(Date.now() / 1000)}`}
+						title={t("Restart")}
+						message={t("Are you sure you want to restart the server?")}
+					>
+						<i className="fas fa-arrow-rotate-left icon-red"></i>
+						{t("Restart")}
+					</ConfirmLink>
+				) : null}
 			</ListView>
 		</div>
 	);

@@ -1,0 +1,4 @@
+#!/bin/bash
+# Fixture: v-restart-system yes -> success, no output (no real reboot)
+echo "$(basename "$0") $*" >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
+exit 0

@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "$(basename "$0") $*" >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
 # Fixture: v-add-access-key USER PERMISSIONS COMMENT json -> new record incl. secret
 cat << 'JSON'
 {

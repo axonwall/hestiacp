@@ -1354,6 +1354,11 @@ export class HestiaClient {
 		assertUsername(user);
 		await this.runChecked("v-delete-user-auth-log", user);
 	}
+
+	/** Reboot the appliance (PHP /restart/system/): v-restart-system yes. */
+	async restartSystem() {
+		await this.runChecked("v-restart-system", "yes");
+	}
 	async acknowledgeUserNotification(user: string, notification: string) {
 		assertUsername(user);
 		await this.runChecked("v-acknowledge-user-notification", user, notification);

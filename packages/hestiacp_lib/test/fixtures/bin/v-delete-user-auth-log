@@ -1,3 +1,4 @@
 #!/bin/bash
+echo "$(basename "$0") $*" >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
 # Fixture: v-delete-user-auth-log USER -> success, no output
 exit 0
