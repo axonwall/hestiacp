@@ -6,11 +6,13 @@ export {
 	assertUsername,
 	serializeUserPackage,
 	USER_PACKAGE_FIELDS,
+	RRD_PERIODS,
 	type AddUserOptions,
 	type HestiaPackage,
 	type HestiaRow,
 	type ResticFileEntry,
 	type HestiaUser,
+	type RrdExport,
 } from "./client";
 export { SessionStore, type PanelSession } from "./session";
 export {

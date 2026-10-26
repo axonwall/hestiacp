@@ -8,6 +8,22 @@ import { runHestiaCommand, type CommandResult } from "./exec";
 /** One flat row of any v-list-* JSON map. Values are strings, as emitted. */
 export type HestiaRow = Record<string, string>;
 
+/** Periods accepted by v-export-rrd and PHP /list/rrd/ajax.php. */
+export const RRD_PERIODS = [
+	"daily",
+	"weekly",
+	"monthly",
+	"yearly",
+	"biennially",
+	"triennially",
+] as const;
+
+/** rrdtool xport --json output, as consumed by web/js/src/rrdCharts.js. */
+export interface RrdExport {
+	data: number[][];
+	meta: { start: number; step: number; legend: string[] };
+}
+
 /** One entry of a restic snapshot listing (restic ls --json line). */
 export interface ResticFileEntry {
 	name: string;
@@ -184,6 +200,22 @@ export class HestiaClient {
 	}
 	listSysRrd() {
 		return this.listRows("v-list-sys-rrd");
+	}
+
+	/**
+	 * RRD chart export (PHP /list/rrd/ajax.php): v-export-rrd SERVICE
+	 * PERIOD. The service name is allowlisted to the characters rrdtool
+	 * chart names use; the period must be one of RRD_PERIODS. The
+	 * command prints rrdtool xport --json directly (no "json" argument).
+	 */
+	async exportRrd(service: string, period: string): Promise<RrdExport> {
+		if (!/^[A-Za-z0-9_.-]+$/.test(service)) {
+			throw new Error(`invalid RRD service: ${service}`);
+		}
+		if (!(RRD_PERIODS as readonly string[]).includes(period)) {
+			throw new Error(`invalid RRD period: ${period}`);
+		}
+		return this.json<RrdExport>("v-export-rrd", service, period);
 	}
 
 	/* ==================================================================
