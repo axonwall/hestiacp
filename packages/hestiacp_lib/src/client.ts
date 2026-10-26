@@ -170,10 +170,20 @@ export class HestiaClient {
 		return this.listRows("v-list-user-stats", user);
 	}
 
+	/** Overall statistics (PHP /list/stats/ with no ?user=). */
+	listUsersStats() {
+		return this.listRows("v-list-users-stats");
+	}
+
 	/* ---- Server / admin lists ---- */
 
 	listSysServices() {
 		return this.listRows("v-list-sys-services");
+	}
+
+	/** Flat username list (PHP /list/stats/ per-user select). */
+	async listSysUsers(): Promise<string[]> {
+		return this.json<string[]>("v-list-sys-users", "json");
 	}
 	/** v-list-sys-info returns one flat record, not a map of rows. */
 	async listSysInfo(): Promise<HestiaRow> {
