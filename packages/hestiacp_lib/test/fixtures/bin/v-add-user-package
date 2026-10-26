@@ -1,0 +1,8 @@
+#!/bin/bash
+# Fixture: v-add-user-package FILE NAME [yes] — validate the staged
+# definition file, save a copy for test assertions, log the call.
+echo "$(basename "$0") $*" >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
+[ -f "$1" ] || exit 3
+grep -q "^WEB_TEMPLATE=" "$1" || exit 2
+cp "$1" "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}.pkg"
+exit 0

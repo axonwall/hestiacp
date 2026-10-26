@@ -1,0 +1,6 @@
+#!/bin/bash
+# Fixture: v-list-user-backup-exclusions — real shape: per-system objects
+# keyed by excluded name (segment detail in the value), {} when empty.
+cat << 'JSON'
+{"WEB": {"public_html/cache": "", "logs": ""}, "DNS": {}, "MAIL": {}, "DB": {}, "CRON": {}, "USER": {}}
+JSON

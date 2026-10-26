@@ -1,0 +1,2 @@
+#!/bin/bash
+printf 'UTC\nAmerica/Chicago\nEurope/London\n'

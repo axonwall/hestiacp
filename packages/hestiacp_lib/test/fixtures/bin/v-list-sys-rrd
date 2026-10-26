@@ -1,0 +1,27 @@
+#!/bin/bash
+# Fixture: v-list-sys-rrd (read-only list double)
+cat << 'JSON'
+{
+    "1": {
+        "TYPE": "la",
+        "RRD": "la",
+        "TITLE": "Load Average",
+        "TIME": "",
+        "DATE": ""
+    },
+    "2": {
+        "TYPE": "mem",
+        "RRD": "mem",
+        "TITLE": "Memory Usage",
+        "TIME": "",
+        "DATE": ""
+    },
+    "3": {
+        "TYPE": "net",
+        "RRD": "enp6s18",
+        "TITLE": "Bandwidth Usage enp6s18",
+        "TIME": "",
+        "DATE": ""
+    }
+}
+JSON

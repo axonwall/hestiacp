@@ -1,0 +1,22 @@
+{
+	"description": "HestiaNG shared library: typed client for the HestiaCP v-* command layer, session store, and panel primitives.",
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"typescript": "^5.9.3",
+		"vitest": "^4.1.11"
+	},
+	"exports": {
+		".": {
+			"default": "./src/index.ts",
+			"types": "./src/index.ts"
+		}
+	},
+	"name": "@hestiacp/lib",
+	"private": true,
+	"scripts": {
+		"test": "vitest run",
+		"typecheck": "tsc --noEmit -p tsconfig.json"
+	},
+	"type": "module",
+	"version": "0.0.1"
+}

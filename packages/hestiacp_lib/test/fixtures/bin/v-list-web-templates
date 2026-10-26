@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-list-web-templates (enumeration double)
+echo '["default", "caching"]'

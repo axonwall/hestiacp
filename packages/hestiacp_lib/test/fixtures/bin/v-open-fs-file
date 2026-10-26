@@ -1,0 +1,24 @@
+#!/bin/bash
+# Fixture: v-open-fs-file — one canned content block carrying every
+# needle the WebApp .env rewrites look for.
+cat << 'CONTENT'
+DB_CONNECTION=sqlite
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=laravel
+# DB_USERNAME=root
+# DB_PASSWORD=
+<redacted>
+APP_URL=http://127.0.0.1:8000
+DATABASE_URL=mysql://root:root@localhost/shopware
+app.baseURL="https://YOUR_DOMAIN_NAME/"
+media.baseURL="https://YOUR_MEDIA_DOMAIN_NAME/"
+admin.gateway="cp-admin"
+auth.gateway="cp-auth"
+analytics.salt="RANDOM_STRING_OF_64_CHARACTERS"
+database.default.hostname="localhost"
+database.default.database="castopod"
+database.default.username="root"
+database.default.password="****"
+memory_limit=128M
+CONTENT

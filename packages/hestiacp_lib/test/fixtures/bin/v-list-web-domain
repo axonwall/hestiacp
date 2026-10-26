@@ -1,0 +1,25 @@
+#!/bin/bash
+# Fixture: v-list-web-domain (singular/enumeration double)
+cat << 'JSON'
+{
+    "example.com": {
+        "IP": "203.0.113.10",
+        "IP6": "",
+        "TPL": "default",
+        "ALIAS": "www.example.com",
+        "STATS": "",
+        "SSL": "yes",
+        "SSL_FORCE": "no",
+        "SSL_HSTS": "no",
+        "LETSENCRYPT": "yes",
+        "FTP_USER": "demo_ftp1", "FTP_PATH": "/home/demo/web/example.com/public_html/ftp",
+        "BACKEND": "PHP-8_4",
+        "PROXY": "default",
+        "PROXY_EXT": "jpg,jpeg,png",
+        "FASTCGI_CACHE": "no",
+        "FASTCGI_DURATION": "",
+        "SUSPENDED": "no",
+        "DATE": "2026-10-01"
+    }
+}
+JSON

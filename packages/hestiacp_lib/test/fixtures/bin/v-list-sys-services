@@ -1,0 +1,27 @@
+#!/bin/bash
+# Fixture: v-list-sys-services (read-only list double)
+cat << 'JSON'
+{
+    "nginx": {
+        "SERVICE": "nginx",
+        "STATE": "running",
+        "CPU": "0.1",
+        "MEM": "42",
+        "RTIME": "0"
+    },
+    "php-fpm": {
+        "SERVICE": "php-fpm",
+        "STATE": "running",
+        "CPU": "0.4",
+        "MEM": "128",
+        "RTIME": "0"
+    },
+    "mysqld": {
+        "SERVICE": "mysqld",
+        "STATE": "stopped",
+        "CPU": "0",
+        "MEM": "0",
+        "RTIME": "0"
+    }
+}
+JSON

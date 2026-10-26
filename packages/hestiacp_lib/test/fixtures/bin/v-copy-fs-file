@@ -1,0 +1,10 @@
+#!/bin/bash
+# Fixture: v-copy-fs-file — log the call AND the staged file's contents
+# (so tests can assert what createFile wrote).
+{
+	echo "v-copy-fs-file $*"
+	echo "--- staged content begin"
+	cat "$2" 2> /dev/null
+	echo "--- staged content end"
+} >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
+exit 0

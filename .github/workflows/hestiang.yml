@@ -1,0 +1,72 @@
+# HestiaNG (Next.js panel) CI — additive to upstream HestiaCP's workflows.
+# Gates: frozen install with the pinned pnpm, lib tests, typecheck,
+# production build, and i18n dictionary freshness (the extracted
+# locales must match the shipped .mo catalogs).
+name: hestiang
+
+on:
+  push:
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/hestiang.yml"
+  pull_request:
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/hestiang.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  panel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.9.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install (frozen lockfile)
+        # The committed lockfile is the reviewed artifact; pnpm's
+        # default minimum-release-age policy otherwise fails the run
+        # whenever a locked package is <24h old (Next 16.4.3 was
+        # published the day before the D10 box run and broke both
+        # this step and the bundle build until it aged out).
+        run: pnpm install --frozen-lockfile --config.minimum-release-age=0
+      - name: Library tests
+        run: pnpm --filter @hestiacp/lib test
+      - name: Typecheck (lib + panel)
+        run: |
+          pnpm --filter @hestiacp/lib typecheck
+          pnpm --filter @hestiacp/panel typecheck
+      - name: i18n dictionaries are fresh
+        run: |
+          pnpm --filter @hestiacp/panel i18n:extract
+          git diff --exit-code -- apps/panel/locales
+      - name: WebApp catalog is fresh
+        run: |
+          pnpm --filter @hestiacp/panel webapps:extract
+          git diff --exit-code -- apps/panel/data
+      - name: Theme assets are fresh
+        run: |
+          pnpm --filter @hestiacp/panel theme:build
+          git diff --exit-code -- apps/panel/public
+      - name: Production build (the gate)
+        run: pnpm --filter @hestiacp/panel build
+      - name: Deploy bundle builds and boots
+        run: |
+          PNPM=pnpm ./apps/panel/deploy/build-bundle.sh
+          BUNDLE=$(ls -d apps/panel/dist/hestiang-panel-*/ | head -1)
+          HESTIA_BIN="$PWD/packages/hestiacp_lib/test/fixtures/bin" \
+            ./apps/panel/deploy/smoke-bundle.sh "$BUNDLE" 3210

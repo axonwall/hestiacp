@@ -1,0 +1,30 @@
+#!/bin/bash
+# Fixture: v-list-sys-hestia-updates (read-only list double)
+cat << 'JSON'
+{
+    "hestia": {
+        "VERSION": "1.10.5-1+ubuntu24.04",
+        "ARCH": "amd64",
+        "UPDATED": "no",
+        "DESCR": "Hestia core package",
+        "TIME": "05:17:58",
+        "DATE": "2026-10-24"
+    },
+    "hestia-nginx": {
+        "VERSION": "1.29.2-1+ubuntu24.04",
+        "ARCH": "amd64",
+        "UPDATED": "yes",
+        "DESCR": "Hestia internal web server",
+        "TIME": "05:17:58",
+        "DATE": "2026-10-24"
+    },
+    "hestia-php": {
+        "VERSION": "8.5.12-1+ubuntu24.04",
+        "ARCH": "amd64",
+        "UPDATED": "yes",
+        "DESCR": "Hestia internal php interpreter",
+        "TIME": "05:17:58",
+        "DATE": "2026-10-24"
+    }
+}
+JSON

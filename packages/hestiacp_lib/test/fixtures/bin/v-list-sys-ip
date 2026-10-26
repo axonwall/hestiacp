@@ -1,0 +1,17 @@
+#!/bin/bash
+# Fixture: v-list-sys-ip — single-IP record double.
+cat << 'JSON'
+{
+    "203.0.113.10": {
+        "IP": "203.0.113.10",
+        "NETMASK": "255.255.255.0",
+        "INTERFACE": "eth0",
+        "OWNER": "admin",
+        "STATUS": "shared",
+        "NAME": "",
+        "NAT": "198.51.100.23",
+        "U_WEB_DOMAINS": "1",
+        "DATE": "2026-10-01"
+    }
+}
+JSON

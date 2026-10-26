@@ -1,0 +1,28 @@
+{
+	"dependencies": {
+		"@hestiacp/lib": "workspace:*",
+		"next": "16.4.3",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"@types/react": "^19.0.0",
+		"@types/react-dom": "^19.0.0",
+		"typescript": "^5.9.3"
+	},
+	"name": "@hestiacp/panel",
+	"private": true,
+	"scripts": {
+		"build": "next build",
+		"dev": "next dev",
+		"start": "next start",
+		"i18n:extract": "node scripts/extract-locales.mjs",
+		"theme:build": "node scripts/build-theme.mjs",
+		"theme:check": "node scripts/build-theme.mjs --check",
+		"typecheck": "tsc --noEmit",
+		"webapps:extract": "node scripts/extract-webapps.mjs"
+	},
+	"type": "module",
+	"version": "0.0.1"
+}

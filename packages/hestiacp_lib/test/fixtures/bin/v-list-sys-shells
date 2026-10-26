@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-list-sys-shells json (array shape)
+echo '["bash", "nologin", "rssh", "rbash"]'

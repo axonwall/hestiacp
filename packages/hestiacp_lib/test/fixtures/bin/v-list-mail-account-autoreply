@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-list-mail-account-autoreply (plain text)
+echo 'I am out of office.'

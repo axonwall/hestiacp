@@ -1,0 +1,11 @@
+#!/bin/bash
+# Fixture: v-check-user-hash USER HASHFILE IP — succeeds iff the staged
+# file's first line is the fixture hash for the fixture admin.
+user="$1"
+hash_file="$2"
+hash_input=$(head -n 1 "$hash_file" 2> /dev/null)
+if [ "$user" = "admin" ] && [ "$hash_input" = "fixture-hash-value" ]; then
+	exit 0
+fi
+echo "Error: hash missmatch" >&2
+exit 9

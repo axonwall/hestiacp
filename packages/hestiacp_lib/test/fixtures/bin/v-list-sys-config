@@ -1,0 +1,35 @@
+#!/bin/bash
+# Fixture: v-list-sys-config json. If HESTIA_FIXTURE_CONFIG points at a
+# file, cat that instead (lets tests vary sys config, e.g. API disabled).
+if [ -n "$HESTIA_FIXTURE_CONFIG" ] && [ -f "$HESTIA_FIXTURE_CONFIG" ]; then
+	cat "$HESTIA_FIXTURE_CONFIG"
+	exit 0
+fi
+cat << 'JSON'
+{
+    "config": {
+        "VERSION": "1.10.5",
+        "RELEASE_BRANCH": "release",
+        "WEB_SYSTEM": "nginx",
+        "WEB_BACKEND": "php-fpm",
+        "ROOT_USER": "admin",
+        "API": "yes",
+        "API_SYSTEM": "2",
+        "API_ALLOWED_IP": "allow-all",
+        "FILE_MANAGER": "true",
+        "WEB_TERMINAL": "true",
+        "HOSTNAME": "panel.fixture.local",
+    "TIMEZONE": "UTC",
+    "LANGUAGE": "en",
+    "THEME": "default",
+    "BACKUP": "/backup",
+    "BACKUP_MODE": "gzip",
+    "BACKUP_GZIP": "4",
+    "BACKUP_SYSTEM": "local",
+    "FIREWALL_SYSTEM": "",
+    "QUOTA_SYSTEM": "",
+    "DEBUG_MODE": "",
+    "INACTIVE_SESSION_TIMEOUT": "1800"
+    }
+}
+JSON

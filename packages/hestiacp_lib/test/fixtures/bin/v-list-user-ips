@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fixture: v-list-user-ips (singular/enumeration double)
+cat << 'JSON'
+{
+    "203.0.113.10": {
+        "IP": "203.0.113.10",
+        "NAT": "198.51.100.23",
+        "OWNER": "admin",
+        "STATUS": "shared",
+        "INTERFACE": "eth0"
+    }
+}
+JSON

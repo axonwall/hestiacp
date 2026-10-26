@@ -1,0 +1,20 @@
+#!/bin/bash
+# Fixture: v-list-user-log (read-only list double)
+cat << 'JSON'
+{
+    "1": {
+        "DATE": "2026-10-22",
+        "TIME": "09:14:02",
+        "CATEGORY": "Web",
+        "LEVEL": "Info",
+        "MESSAGE": "Login success (User: demo)"
+    },
+    "2": {
+        "DATE": "2026-10-21",
+        "TIME": "22:03:11",
+        "CATEGORY": "Cron",
+        "LEVEL": "Warning",
+        "MESSAGE": "Cron job 2 exited with code 1"
+    }
+}
+JSON

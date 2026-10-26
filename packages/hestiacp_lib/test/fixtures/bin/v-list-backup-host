@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fixture: v-list-backup-host (record double)
+cat << 'JSON'
+{
+    "sftp": {
+        "TYPE": "sftp",
+        "HOST": "backup.example.net",
+        "USERNAME": "bkup",
+        "PATH": "/backups",
+        "PORT": "22"
+    }
+}
+JSON

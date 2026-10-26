@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-list-web-templates-backend (enumeration double)
+echo '["PHP-8_4", "PHP-8_3"]'

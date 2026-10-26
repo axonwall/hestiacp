@@ -1,0 +1,85 @@
+import { effectiveUser, getT, hestia, loadRows, requireSession } from "@/lib/panel";
+import Link from "next/link";
+import { ListView } from "@/components/ListView";
+import { RowAction, RowActionButton } from "@/components/RowAction";
+import { toggleMailAccountAction } from "./actions";
+
+/** Mail accounts of one domain (/list/mail/ → click a domain). */
+export default async function Page({
+	searchParams,
+}: {
+	searchParams: Promise<{ domain?: string }>;
+}) {
+	const session = await requireSession();
+	const t = await getT();
+	const user = effectiveUser(session);
+	const { domain } = await searchParams;
+	if (!domain) {
+		return (
+			<div className="card">
+				<h1>{t("Mail Accounts")}</h1>
+				<p>
+					<a href="/list/mail">{t("Back")}</a> — pick a domain first.
+				</p>
+			</div>
+		);
+	}
+	const token = String(session.data.token ?? "");
+	const result = await loadRows(() => hestia.listMailAccounts(user, domain));
+	return (
+		<ListView
+			title={`${t("Mail Accounts")} — ${domain}`}
+			result={result}
+			columns={[
+				{ key: "ACCOUNT", label: t("Account") },
+				{ key: "QUOTA", label: t("Quota") },
+				{
+					key: "U_DISK",
+					label: t("Disk"),
+					format: (v) => `${v} MB`,
+				},
+				{ key: "AUTOREPLY", label: t("Autoreply") },
+				{ key: "SUSPENDED", label: t("Suspended") },
+			]}
+			rowActions={(key, row) => (
+				<>
+					<RowAction
+						href={`/edit/mail/account?domain=${encodeURIComponent(domain)}&account=${encodeURIComponent(key)}`}
+						title={t("Edit")}
+						icon="fa-pencil icon-orange"
+					/>
+					<form action={toggleMailAccountAction} style={{ display: "inline" }}>
+						<input type="hidden" name="token" value={token} />
+						<input type="hidden" name="domain" value={domain} />
+						<input type="hidden" name="account" value={key} />
+						<input
+							type="hidden"
+							name="op"
+							value={row.SUSPENDED === "yes" ? "unsuspend" : "suspend"}
+						/>
+						<RowActionButton
+							title={row.SUSPENDED === "yes" ? t("Unsuspend") : t("Suspend")}
+							icon={row.SUSPENDED === "yes" ? "fa-play icon-green" : "fa-pause icon-highlight"}
+						/>
+					</form>
+					<RowAction
+						href={`/delete/mail/account?domain=${encodeURIComponent(domain)}&account=${encodeURIComponent(key)}`}
+						title={t("Delete")}
+						icon="fa-trash icon-red"
+					/>
+				</>
+			)}
+		>
+			<p>
+				<a href="/list/mail">{t("Back")}</a> ·{" "}
+				<Link
+					className="button button-secondary"
+					href={`/add/mail/account?domain=${encodeURIComponent(domain)}`}
+				>
+					<i className="fas fa-circle-plus icon-green"></i>
+					{t("Add Mail Account")}
+				</Link>
+			</p>
+		</ListView>
+	);
+}

@@ -1,0 +1,16 @@
+#!/bin/bash
+# Fixture: v-list-firewall-rule (record double)
+cat << 'JSON'
+{
+    "1": {
+        "RULE": "1",
+        "ACTION": "DROP",
+        "PROTOCOL": "TCP",
+        "PORT": "23",
+        "IP": "0.0.0.0/0",
+        "COMMENT": "Block telnet",
+        "SUSPENDED": "no",
+        "DATE": "2026-10-01"
+    }
+}
+JSON

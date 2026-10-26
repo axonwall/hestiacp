@@ -1,0 +1,26 @@
+#!/bin/bash
+# Fixture: v-list-cron-jobs (read-only list double)
+cat << 'JSON'
+{
+    "1": {
+        "JOB": "1",
+        "MIN": "0",
+        "HOUR": "3",
+        "DAY": "*",
+        "MONTH": "*",
+        "WDAY": "*",
+        "CMD": "/usr/bin/backup.sh",
+        "SUSPENDED": "no"
+    },
+    "2": {
+        "JOB": "2",
+        "MIN": "*/15",
+        "HOUR": "*",
+        "DAY": "*",
+        "MONTH": "*",
+        "WDAY": "*",
+        "CMD": "php /home/demo/cron.php",
+        "SUSPENDED": "no"
+    }
+}
+JSON

@@ -1,0 +1,26 @@
+#!/bin/bash
+# Fixture: v-list-web-domains (read-only list double)
+cat << 'JSON'
+{
+    "example.com": {
+        "IP": "203.0.113.10",
+        "CUSTOM_DOCROOT": "",
+        "REDIRECT": "",
+        "SSL": "yes",
+        "LETSENCRYPT": "yes",
+        "FTP_USER": "demo_ftp",
+        "SUSPENDED": "no",
+        "DATE": "2026-10-01"
+    },
+    "blog.example.com": {
+        "IP": "203.0.113.10",
+        "CUSTOM_DOCROOT": "",
+        "REDIRECT": "",
+        "SSL": "no",
+        "LETSENCRYPT": "no",
+        "FTP_USER": "",
+        "SUSPENDED": "no",
+        "DATE": "2026-10-05"
+    }
+}
+JSON

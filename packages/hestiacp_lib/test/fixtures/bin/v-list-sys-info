@@ -1,0 +1,16 @@
+#!/bin/bash
+# Fixture: v-list-sys-info json (wrapped record, as the real script emits)
+cat << 'JSON'
+{
+    "sysinfo": {
+        "HOSTNAME": "panel.example.test",
+        "OS": "Ubuntu",
+        "VERSION": "24.04",
+        "ARCH": "x86_64",
+        "HESTIA": "1.10.5",
+        "RELEASE": "release",
+        "UPTIME": "86400",
+        "LOADAVERAGE": "0.10"
+    }
+}
+JSON

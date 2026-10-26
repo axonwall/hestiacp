@@ -1,0 +1,220 @@
+/*
+ * HestiaNG compatibility layer.
+ *
+ * The panel's look comes from HestiaCP's own theme stylesheets
+ * (public/hestia/themes/*.min.css, bundled from web/css/src by
+ * scripts/build-theme.mjs — D6 visual parity). This file holds ONLY
+ * the bridges between that CSS and this panel's markup conventions:
+ * the <details>-based top-bar menu, the chrome additions (search,
+ * impersonation banner), and the shared page classes the React
+ * components use (.card, .primary, bare form elements, dashboard
+ * gauges). Everything visual references the theme's CSS variables
+ * so the default and dark themes both hold.
+ */
+
+/* --- Top-bar menu: <details> instead of Alpine x-data --- */
+.top-bar-menu {
+	position: relative;
+}
+.top-bar-menu summary {
+	list-style: none;
+	cursor: pointer;
+}
+.top-bar-menu summary::-webkit-details-marker {
+	display: none;
+}
+.top-bar-menu .top-bar-menu-panel {
+	display: none;
+	position: absolute;
+	right: 0;
+	top: 100%;
+	z-index: 60;
+}
+.top-bar-menu[open] .top-bar-menu-panel {
+	display: block;
+}
+.top-bar-menu .top-bar-menu-link {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+.top-bar-logout-form {
+	margin: 0;
+}
+.top-bar-logout-form button.top-bar-menu-link {
+	background: none;
+	border: 0;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+	width: 100%;
+	text-align: left;
+}
+.top-bar-search input {
+	max-width: 180px;
+}
+
+/* --- Impersonation banner (our addition; PHP has none) --- */
+.impersonation-banner {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	justify-content: center;
+	background: var(--alert-danger-color);
+	color: #fff;
+	padding: 0.4rem 1rem;
+	font-size: 0.9rem;
+}
+.impersonation-banner .link-button {
+	color: #fff;
+	text-decoration: underline;
+}
+
+/* --- Row actions: the theme styles .units-table-row-action-link
+   as an <a>; form-submit buttons need the same look without
+   browser button chrome. --- */
+button.units-table-row-action-link {
+	background: none;
+	border: 0;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+}
+
+/* --- Page scaffolding --- */
+.list-title {
+	font-size: 1.05rem;
+	margin: 0;
+	color: var(--color-text-heading);
+}
+.card {
+	padding: 1rem 20px;
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 1rem;
+	padding: 0 20px;
+}
+.card .card,
+.cards .card {
+	padding: 0;
+}
+.card-title {
+	font-weight: 600;
+	color: var(--color-text-heading);
+	margin-bottom: 0.35rem;
+}
+.muted {
+	color: var(--color-text);
+	opacity: 0.75;
+	font-size: 0.85rem;
+}
+.notice {
+	border-left: 4px solid var(--alert-info-color);
+	padding: 0.5rem 0.75rem;
+	margin: 0.75rem 0;
+}
+.ok {
+	color: var(--alert-success-color);
+}
+.kv {
+	display: grid;
+	grid-template-columns: minmax(140px, 220px) 1fr;
+	gap: 0.25rem 1rem;
+}
+.kv dt {
+	font-weight: 600;
+	color: var(--color-text-heading);
+}
+.kv dd {
+	margin: 0;
+}
+
+/* --- Buttons: pages use the theme's own .button classes now
+   (primary submits, .button-secondary toolbar adds, .button-danger
+   delete confirms), so both themes render them natively. The old
+   compat .primary rule hardcoded the LIGHT theme's gradient and
+   is gone — that was the visible button mismatch on dark pages.
+   .link-button stays a text button. --- */
+.link-button {
+	background: none;
+	border: 0;
+	padding: 0;
+	font: inherit;
+	color: var(--color-text-link);
+	cursor: pointer;
+}
+.link-button:hover {
+	color: var(--color-text-link-hover);
+}
+.inline-form {
+	display: inline;
+}
+
+/* --- Forms: pages use the theme's .form-control/.form-select
+   classes directly. Labels keep a light structural rule only. --- */
+main form label,
+.app-content form label {
+	display: block;
+	font-size: 0.8rem;
+	font-weight: 600;
+	margin: 0.6rem 0 0.25rem;
+	color: var(--color-text-heading);
+}
+main form input[type="checkbox"],
+main form input[type="radio"] {
+	margin-right: 0.4rem;
+}
+.fields {
+	max-width: 640px;
+}
+.toolbar-buttons p {
+	margin: 0;
+}
+
+/* --- Data tables that are not ListView (sublists, stats).
+   Borders use a translucent gray so they read on both themes. --- */
+table.grid {
+	width: calc(100% - 40px);
+	margin: 0 20px;
+	border-collapse: collapse;
+	font-size: 0.85rem;
+}
+table.grid th,
+table.grid td {
+	text-align: left;
+	padding: 8px 10px;
+	border-bottom: 1px solid rgb(128 128 128 / 40%);
+}
+table.grid th {
+	color: var(--color-text-heading);
+}
+
+/* --- Dashboard gauges --- */
+.gauges {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 1rem;
+	padding: 0 20px;
+}
+.gauge-label {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--color-text-heading);
+}
+.gauge-value {
+	font-size: 0.95rem;
+	margin: 0.15rem 0;
+}
+.gauge-bar {
+	height: 8px;
+	border-radius: 4px;
+	background: rgb(140 140 140 / 30%);
+	overflow: hidden;
+}
+.gauge-bar > span {
+	display: block;
+	height: 100%;
+	background: var(--alert-info-color);
+}

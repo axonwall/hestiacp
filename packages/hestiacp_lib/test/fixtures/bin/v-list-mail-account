@@ -1,0 +1,17 @@
+#!/bin/bash
+# Fixture: v-list-mail-account (singular/enumeration double)
+cat << 'JSON'
+{
+    "info": {
+        "ALIAS": "postmaster",
+        "FWD": "",
+        "FWD_ONLY": "no",
+        "AUTOREPLY": "no",
+        "QUOTA": "unlimited",
+        "RATE_LIMIT": "",
+        "U_DISK": "12",
+        "SUSPENDED": "no",
+        "DATE": "2026-10-02"
+    }
+}
+JSON

@@ -1,0 +1,56 @@
+#!/bin/bash
+# Fixture: v-list-user-packages json
+cat << 'JSON'
+{
+    "default": {
+        "WEB_TEMPLATE": "default",
+        "BACKEND_TEMPLATE": "PHP-8_3",
+        "PROXY_TEMPLATE": "default",
+        "DNS_TEMPLATE": "default",
+        "WEB_DOMAINS": "unlimited",
+        "WEB_ALIASES": "unlimited",
+        "DNS_DOMAINS": "unlimited",
+        "DNS_RECORDS": "unlimited",
+        "MAIL_DOMAINS": "unlimited",
+        "MAIL_ACCOUNTS": "unlimited",
+        "DATABASES": "unlimited",
+        "CRON_JOBS": "unlimited",
+        "DISK_QUOTA": "unlimited",
+        "CPU_QUOTA": "",
+        "CPU_QUOTA_PERIOD": "",
+        "MEMORY_LIMIT": "",
+        "SWAP_LIMIT": "",
+        "BANDWIDTH": "unlimited",
+        "RATE_LIMIT": "unlimited",
+        "NS": "ns1.example.com,ns2.example.com",
+        "SHELL": "nologin",
+        "BACKUPS": "unlimited",
+        "BACKUPS_INCREMENTAL": "no"
+    },
+    "small": {
+        "WEB_TEMPLATE": "default",
+        "BACKEND_TEMPLATE": "PHP-8_3",
+        "PROXY_TEMPLATE": "default",
+        "DNS_TEMPLATE": "default",
+        "WEB_DOMAINS": "5",
+        "WEB_ALIASES": "10",
+        "DNS_DOMAINS": "5",
+        "DNS_RECORDS": "50",
+        "MAIL_DOMAINS": "5",
+        "MAIL_ACCOUNTS": "25",
+        "DATABASES": "5",
+        "CRON_JOBS": "10",
+        "DISK_QUOTA": "1000",
+        "CPU_QUOTA": "",
+        "CPU_QUOTA_PERIOD": "",
+        "MEMORY_LIMIT": "",
+        "SWAP_LIMIT": "",
+        "BANDWIDTH": "10000",
+        "RATE_LIMIT": "200",
+        "NS": "ns1.example.com,ns2.example.com",
+        "SHELL": "nologin",
+        "BACKUPS": "3",
+        "BACKUPS_INCREMENTAL": "no"
+    }
+}
+JSON

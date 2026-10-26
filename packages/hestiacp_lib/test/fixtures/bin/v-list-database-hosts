@@ -1,0 +1,19 @@
+#!/bin/bash
+# Fixture: v-list-database-hosts (real shape: an ARRAY of host rows)
+cat << 'JSON'
+[
+    {
+        "HOST": "localhost",
+        "PORT": "3306",
+        "TYPE": "mysql",
+        "CHARSETS": "utf8mb4,utf8,latin1",
+        "MAX_DB": "unlimited",
+        "U_SYS_USERS": "",
+        "U_DB_BASES": "0",
+        "TPL": "",
+        "SUSPENDED": "no",
+        "TIME": "05:22:38",
+        "DATE": "2026-10-24"
+    }
+]
+JSON

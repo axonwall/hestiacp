@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-list-web-templates-proxy (enumeration double)
+echo '["default", "caching"]'

@@ -1,0 +1,117 @@
+#!/bin/bash
+# Fixture: v-list-user USER json — one record keyed by username.
+case "$1" in
+	admin)
+		cat << 'JSON'
+{
+    "admin": {
+        "NAME": "Administrator",
+        "ROLE": "admin",
+        "SHELL": "/bin/bash",
+        "LANGUAGE": "en",
+        "PACKAGE": "default",
+        "CONTACT": "admin@example.com",
+        "U_DISK": "1024",
+        "U_BANDWIDTH": "4096",
+        "U_USERS": "2",
+        "NS": "ns1.example.com,ns2.example.com",
+        "LOGIN_DISABLED": "no",
+        "THEME": "default",
+        "WEB_DOMAINS": "1",
+        "DNS_DOMAINS": "1",
+        "MAIL_DOMAINS": "0",
+        "DATABASES": "unlimited",
+        "CRON_JOBS": "2",
+        "DISK_QUOTA": "unlimited",
+        "SUSPENDED": "no"
+    }
+}
+JSON
+		;;
+	demo)
+		cat << 'JSON'
+{
+    "demo": {
+        "NAME": "Demo User",
+        "ROLE": "user",
+        "SHELL": "/bin/bash",
+        "LANGUAGE": "en",
+        "PACKAGE": "default",
+        "CONTACT": "demo@example.com",
+        "U_DISK": "512",
+        "U_BANDWIDTH": "2048",
+        "U_WEB_DOMAINS": "2",
+        "U_DNS_DOMAINS": "1",
+        "U_MAIL_DOMAINS": "1",
+        "U_DATABASES": "1",
+        "U_CRON_JOBS": "2",
+        "U_BACKUPS": "1",
+        "NS": "ns1.example.com,ns2.example.com",
+        "LOGIN_DISABLED": "no",
+        "THEME": "dark",
+        "WEB_DOMAINS": "0",
+        "DNS_DOMAINS": "0",
+        "MAIL_DOMAINS": "0",
+        "DATABASES": "10",
+        "CRON_JOBS": "0",
+        "DISK_QUOTA": "1024",
+        "SUSPENDED": "no"
+    }
+}
+JSON
+		;;
+	hans)
+		cat << 'JSON'
+{
+    "hans": {
+        "NAME": "Hans Beispiel",
+        "ROLE": "user",
+        "SHELL": "/bin/bash",
+        "LANGUAGE": "de",
+        "PACKAGE": "default",
+        "CONTACT": "hans@example.com",
+        "NS": "ns1.example.com,ns2.example.com",
+        "LOGIN_DISABLED": "no",
+        "THEME": "default",
+        "WEB_DOMAINS": "0",
+        "DNS_DOMAINS": "0",
+        "MAIL_DOMAINS": "0",
+        "DATABASES": "0",
+        "CRON_JOBS": "0",
+        "DISK_QUOTA": "1024",
+        "SUSPENDED": "no"
+    }
+}
+JSON
+		;;
+	secure)
+		cat << 'JSON'
+{
+    "secure": {
+        "NAME": "Secure User",
+        "ROLE": "user",
+        "SHELL": "/bin/bash",
+        "LANGUAGE": "en",
+        "PACKAGE": "default",
+        "CONTACT": "secure@example.com",
+        "NS": "ns1.example.com,ns2.example.com",
+        "LOGIN_DISABLED": "no",
+        "THEME": "default",
+        "TWOFA": "FIXTUREBASE32SECRET",
+        "QRCODE": "data:image/png;base64,fixtureqrcode",
+        "WEB_DOMAINS": "0",
+        "DNS_DOMAINS": "0",
+        "MAIL_DOMAINS": "0",
+        "DATABASES": "0",
+        "CRON_JOBS": "0",
+        "DISK_QUOTA": "1024",
+        "SUSPENDED": "no"
+    }
+}
+JSON
+		;;
+	*)
+		echo "Error: user not found" >&2
+		exit 9
+		;;
+esac

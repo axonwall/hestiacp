@@ -1,0 +1,2 @@
+#!/bin/bash
+printf 'fixture config contents for %s\n' "$1"

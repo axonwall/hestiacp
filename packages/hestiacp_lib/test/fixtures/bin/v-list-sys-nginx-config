@@ -1,0 +1,5 @@
+#!/bin/bash
+# Fixture: v-list-sys-nginx-config — dynamic config path record.
+cat << 'JSON'
+{"CONFIG": {"config_path": "/etc/nginx/nginx.conf"}}
+JSON

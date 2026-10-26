@@ -1,0 +1,20 @@
+#!/bin/bash
+# Fixture: v-list-user-backup (record double)
+cat << 'JSON'
+{
+    "demo.2026-10-01_00-00-00.tar": {
+        "BACKUP": "demo.2026-10-01_00-00-00.tar",
+        "TYPE": "local",
+        "SIZE": "42",
+        "WEB": "example.com",
+        "DNS": "example.com",
+        "MAIL": "example.com",
+        "DB": "demo_main",
+        "CRON": "yes",
+        "USER_DIRS": "Documents",
+        "RUNTIME": "1",
+        "DATE": "2026-10-01",
+        "TIME": "00:00:00"
+    }
+}
+JSON

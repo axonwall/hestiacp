@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-list-sys-languages json (code -> label map)
+echo '{"en": "English", "de": "German", "fr": "French"}'

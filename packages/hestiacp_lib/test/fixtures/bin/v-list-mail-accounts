@@ -1,0 +1,22 @@
+#!/bin/bash
+# Fixture: v-list-mail-accounts (read-only list double)
+cat << 'JSON'
+{
+    "info": {
+        "ALIAS": "",
+        "AUTOREPLY": "no",
+        "FWD": "",
+        "QUOTA": "unlimited",
+        "U_DISK": "12",
+        "SUSPENDED": "no"
+    },
+    "admin": {
+        "ALIAS": "",
+        "AUTOREPLY": "no",
+        "FWD": "",
+        "QUOTA": "500",
+        "U_DISK": "3",
+        "SUSPENDED": "no"
+    }
+}
+JSON
