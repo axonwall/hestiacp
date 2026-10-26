@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fixture: v-list-access-key ID json -> flat record
+cat << 'JSON'
+{
+    "ACCESS_KEY_ID": "AKIDEXAMPLE123",
+    "SECRET_ACCESS_KEY": "s3cr3texamplekey",
+    "USER": "admin",
+    "PERMISSIONS": ["v-list-mail-accounts", "v-purge-nginx-cache"],
+    "COMMENT": "test key",
+    "TIME": "05:10:02",
+    "DATE": "2026-10-25"
+}
+JSON

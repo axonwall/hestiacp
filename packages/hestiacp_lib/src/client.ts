@@ -24,6 +24,23 @@ export interface RrdExport {
 	meta: { start: number; step: number; legend: string[] };
 }
 
+/** One v-list-access-key / v-add-access-key record (flat, JSON form). */
+export interface AccessKeyRecord {
+	ACCESS_KEY_ID: string;
+	SECRET_ACCESS_KEY: string;
+	USER: string;
+	PERMISSIONS: string[];
+	COMMENT: string;
+	TIME: string;
+	DATE: string;
+}
+
+/** One v-list-apis entry: its commands plus the role allowed to use it. */
+export interface ApiEntry {
+	COMMANDS: string[];
+	ROLE: string;
+}
+
 /** One entry of a restic snapshot listing (restic ls --json line). */
 export interface ResticFileEntry {
 	name: string;
@@ -162,6 +179,16 @@ export class HestiaClient {
 	listAccessKeys(user: string) {
 		assertUsername(user);
 		return this.listRows("v-list-access-keys", user);
+	}
+
+	/** One access key (PHP /list/access-key/?key=): flat record. */
+	async listAccessKey(keyId: string): Promise<AccessKeyRecord> {
+		return this.json<AccessKeyRecord>("v-list-access-key", keyId, "json");
+	}
+
+	/** API catalogue (PHP /add/access-key/ permission list). */
+	async listApis(): Promise<Record<string, ApiEntry>> {
+		return this.json<Record<string, ApiEntry>>("v-list-apis", "json");
 	}
 	listUserLog(user: string) {
 		assertUsername(user);
@@ -1240,6 +1267,22 @@ export class HestiaClient {
 
 	async deleteAccessKey(keyId: string) {
 		await this.runChecked("v-delete-access-key", keyId);
+	}
+
+	/** Create an access key (PHP /add/access-key/): returns the new record including the secret. */
+	async addAccessKey(
+		user: string,
+		permissions: string,
+		comment: string,
+	): Promise<AccessKeyRecord> {
+		assertUsername(user);
+		return this.json<AccessKeyRecord>("v-add-access-key", user, permissions, comment, "json");
+	}
+
+	/** Add an SSH key (PHP /add/key/): v-add-user-ssh-key USER KEY. */
+	async addUserSshKey(user: string, key: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-add-user-ssh-key", user, key);
 	}
 	async deleteUserSshKey(user: string, key: string) {
 		assertUsername(user);

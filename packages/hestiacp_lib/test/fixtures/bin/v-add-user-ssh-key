@@ -1,0 +1,3 @@
+#!/bin/bash
+# Fixture: v-add-user-ssh-key USER KEY -> success, no output
+exit 0

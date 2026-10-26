@@ -9,8 +9,7 @@ import { deleteSshKeyAction } from "./actions";
  * no search. The key is shown in full and bold — the old page
  * truncated it at 32 chars. PHP hides the filemanager system key
  * (display:none); it is filtered out here instead, so it cannot be
- * deleted from this list. The Add SSH Key button is omitted until
- * /add/key exists.
+ * deleted from this list.
  */
 export default async function Page() {
 	const session = await requireSession();
@@ -57,6 +56,10 @@ export default async function Page() {
 			<Link className="button button-secondary" href="/edit/user">
 				<i className="fas fa-arrow-left icon-blue"></i>
 				{t("Back")}
+			</Link>
+			<Link className="button button-secondary js-button-create" href="/add/key">
+				<i className="fas fa-circle-plus icon-green"></i>
+				{t("Add SSH Key")}
 			</Link>
 		</ListView>
 	);

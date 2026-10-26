@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fixture: v-add-access-key USER PERMISSIONS COMMENT json -> new record incl. secret
+cat << 'JSON'
+{
+    "ACCESS_KEY_ID": "AKIDNEWKEY456",
+    "SECRET_ACCESS_KEY": "newsecretkey789",
+    "USER": "admin",
+    "PERMISSIONS": ["v-list-mail-accounts"],
+    "COMMENT": "created by probe",
+    "TIME": "05:10:02",
+    "DATE": "2026-10-25"
+}
+JSON
