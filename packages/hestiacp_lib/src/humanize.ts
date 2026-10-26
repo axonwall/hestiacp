@@ -1,18 +1,20 @@
 /**
  * PHP humanize_usage_size/humanize_usage_measure (web/inc/main.php),
  * ported exactly: the input is a usage in MB, the output is a
- * display number (2 decimals, en-US grouping) plus a unit. The
- * divide chain is: >1024 MB -> GB, >1024 GB -> TB, >1024 TB -> PB,
- * with the >999 bump that keeps "1024 MB" rendering as "1.00 gb"
- * rather than "1024.00 mb". "unlimited" renders as infinity with
- * no unit, matching PHP's "∞" + empty measure.
+ * display number (2 decimals by default, en-US grouping) plus a unit.
+ * PHP's size function takes a decimals argument (the users list
+ * passes 1); the measure is unaffected by it. The divide chain is:
+ * >1024 MB -> GB, >1024 GB -> TB, >1024 TB -> PB, with the >999 bump
+ * that keeps "1024 MB" rendering as "1.00 gb" rather than "1024.00 mb".
+ * "unlimited" renders as infinity with no unit, matching PHP's "∞" +
+ * empty measure.
  */
-export function humanizeUsage(usage: string): { size: string; measure: string } {
+export function humanizeUsage(usage: string, decimals = 2): { size: string; measure: string } {
 	if (usage === "unlimited") return { size: "∞", measure: "" };
 	const fmt = (n: number): string =>
 		n.toLocaleString("en-US", {
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2,
+			minimumFractionDigits: decimals,
+			maximumFractionDigits: decimals,
 		});
 	let u = Number(usage);
 	if (Number.isNaN(u)) return { size: usage, measure: "" };

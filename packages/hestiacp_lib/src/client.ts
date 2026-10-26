@@ -1575,6 +1575,54 @@ export class HestiaClient {
 		await this.runChecked("v-delete-user", user);
 	}
 
+	/** PHP /bulk/user/ "rebuild" (Rebuild All): v-rebuild-all. */
+	async rebuildAll(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-all", user, "no");
+	}
+
+	/** PHP /bulk/user/ "rebuild user" (Rebuild User Profile). */
+	async rebuildUser(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-user", user, "no");
+	}
+
+	/** PHP /bulk/user/ "rebuild web". */
+	async rebuildWebDomains(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-web-domains", user);
+	}
+
+	/** PHP /bulk/user/ "rebuild dns". */
+	async rebuildDnsDomains(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-dns-domains", user);
+	}
+
+	/** PHP /bulk/user/ "rebuild mail". */
+	async rebuildMailDomains(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-mail-domains", user);
+	}
+
+	/** PHP /bulk/user/ "rebuild db". */
+	async rebuildDatabases(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-databases", user);
+	}
+
+	/** PHP /bulk/user/ "rebuild cron". */
+	async rebuildCronJobs(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-cron-jobs", user);
+	}
+
+	/** PHP /bulk/user/ "update counters". */
+	async updateUserCounters(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-update-user-counters", user);
+	}
+
 	// ---- Two-factor authentication ----
 
 	/**
@@ -1671,6 +1719,11 @@ export class HestiaClient {
 
 	async deleteUserPackage(name: string): Promise<void> {
 		await this.runChecked("v-delete-user-package", name);
+	}
+
+	/** PHP /copy/package/: v-copy-user-package PACKAGE PACKAGE-copy. */
+	async copyUserPackage(name: string): Promise<void> {
+		await this.runChecked("v-copy-user-package", name, `${name}-copy`);
 	}
 
 	// ---- System enumerations used by admin forms ----

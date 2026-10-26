@@ -18,6 +18,13 @@ cat << 'JSON'
         "DATABASES": "0",
         "CRON_JOBS": "2",
         "DISK_QUOTA": "unlimited",
+        "BANDWIDTH": "unlimited",
+        "U_DISK": "512",
+        "U_BANDWIDTH": "2048",
+        "U_BACKUPS": "1",
+        "IP_OWNED": "1",
+        "DATE": "2026-10-25",
+        "TIME": "05:10:02",
         "SUSPENDED": "no"
     },
     "demo": {
@@ -36,6 +43,13 @@ cat << 'JSON'
         "DATABASES": "1",
         "CRON_JOBS": "0",
         "DISK_QUOTA": "1024",
+        "BANDWIDTH": "1000",
+        "U_DISK": "256",
+        "U_BANDWIDTH": "100",
+        "U_BACKUPS": "0",
+        "IP_OWNED": "0",
+        "DATE": "2026-10-20",
+        "TIME": "12:00:00",
         "SUSPENDED": "no"
     }
 }
