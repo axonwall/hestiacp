@@ -227,6 +227,17 @@ export default async function Page({
 					{t("Save")}
 				</button>
 			</form>
+			<span>
+				{" "}
+				/{" "}
+				<a
+					className="form-link"
+					target="_blank"
+					href={`/generate/ssl?domain=${encodeURIComponent(domain)}`}
+				>
+					{t("Generate Self-Signed SSL Certificate")}
+				</a>
+			</span>
 			<h2>{t("FTP Accounts")}</h2>
 			{ftpUsers.map((ftpUser, i) => (
 				<form key={ftpUser} action={updateWebDomainFtpAction}>

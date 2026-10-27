@@ -1359,6 +1359,42 @@ export class HestiaClient {
 	async restartSystem() {
 		await this.runChecked("v-restart-system", "yes");
 	}
+
+	/**
+	 * Generate a self-signed cert (PHP /generate/ssl/):
+	 * v-generate-ssl-cert DOMAIN EMAIL COUNTRY STATE CITY ORG IT
+	 * ALIASES json KEY_ALGO. Aliases are newline-joined; the org
+	 * unit is hardcoded to IT, as PHP does.
+	 */
+	async generateSslCert(
+		domain: string,
+		email: string,
+		country: string,
+		state: string,
+		locality: string,
+		org: string,
+		aliases: string,
+		keyAlgo: string,
+	): Promise<{ CRT: string; KEY: string; CSR: string }> {
+		const data = await this.json<Record<string, { CRT: string; KEY: string; CSR: string }>>(
+			"v-generate-ssl-cert",
+			domain,
+			email,
+			country,
+			state,
+			locality,
+			org,
+			"IT",
+			aliases,
+			"json",
+			keyAlgo,
+		);
+		const record = data[domain];
+		if (!record) {
+			throw new Error(`v-generate-ssl-cert returned no record for ${domain}`);
+		}
+		return record;
+	}
 	async acknowledgeUserNotification(user: string, notification: string) {
 		assertUsername(user);
 		await this.runChecked("v-acknowledge-user-notification", user, notification);

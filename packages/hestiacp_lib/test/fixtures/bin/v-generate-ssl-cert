@@ -1,0 +1,13 @@
+#!/bin/bash
+# Fixture: v-generate-ssl-cert DOMAIN EMAIL COUNTRY STATE CITY ORG IT ALIASES json KEY_ALGO
+# -> JSON keyed by domain with fake CRT/KEY/CSR.
+echo "$(basename "$0") $*" >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
+cat << JSON
+{
+    "$1": {
+        "CRT": "-----BEGIN CERTIFICATE-----\nFAKECERT\n-----END CERTIFICATE-----",
+        "KEY": "-----BEGIN PRIVATE KEY-----\nFAKEKEY\n-----END PRIVATE KEY-----",
+        "CSR": "-----BEGIN CERTIFICATE REQUEST-----\nFAKECSR\n-----END CERTIFICATE REQUEST-----"
+    }
+}
+JSON
