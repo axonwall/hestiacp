@@ -24,7 +24,7 @@ export async function editMailAccountAction(formData: FormData): Promise<void> {
 		redirect(`${back}&error=csrf`);
 	}
 	const user = effectiveUser(session);
-	const isAdmin = session.data.userContext === "admin" && !session.data.look;
+	const isAdmin = session.data.userContext === "admin";
 	try {
 		const current = await hestia.listMailAccount(user, domain, account);
 
@@ -60,7 +60,13 @@ export async function editMailAccountAction(formData: FormData): Promise<void> {
 			}
 		}
 
-		const postedFwd = splitList(String(formData.get("forwards") ?? ""));
+		// PHP's blackhole: checked means the forwarder list is
+		// exactly ":blackhole:" (and the textarea shows empty);
+		// unchecked diffs the textarea as usual.
+		const postedFwd =
+			formData.get("blackhole") === "yes"
+				? [":blackhole:"]
+				: splitList(String(formData.get("forwards") ?? ""));
 		const currentFwd = splitList(current.FWD ?? "");
 		for (const fwd of currentFwd) {
 			if (!postedFwd.includes(fwd)) {

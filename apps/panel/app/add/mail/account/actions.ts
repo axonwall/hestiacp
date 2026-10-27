@@ -35,14 +35,22 @@ export async function addMailAccountAction(formData: FormData): Promise<void> {
 		for (const alias of splitList(String(formData.get("aliases") ?? ""))) {
 			await hestia.addMailAccountAlias(user, domain, account, alias);
 		}
-		for (const fwd of splitList(String(formData.get("forwards") ?? ""))) {
-			await hestia.addMailAccountForward(user, domain, account, fwd);
+		// PHP's blackhole: forward ":blackhole:" and discard the
+		// forwarder list entirely.
+		if (formData.get("blackhole") === "yes") {
+			await hestia.addMailAccountForward(user, domain, account, ":blackhole:");
+		} else {
+			for (const fwd of splitList(String(formData.get("forwards") ?? ""))) {
+				await hestia.addMailAccountForward(user, domain, account, fwd);
+			}
 		}
 		if (formData.get("fwdOnly") === "yes") {
 			await hestia.setMailAccountFwdOnly(user, domain, account, true);
 		}
 		const rate = String(formData.get("rate") ?? "").trim();
-		if (rate && session.data.userContext === "admin" && !session.data.look) {
+		// PHP gates the rate only on userContext == "admin" — an
+		// impersonating admin may set it too.
+		if (rate && session.data.userContext === "admin") {
 			await hestia.changeMailAccountRateLimit(user, domain, account, rate);
 		}
 	} catch (error) {
