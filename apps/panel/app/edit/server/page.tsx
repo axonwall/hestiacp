@@ -4,7 +4,11 @@ import { getT, hestia, requireAdmin } from "@/lib/panel";
 import {
 	addBackupHostAction,
 	deleteBackupHostAction,
+	editServerApiAction,
 	editServerFeaturesAction,
+	editServerPoliciesAction,
+	editServerProtectionAction,
+	editServerSecurityAction,
 	editServerSettingsAction,
 	saveBackupHostResticAction,
 } from "./actions";
@@ -28,6 +32,8 @@ export default async function Page({
 		hestia.listBackupHosts().catch(() => ({})),
 	]);
 	const token = String(session.data.token ?? "");
+	const isRoot =
+		!!sys.ROOT_USER && session.data.user !== undefined && session.data.user === sys.ROOT_USER;
 	return (
 		<div className="card">
 			<h1>{t("Server settings")}</h1>
@@ -166,6 +172,314 @@ export default async function Page({
 					<input type="checkbox" name="quota" value="yes" defaultChecked={!!sys.QUOTA_SYSTEM} />{" "}
 					{t("Disk quota")}
 				</label>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
+			</form>
+
+			<h2>{t("Security")}</h2>
+			<form action={editServerSecurityAction}>
+				<input type="hidden" name="token" value={token} />
+				<label htmlFor="srvLoginStyle">{t("Login screen style")}</label>
+				<select
+					className="form-select"
+					id="srvLoginStyle"
+					name="loginStyle"
+					defaultValue={sys.LOGIN_STYLE ?? "default"}
+				>
+					<option value="default">{t("Default")}</option>
+					<option value="old">{t("Old")}</option>
+				</select>
+				<label htmlFor="srvTimeout">
+					{t("Inactive session timeout")} ({t("Minutes")})
+				</label>
+				<input
+					className="form-control"
+					id="srvTimeout"
+					name="inactiveTimeout"
+					defaultValue={sys.INACTIVE_SESSION_TIMEOUT ?? ""}
+				/>
+				<label htmlFor="srvCsrf">{t("Prevent CSRF")}</label>
+				<select
+					className="form-select"
+					id="srvCsrf"
+					name="csrfStrictness"
+					defaultValue={sys.POLICY_CSRF_STRICTNESS ?? "0"}
+				>
+					<option value="0">{t("Disabled")}</option>
+					<option value="1">{t("Enabled")}</option>
+					<option value="2">{t("Strict")}</option>
+				</select>
+				<label htmlFor="srvEnforce">{t("Enforce subdomain ownership")}</label>
+				<select
+					className="form-select"
+					id="srvEnforce"
+					name="enforceSubdomain"
+					defaultValue={sys.ENFORCE_SUBDOMAIN_OWNERSHIP ?? "no"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label>
+					<input
+						type="checkbox"
+						name="experimental"
+						value="on"
+						defaultChecked={sys.POLICY_SYSTEM_ENABLE_BACON === "true"}
+					/>{" "}
+					{t("Enable preview features")}
+				</label>
+				<label htmlFor="srvPlugin">{t("Quick App Installer")}</label>
+				<select
+					className="form-select"
+					id="srvPlugin"
+					name="pluginInstaller"
+					defaultValue={sys.PLUGIN_APP_INSTALLER ?? "true"}
+				>
+					<option value="true">{t("Yes")}</option>
+					<option value="false">{t("No")}</option>
+				</select>
+				<label htmlFor="srvResources">{t("Limit System Resources")}</label>
+				<select
+					className="form-select"
+					id="srvResources"
+					name="resourcesLimit"
+					defaultValue={sys.RESOURCES_LIMIT ?? "no"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvPmaKey">{t("phpMyAdmin Single Sign On")}</label>
+				<select
+					className="form-select"
+					id="srvPmaKey"
+					name="pmaKey"
+					defaultValue={sys.PHPMYADMIN_KEY ? "yes" : "no"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvPmaRestrict">{t("Restrict phpMyAdmin access")}</label>
+				<select
+					className="form-select"
+					id="srvPmaRestrict"
+					name="pmaRestrict"
+					defaultValue={sys.PMA_RESTRICT_ACCESS ?? "no"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label>
+					<input
+						type="checkbox"
+						name="upgradeNotify"
+						value="on"
+						defaultChecked={sys.UPGRADE_SEND_EMAIL === "true"}
+					/>{" "}
+					{t("Send email notification when an update is available")}
+				</label>
+				<label>
+					<input
+						type="checkbox"
+						name="upgradeLog"
+						value="on"
+						defaultChecked={sys.UPGRADE_SEND_EMAIL_LOG === "true"}
+					/>{" "}
+					{t("Send email notification when an update has been installed")}
+				</label>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
+			</form>
+
+			{isRoot ? (
+				<>
+					<h2>{t("System Protection")}</h2>
+					<form action={editServerProtectionAction}>
+						<input type="hidden" name="token" value={token} />
+						<label htmlFor="srvProtectedAdmin">
+							{t("Restrict access to read-only for other administrators")}
+						</label>
+						<select
+							className="form-select"
+							id="srvProtectedAdmin"
+							name="protectedAdmin"
+							defaultValue={sys.POLICY_SYSTEM_PROTECTED_ADMIN ?? "no"}
+						>
+							<option value="yes">{t("Yes")}</option>
+							<option value="no">{t("No")}</option>
+						</select>
+						<label htmlFor="srvHideAdmin">{t("Hide account from other administrators")}</label>
+						<select
+							className="form-select"
+							id="srvHideAdmin"
+							name="hideAdmin"
+							defaultValue={sys.POLICY_SYSTEM_HIDE_ADMIN ?? "no"}
+						>
+							<option value="yes">{t("Yes")}</option>
+							<option value="no">{t("No")}</option>
+						</select>
+						<label htmlFor="srvHideServices">
+							{t("Do not allow other administrators to access Server Settings")}
+						</label>
+						<select
+							className="form-select"
+							id="srvHideServices"
+							name="hideServices"
+							defaultValue={sys.POLICY_SYSTEM_HIDE_SERVICES ?? "no"}
+						>
+							<option value="yes">{t("Yes")}</option>
+							<option value="no">{t("No")}</option>
+						</select>
+						<button type="submit" className="button">
+							{t("Save")}
+						</button>
+					</form>
+				</>
+			) : null}
+
+			<h2>{t("Policies")}</h2>
+			<form action={editServerPoliciesAction}>
+				<input type="hidden" name="token" value={token} />
+				<label htmlFor="srvEditDetails">{t("Allow users to edit their account details")}</label>
+				<select
+					className="form-select"
+					id="srvEditDetails"
+					name="editDetails"
+					defaultValue={sys.POLICY_USER_EDIT_DETAILS ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvEditWeb">{t("Allow users to edit web templates")}</label>
+				<select
+					className="form-select"
+					id="srvEditWeb"
+					name="editWebTemplates"
+					defaultValue={sys.POLICY_USER_EDIT_WEB_TEMPLATES ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvEditDns">{t("Allow users to edit DNS templates")}</label>
+				<select
+					className="form-select"
+					id="srvEditDns"
+					name="editDnsTemplates"
+					defaultValue={sys.POLICY_USER_EDIT_DNS_TEMPLATES ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvViewLogs">{t("Allow users to view logs")}</label>
+				<select
+					className="form-select"
+					id="srvViewLogs"
+					name="viewLogs"
+					defaultValue={sys.POLICY_USER_VIEW_LOGS ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvDeleteLogs">{t("Allow users to delete logs")}</label>
+				<select
+					className="form-select"
+					id="srvDeleteLogs"
+					name="deleteLogs"
+					defaultValue={sys.POLICY_USER_DELETE_LOGS ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvViewSuspended">
+					{t("Allow suspended users to log in with read-only access")}
+				</label>
+				<select
+					className="form-select"
+					id="srvViewSuspended"
+					name="viewSuspended"
+					defaultValue={sys.POLICY_USER_VIEW_SUSPENDED ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvBackupSuspended">
+					{t("Allow suspended users to create new backups")}
+				</label>
+				<select
+					className="form-select"
+					id="srvBackupSuspended"
+					name="backupSuspended"
+					defaultValue={sys.POLICY_USER_BACKUP_SUSPENDED_USERS ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvSyncError">{t("Sync Error document templates on user rebuild")}</label>
+				<select
+					className="form-select"
+					id="srvSyncError"
+					name="syncErrorDocuments"
+					defaultValue={sys.POLICY_SYNC_ERROR_DOCUMENTS ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvSyncSkeleton">{t("Sync Skeleton templates")}</label>
+				<select
+					className="form-select"
+					id="srvSyncSkeleton"
+					name="syncSkeleton"
+					defaultValue={sys.POLICY_SYNC_SKELETON ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label>
+					<input
+						type="checkbox"
+						name="changeTheme"
+						value="on"
+						defaultChecked={sys.POLICY_USER_CHANGE_THEME === "no"}
+					/>{" "}
+					{t("Set as selected theme for all users")}
+				</label>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
+			</form>
+
+			<h2>{t("API")}</h2>
+			<form action={editServerApiAction}>
+				<input type="hidden" name="token" value={token} />
+				<label htmlFor="srvApiSystem">{t("Enable API access")}</label>
+				<select
+					className="form-select"
+					id="srvApiSystem"
+					name="apiSystem"
+					defaultValue={sys.API_SYSTEM ?? "0"}
+				>
+					<option value="0">{t("Disabled")}</option>
+					<option value="1">{t("Enabled for admin")}</option>
+					<option value="2">{t("Enabled for all users")}</option>
+				</select>
+				<label htmlFor="srvLegacyApi">{t("Enable legacy API access")}</label>
+				<select
+					className="form-select"
+					id="srvLegacyApi"
+					name="legacyApi"
+					defaultValue={sys.API ?? "yes"}
+				>
+					<option value="yes">{t("Yes")}</option>
+					<option value="no">{t("No")}</option>
+				</select>
+				<label htmlFor="srvAllowedIps">{t("Allowed IP addresses for API")}</label>
+				<textarea
+					className="form-control"
+					id="srvAllowedIps"
+					name="allowedIps"
+					defaultValue={(sys.API_ALLOWED_IP ?? "").split(",").filter(Boolean).join("\n")}
+				/>
 				<button type="submit" className="button">
 					{t("Save")}
 				</button>

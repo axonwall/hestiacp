@@ -24,7 +24,7 @@ export interface RrdExport {
 	meta: { start: number; step: number; legend: string[] };
 }
 
-	/** One v-list-access-key / v-add-access-key record (flat, JSON form). */
+/** One v-list-access-key / v-add-access-key record (flat, JSON form). */
 export interface AccessKeyRecord {
 	ACCESS_KEY_ID: string;
 	SECRET_ACCESS_KEY: string;
@@ -998,7 +998,7 @@ export class HestiaClient {
 		domain: string,
 		cert: { crt: string; key: string; ca?: string },
 	): Record<string, string> {
-		const norm = (s: string) => s.replace(/\r\n/g, "\n") + "\n";
+		const norm = (s: string) => `${s.replace(/\r\n/g, "\n")}\n`;
 		const files: Record<string, string> = {};
 		if (cert.crt) files[`${domain}.crt`] = norm(cert.crt);
 		if (cert.key) files[`${domain}.key`] = norm(cert.key);
@@ -1326,11 +1326,7 @@ export class HestiaClient {
 	}
 
 	/** Create an access key (PHP /add/access-key/): returns the new record including the secret. */
-	async addAccessKey(
-		user: string,
-		permissions: string,
-		comment: string,
-	): Promise<AccessKeyRecord> {
+	async addAccessKey(user: string, permissions: string, comment: string): Promise<AccessKeyRecord> {
 		assertUsername(user);
 		return this.json<AccessKeyRecord>("v-add-access-key", user, permissions, comment, "json");
 	}
@@ -1486,6 +1482,79 @@ export class HestiaClient {
 	}
 	async changeSysConfigValue(key: string, value: string) {
 		await this.runChecked("v-change-sys-config-value", key, value);
+	}
+	async changeSysApi(status: "enable" | "disable") {
+		await this.runChecked("v-change-sys-api", status);
+	}
+	async addSysPmaSso() {
+		await this.runChecked("v-add-sys-pma-sso", "quiet");
+	}
+	async deleteSysPmaSso() {
+		await this.runChecked("v-delete-sys-pma-sso", "quiet");
+	}
+	async addSysPmaRestrict() {
+		await this.runChecked("v-add-sys-pma-restrict", "quiet");
+	}
+	async deleteSysPmaRestrict() {
+		await this.runChecked("v-delete-sys-pma-restrict", "quiet");
+	}
+	async addSysCgroups() {
+		await this.runChecked("v-add-sys-cgroups");
+	}
+	async deleteSysCgroups() {
+		await this.runChecked("v-delete-sys-cgroups");
+	}
+	async changeSysWebmail(alias: string) {
+		await this.runChecked("v-change-sys-webmail", alias);
+	}
+	async changeSysDbAlias(kind: "pma" | "pga", alias: string) {
+		await this.runChecked("v-change-sys-db-alias", kind, alias);
+	}
+	async addSysSmtpRelay(host: string, user: string, pass: string, port: string) {
+		await this.withStagedFile(`${pass}\n`, (file) =>
+			this.runChecked("v-add-sys-smtp-relay", host, user, file, port),
+		);
+	}
+	async deleteSysSmtpRelay() {
+		await this.runChecked("v-delete-sys-smtp-relay");
+	}
+	async changeDatabaseHostPassword(password: string) {
+		await this.withStagedFile(`${password}\n`, (file) =>
+			this.runChecked("v-change-database-host-password", "mysql", "localhost", "root", file),
+		);
+	}
+	async listSysHestiaSsl(): Promise<Record<string, Record<string, string>>> {
+		return this.json("v-list-sys-hestia-ssl", "json");
+	}
+	async changeSysHestiaSsl(crt: string, key: string) {
+		const norm = (s: string) => `${s.replace(/\r\n/g, "\n")}\n`;
+		await this.withStagedDir(
+			{ "certificate.crt": norm(crt), "certificate.key": norm(key) },
+			(dir) => this.runChecked("v-change-sys-hestia-ssl", dir),
+		);
+	}
+	async addWebPhp(version: string) {
+		await this.runChecked("v-add-web-php", version);
+	}
+	async deleteWebPhp(version: string) {
+		await this.runChecked("v-delete-web-php", version);
+	}
+	async changeSysPhp(version: string) {
+		await this.runChecked("v-change-sys-php", version);
+	}
+	async listSysPhp(): Promise<string[]> {
+		return this.json("v-list-sys-php", "json");
+	}
+	async listRemoteDnsHosts(): Promise<Record<string, Record<string, string>>> {
+		return this.json("v-list-remote-dns-hosts", "json");
+	}
+	async addBackupHostB2(bucket: string, appId: string, appKey: string) {
+		await this.withStagedFile(`${appKey}\n`, (file) =>
+			this.runChecked("v-add-backup-host", "b2", bucket, appId, file),
+		);
+	}
+	async addBackupHostRclone(host: string, path: string) {
+		await this.runChecked("v-add-backup-host", "rclone", host, "", "", path);
 	}
 	async getSysTimezones(): Promise<string[]> {
 		const result = await this.raw("v-get-sys-timezones");
