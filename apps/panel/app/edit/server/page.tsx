@@ -746,6 +746,8 @@ export default async function Page({
 				<select className="form-select" id="bhType" name="type" defaultValue="sftp">
 					<option value="ftp">FTP</option>
 					<option value="sftp">SFTP</option>
+					<option value="b2">B2</option>
+					<option value="rclone">Rclone</option>
 				</select>
 				<label htmlFor="bhHost">{t("Host")}</label>
 				<input className="form-control" id="bhHost" name="host" />
@@ -763,6 +765,18 @@ export default async function Page({
 				<input className="form-control" id="bhPath" name="path" />
 				<label htmlFor="bhPort">{t("Port")}</label>
 				<input className="form-control" id="bhPort" name="port" />
+				<label htmlFor="bhBucket">{t("Bucket (B2 only)")}</label>
+				<input className="form-control" id="bhBucket" name="bucket" />
+				<label htmlFor="bhAppId">{t("Application ID (B2 only)")}</label>
+				<input className="form-control" id="bhAppId" name="appId" />
+				<label htmlFor="bhAppKey">{t("Application key (B2 only)")}</label>
+				<input
+					className="form-control"
+					id="bhAppKey"
+					name="appKey"
+					type="password"
+					autoComplete="new-password"
+				/>
 				<button type="submit" className="button">
 					{t("Add")}
 				</button>

@@ -100,15 +100,37 @@ export async function editServerFeaturesAction(formData: FormData): Promise<void
 export async function addBackupHostAction(formData: FormData): Promise<void> {
 	const session = await requireAdmin();
 	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
+	// Validation redirects stay outside try (redirect() throws).
+	const type = String(formData.get("type") ?? "");
+	const host = String(formData.get("host") ?? "").trim();
+	const path = String(formData.get("path") ?? "").trim();
+	if (type === "b2" && !String(formData.get("bucket") ?? "").trim()) {
+		redirect("/edit/server?error=Bucket%20is%20required.");
+	}
+	if (type === "rclone" && !host) {
+		redirect("/edit/server?error=Host%20is%20required.");
+	}
 	try {
-		await hestia.addBackupHost(
-			String(formData.get("type") ?? ""),
-			String(formData.get("host") ?? "").trim(),
-			String(formData.get("username") ?? "").trim(),
-			String(formData.get("secret") ?? ""),
-			String(formData.get("path") ?? "").trim(),
-			String(formData.get("port") ?? "").trim(),
-		);
+		if (type === "b2") {
+			// PHP's b2 branch: bucket + application id + staged key file.
+			await hestia.addBackupHostB2(
+				String(formData.get("bucket") ?? "").trim(),
+				String(formData.get("appId") ?? "").trim(),
+				String(formData.get("appKey") ?? ""),
+			);
+		} else if (type === "rclone") {
+			// PHP's rclone branch: host + path, empty user/pass slots.
+			await hestia.addBackupHostRclone(host, path);
+		} else {
+			await hestia.addBackupHost(
+				type,
+				host,
+				String(formData.get("username") ?? "").trim(),
+				String(formData.get("secret") ?? ""),
+				path,
+				String(formData.get("port") ?? "").trim(),
+			);
+		}
 	} catch (error) {
 		redirect(`/edit/server?error=${encodeURIComponent(errorMessage(error))}`);
 	}
