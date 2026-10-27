@@ -1355,6 +1355,50 @@ export class HestiaClient {
 		await this.runChecked("v-delete-user-auth-log", user);
 	}
 
+	/** v-get-user-value USER KEY: plain (unformatted) single value. */
+	async getUserValue(user: string, key: string): Promise<string> {
+		assertUsername(user);
+		const result = await this.raw("v-get-user-value", user, key);
+		if (result.code !== 0) {
+			throw new Error(`v-get-user-value exited ${result.code}`);
+		}
+		return result.stdout.trim();
+	}
+
+	/**
+	 * v-change-user-rkey USER FILE: the reset-key hash travels via a
+	 * staged 0600 file, exactly like v-change-user-password (PHP
+	 * writes the bcrypt hash to a temp file and passes the path).
+	 */
+	async changeUserRkey(user: string, hash: string): Promise<void> {
+		assertUsername(user);
+		await this.withStagedFile(`${hash}\n`, (path) =>
+			this.runChecked("v-change-user-rkey", user, path),
+		);
+	}
+
+	/**
+	 * Read a Hestia email template (PHP get_email_template): the
+	 * per-language file under <hestia>/data/templates/email/, then
+	 * the unlocalized one, else null (the caller falls back to the
+	 * translated string, as PHP does when no template exists).
+	 */
+	async readEmailTemplate(name: string, language: string): Promise<string | null> {
+		const { readFile } = await import("node:fs/promises");
+		const root = dirname(this.config.binDir);
+		for (const candidate of [
+			join(root, "data", "templates", "email", language, `${name}.html`),
+			join(root, "data", "templates", "email", `${name}.html`),
+		]) {
+			try {
+				return await readFile(candidate, "utf8");
+			} catch {
+				// Try the next candidate.
+			}
+		}
+		return null;
+	}
+
 	/** Reboot the appliance (PHP /restart/system/): v-restart-system yes. */
 	async restartSystem() {
 		await this.runChecked("v-restart-system", "yes");

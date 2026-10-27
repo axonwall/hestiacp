@@ -98,6 +98,7 @@ JSON
         "LOGIN_DISABLED": "no",
         "THEME": "default",
         "TWOFA": "FIXTUREBASE32SECRET",
+        "RKEY": "$2b$10$aSlhA2N/AGA/lfZDK6WY5e.pUQ6pH4Ipbto5b2GEEg16p4GANRi9.",
         "QRCODE": "data:image/png;base64,fixtureqrcode",
         "WEB_DOMAINS": "0",
         "DNS_DOMAINS": "0",

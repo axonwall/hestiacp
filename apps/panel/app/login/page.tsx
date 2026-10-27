@@ -46,6 +46,9 @@ export default async function LoginPage({
 					<i className="fas fa-right-to-bracket"></i>
 					{t("Log in")}
 				</button>
+				<a className="login-form-link" href="/reset">
+					{t("Forgot Password")}
+				</a>
 			</form>
 		</div>
 	);
