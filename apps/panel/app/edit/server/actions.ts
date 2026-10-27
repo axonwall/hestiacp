@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { csrfValid, errorMessage, hestia, requireAdmin } from "@/lib/panel";
+import { PHP_VERSIONS } from "./phpVersions";
 
 /**
  * Basic server settings (web/edit/server, the fields with dedicated
@@ -366,6 +367,155 @@ export async function editServerApiAction(formData: FormData): Promise<void> {
 			await setConfigValue(sys, "API_SYSTEM", apiSystem);
 			await setConfigValue(sys, "API", legacyApi);
 			await setConfigValue(sys, "API_ALLOWED_IP", allowedIp);
+		}
+	} catch (error) {
+		redirect(`/edit/server?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/edit/server?saved=1");
+}
+
+/**
+ * SMTP relay (web/edit/server): enabled only with a host set,
+ * and only re-added when host/user/port changed or a new
+ * password was given; unchecked with a relay configured
+ * removes it. Port defaults to 587, as PHP's does.
+ */
+export async function editServerSmtpAction(formData: FormData): Promise<void> {
+	const session = await requireAdmin();
+	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
+	try {
+		const sys = (await hestia.listSysConfig()).config ?? {};
+		const text = (name: string) => String(formData.get(name) ?? "").trim();
+		const enabled = formData.get("smtpRelay") === "yes";
+		const host = text("smtpHost");
+		if (enabled && host !== "") {
+			const user = text("smtpUser");
+			const pass = String(formData.get("smtpPass") ?? "");
+			const port = text("smtpPort");
+			if (
+				host !== (sys.SMTP_RELAY_HOST ?? "") ||
+				user !== (sys.SMTP_RELAY_USER ?? "") ||
+				port !== (sys.SMTP_RELAY_PORT ?? "") ||
+				pass !== ""
+			) {
+				await hestia.addSysSmtpRelay(host, user, pass, port || "587");
+			}
+		} else if (!enabled && sys.SMTP_RELAY) {
+			await hestia.deleteSysSmtpRelay();
+		}
+	} catch (error) {
+		redirect(`/edit/server?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/edit/server?saved=1");
+}
+
+/** Webmail alias (v-change-sys-webmail, changed-only). */
+export async function editServerWebmailAction(formData: FormData): Promise<void> {
+	const session = await requireAdmin();
+	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
+	try {
+		const sys = (await hestia.listSysConfig()).config ?? {};
+		const alias = String(formData.get("webmailAlias") ?? "").trim();
+		if (alias !== (sys.WEBMAIL_ALIAS ?? "")) {
+			await hestia.changeSysWebmail(alias);
+		}
+	} catch (error) {
+		redirect(`/edit/server?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/edit/server?saved=1");
+}
+
+/**
+ * Database admin: phpMyAdmin/phpPgAdmin aliases (changed-only)
+ * and the MySQL root password (staged file, as PHP's tempnam
+ * file, to v-change-database-host-password mysql localhost
+ * root). Only rendered when the matching host type exists,
+ * as PHP gates the fields on $v_mysql/$v_pgsql.
+ */
+export async function editServerDbAction(formData: FormData): Promise<void> {
+	const session = await requireAdmin();
+	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
+	try {
+		const sys = (await hestia.listSysConfig()).config ?? {};
+		const text = (name: string) => String(formData.get(name) ?? "").trim();
+		const pmaAlias = text("pmaAlias");
+		if (pmaAlias !== (sys.DB_PMA_ALIAS ?? "")) {
+			await hestia.changeSysDbAlias("pma", pmaAlias);
+		}
+		const pgaAlias = text("pgaAlias");
+		if (pgaAlias !== (sys.DB_PGA_ALIAS ?? "")) {
+			await hestia.changeSysDbAlias("pga", pgaAlias);
+		}
+		const mysqlPassword = String(formData.get("mysqlPassword") ?? "");
+		if (mysqlPassword !== "") {
+			await hestia.changeDatabaseHostPassword(mysqlPassword);
+		}
+	} catch (error) {
+		redirect(`/edit/server?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/edit/server?saved=1");
+}
+
+/**
+ * The panel's own SSL certificate (v-list-sys-hestia-ssl for
+ * display, v-change-sys-hestia-ssl with a staged dir holding
+ * certificate.crt/key for the write, CRLF-normalized as PHP
+ * normalizes). Only rewritten when the certificate or the
+ * key actually changed; PHP compares against the raw stored
+ * value, which can rewrite an unchanged cert when the stored
+ * value carries quotes — Next compares against the
+ * quote-trimmed display value instead, so an untouched form
+ * is a no-op.
+ */
+export async function editServerSslAction(formData: FormData): Promise<void> {
+	const session = await requireAdmin();
+	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
+	try {
+		const cur = (await hestia.listSysHestiaSsl().catch(() => null))?.HESTIA ?? {};
+		const norm = (s: string) => s.replace(/\r\n/g, "\n");
+		const trimQuotes = (s: string) => s.replace(/^'+|'+$/g, "");
+		const crt = norm(String(formData.get("sslCrt") ?? ""));
+		const key = norm(String(formData.get("sslKey") ?? ""));
+		if (crt !== "" && (crt !== trimQuotes(cur.CRT ?? "") || key !== trimQuotes(cur.KEY ?? ""))) {
+			await hestia.changeSysHestiaSsl(crt, key);
+		}
+	} catch (error) {
+		redirect(`/edit/server?error=${encodeURIComponent(errorMessage(error))}`);
+	}
+	redirect("/edit/server?saved=1");
+}
+
+/**
+ * PHP versions (web/edit/server, php-fpm backends only):
+ * checked-but-uninstalled versions are added, unchecked
+ * installed ones deleted — except the newly selected default,
+ * which is never deleted in the same submit — then the
+ * default version is changed when it differs from the
+ * displayed one. The displayed default is the newest
+ * installed version: PHP's page shows the panel's own
+ * runtime PHP version as selected, a concept Next has no
+ * equivalent for, and newest-installed matches the system
+ * default in the common case. v-delete-web-php itself
+ * refuses versions still used by a domain.
+ */
+export async function editServerPhpAction(formData: FormData): Promise<void> {
+	const session = await requireAdmin();
+	if (!csrfValid(session, formData)) redirect("/edit/server?error=csrf");
+	try {
+		const installed = await hestia.listSysPhp().catch(() => [] as string[]);
+		const installedSet = new Set(installed);
+		const wanted = new Set(formData.getAll("phpVersions").map((v) => String(v)));
+		const defaultVersion = String(formData.get("phpDefault") ?? "").trim();
+		for (const version of PHP_VERSIONS) {
+			if (wanted.has(version) && !installedSet.has(version)) {
+				await hestia.addWebPhp(version);
+			} else if (!wanted.has(version) && installedSet.has(version) && version !== defaultVersion) {
+				await hestia.deleteWebPhp(version);
+			}
+		}
+		const currentDefault = [...PHP_VERSIONS].reverse().find((v) => installedSet.has(v)) ?? "";
+		if (defaultVersion !== "" && defaultVersion !== currentDefault) {
+			await hestia.changeSysPhp(defaultVersion);
 		}
 	} catch (error) {
 		redirect(`/edit/server?error=${encodeURIComponent(errorMessage(error))}`);

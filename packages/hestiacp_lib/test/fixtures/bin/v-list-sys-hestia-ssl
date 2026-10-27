@@ -1,0 +1,5 @@
+#!/bin/bash
+# Fixture: v-list-sys-hestia-ssl json -> the panel's own certificate info.
+cat << 'JSON'
+{"HESTIA": {"CRT": "FAKECERT", "KEY": "FAKEKEY", "CA": "", "SUBJECT": "CN=fixture.test", "ALIASES": "fixture.test", "ISSUER": "Fixture CA", "NOT_BEFORE": "2026-01-01", "NOT_AFTER": "2027-01-01", "SIGNATURE": "SHA256", "PUB_KEY": "RSA 2048"}}
+JSON

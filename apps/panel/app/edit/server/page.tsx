@@ -5,13 +5,19 @@ import {
 	addBackupHostAction,
 	deleteBackupHostAction,
 	editServerApiAction,
+	editServerDbAction,
 	editServerFeaturesAction,
+	editServerPhpAction,
 	editServerPoliciesAction,
 	editServerProtectionAction,
 	editServerSecurityAction,
 	editServerSettingsAction,
+	editServerSmtpAction,
+	editServerSslAction,
+	editServerWebmailAction,
 	saveBackupHostResticAction,
 } from "./actions";
+import { PHP_VERSIONS } from "./phpVersions";
 
 export default async function Page({
 	searchParams,
@@ -21,19 +27,30 @@ export default async function Page({
 	const session = await requireAdmin();
 	const t = await getT();
 	const query = await searchParams;
-	const [sys, timezones, languages, themes, backupHosts] = await Promise.all([
-		hestia
-			.listSysConfig()
-			.then((r) => r.config ?? {})
-			.catch(() => ({}) as Record<string, string>),
-		hestia.getSysTimezones().catch(() => [] as string[]),
-		hestia.listSysLanguages().catch(() => [] as string[]),
-		hestia.listSysThemes().catch(() => [] as string[]),
-		hestia.listBackupHosts().catch(() => ({})),
-	]);
+	const [sys, timezones, languages, themes, backupHosts, sslInfo, dnsHosts, phpInstalled, dbHosts] =
+		await Promise.all([
+			hestia
+				.listSysConfig()
+				.then((r) => r.config ?? {})
+				.catch(() => ({}) as Record<string, string>),
+			hestia.getSysTimezones().catch(() => [] as string[]),
+			hestia.listSysLanguages().catch(() => [] as string[]),
+			hestia.listSysThemes().catch(() => [] as string[]),
+			hestia.listBackupHosts().catch(() => ({})),
+			hestia.listSysHestiaSsl().catch(() => null),
+			hestia.listRemoteDnsHosts().catch(() => ({})),
+			hestia.listSysPhp().catch(() => [] as string[]),
+			hestia.listDatabaseHosts().catch(() => ({})),
+		]);
 	const token = String(session.data.token ?? "");
 	const isRoot =
 		!!sys.ROOT_USER && session.data.user !== undefined && session.data.user === sys.ROOT_USER;
+	const ssl = sslInfo?.HESTIA ?? {};
+	const trimQuotes = (s: string) => s.replace(/^'+|'+$/g, "");
+	const dnsClusterYes = Object.keys(dnsHosts).length > 0;
+	const hasMysql = Object.values(dbHosts).some((row) => row.TYPE === "mysql");
+	const hasPgsql = Object.values(dbHosts).some((row) => row.TYPE === "pgsql");
+	const phpDefault = [...PHP_VERSIONS].reverse().find((v) => phpInstalled.includes(v)) ?? "";
 	return (
 		<div className="card">
 			<h1>{t("Server settings")}</h1>
@@ -484,6 +501,231 @@ export default async function Page({
 					{t("Save")}
 				</button>
 			</form>
+
+			<h2>{t("SMTP relay")}</h2>
+			<form action={editServerSmtpAction}>
+				<input type="hidden" name="token" value={token} />
+				<label>
+					<input type="checkbox" name="smtpRelay" value="yes" defaultChecked={!!sys.SMTP_RELAY} />{" "}
+					{t("Enable SMTP relay")}
+				</label>
+				<label htmlFor="srvSmtpHost">{t("SMTP host")}</label>
+				<input
+					className="form-control"
+					id="srvSmtpHost"
+					name="smtpHost"
+					defaultValue={sys.SMTP_RELAY_HOST ?? ""}
+				/>
+				<label htmlFor="srvSmtpPort">{t("SMTP port")}</label>
+				<input
+					className="form-control"
+					id="srvSmtpPort"
+					name="smtpPort"
+					defaultValue={sys.SMTP_RELAY_PORT ?? ""}
+				/>
+				<label htmlFor="srvSmtpUser">{t("SMTP username")}</label>
+				<input
+					className="form-control"
+					id="srvSmtpUser"
+					name="smtpUser"
+					defaultValue={sys.SMTP_RELAY_USER ?? ""}
+				/>
+				<label htmlFor="srvSmtpPass">{t("SMTP password")}</label>
+				<input
+					className="form-control"
+					id="srvSmtpPass"
+					name="smtpPass"
+					type="password"
+					autoComplete="new-password"
+				/>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
+			</form>
+
+			{sys.WEBMAIL_SYSTEM ? (
+				<>
+					<h2>{t("Webmail")}</h2>
+					<form action={editServerWebmailAction}>
+						<input type="hidden" name="token" value={token} />
+						<label htmlFor="srvWebmailAlias">{t("Webmail Alias")}</label>
+						<input
+							className="form-control"
+							id="srvWebmailAlias"
+							name="webmailAlias"
+							defaultValue={sys.WEBMAIL_ALIAS ?? ""}
+						/>
+						<button type="submit" className="button">
+							{t("Save")}
+						</button>
+					</form>
+				</>
+			) : null}
+
+			{hasMysql || hasPgsql ? (
+				<>
+					<h2>{t("Database")}</h2>
+					<form action={editServerDbAction}>
+						<input type="hidden" name="token" value={token} />
+						{hasMysql ? (
+							<>
+								<label htmlFor="srvPmaAlias">{t("phpMyAdmin URL")}</label>
+								<input
+									className="form-control"
+									id="srvPmaAlias"
+									name="pmaAlias"
+									defaultValue={sys.DB_PMA_ALIAS ?? ""}
+								/>
+								<label htmlFor="srvMysqlPass">{t("MySQL root password")}</label>
+								<input
+									className="form-control"
+									id="srvMysqlPass"
+									name="mysqlPassword"
+									type="password"
+									autoComplete="new-password"
+								/>
+							</>
+						) : null}
+						{hasPgsql ? (
+							<>
+								<label htmlFor="srvPgaAlias">{t("phpPgAdmin URL")}</label>
+								<input
+									className="form-control"
+									id="srvPgaAlias"
+									name="pgaAlias"
+									defaultValue={sys.DB_PGA_ALIAS ?? ""}
+								/>
+							</>
+						) : null}
+						<button type="submit" className="button">
+							{t("Save")}
+						</button>
+					</form>
+				</>
+			) : null}
+
+			<h2>{t("Server SSL certificate")}</h2>
+			<form action={editServerSslAction}>
+				<input type="hidden" name="token" value={token} />
+				<label htmlFor="srvSslCrt">{t("SSL Certificate")}</label>
+				<textarea
+					className="form-control"
+					id="srvSslCrt"
+					name="sslCrt"
+					defaultValue={trimQuotes(ssl.CRT ?? "")}
+				/>
+				<label htmlFor="srvSslKey">{t("SSL Private Key")}</label>
+				<textarea
+					className="form-control"
+					id="srvSslKey"
+					name="sslKey"
+					defaultValue={trimQuotes(ssl.KEY ?? "")}
+				/>
+				<button type="submit" className="button">
+					{t("Save")}
+				</button>
+			</form>
+			{ssl.SUBJECT ? (
+				<ul>
+					<li>
+						{t("Subject")}: {ssl.SUBJECT}
+					</li>
+					{ssl.ALIASES ? (
+						<li>
+							{t("Aliases")}: {ssl.ALIASES}
+						</li>
+					) : null}
+					{ssl.ISSUER ? (
+						<li>
+							{t("Issuer")}: {ssl.ISSUER}
+						</li>
+					) : null}
+					{ssl.NOT_BEFORE ? (
+						<li>
+							{t("Valid from")}: {ssl.NOT_BEFORE}
+						</li>
+					) : null}
+					{ssl.NOT_AFTER ? (
+						<li>
+							{t("Valid until")}: {ssl.NOT_AFTER}
+						</li>
+					) : null}
+				</ul>
+			) : null}
+			<p>
+				<a
+					href={`/generate/ssl/?domain=${encodeURIComponent(sys.HOSTNAME ?? "")}`}
+					target="_blank"
+					rel="noopener"
+				>
+					{t("Generate Self-Signed SSL Certificate")}
+				</a>
+			</p>
+
+			{sys.DNS_SYSTEM ? (
+				<>
+					<h2>{t("DNS")}</h2>
+					<p>
+						{sys.DNS_SYSTEM}{" "}
+						<Link href={`/edit/server/service?service=${encodeURIComponent(sys.DNS_SYSTEM)}`}>
+							{t("Edit")}
+						</Link>
+					</p>
+					<p>
+						{t("DNS Cluster")}: {dnsClusterYes ? t("Yes") : t("No")}
+					</p>
+					{Object.keys(dnsHosts).map((host, i) => (
+						<div key={host}>
+							<label htmlFor={`srvDnsHost${i}`}>
+								{t("Host")} #{i + 1}
+							</label>
+							<input
+								className="form-control"
+								id={`srvDnsHost${i}`}
+								name="dnsRemoteHost"
+								defaultValue={host}
+								disabled
+							/>
+						</div>
+					))}
+				</>
+			) : null}
+
+			{sys.WEB_BACKEND === "php-fpm" ? (
+				<>
+					<h2>{t("PHP versions")}</h2>
+					<form action={editServerPhpAction}>
+						<input type="hidden" name="token" value={token} />
+						{PHP_VERSIONS.map((version) => (
+							<label key={version}>
+								<input
+									type="checkbox"
+									name="phpVersions"
+									value={version}
+									defaultChecked={phpInstalled.includes(version)}
+								/>{" "}
+								{`php-${version}`}
+							</label>
+						))}
+						<label htmlFor="srvPhpDefault">{t("Default PHP version")}</label>
+						<select
+							className="form-select"
+							id="srvPhpDefault"
+							name="phpDefault"
+							defaultValue={phpDefault}
+						>
+							{PHP_VERSIONS.map((version) => (
+								<option key={version} value={version}>
+									{`php-${version}`}
+								</option>
+							))}
+						</select>
+						<button type="submit" className="button">
+							{t("Save")}
+						</button>
+					</form>
+				</>
+			) : null}
 
 			<h2>{t("Remote backup hosts")}</h2>
 			<ul>
