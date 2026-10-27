@@ -13,6 +13,8 @@ export function proxy(request: NextRequest) {
 	// needs, so they bypass the gate like /_next does.
 	const isPublic =
 		pathname === "/login" ||
+		pathname === "/reset2fa" ||
+		pathname === "/reset" ||
 		pathname.startsWith("/api") ||
 		pathname.startsWith("/_next") ||
 		pathname.startsWith("/hestia/") ||
