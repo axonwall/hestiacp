@@ -27,7 +27,7 @@ async function emit(relPath, content) {
 	const dest = join(panelDir, "public", relPath);
 	if (checkOnly) {
 		const current = await readFile(dest).catch(() => null);
-		if (!current || !current.equals(content)) {
+		if (!current?.equals(content)) {
 			console.error(`theme drift: public/${relPath}`);
 			drift++;
 		}

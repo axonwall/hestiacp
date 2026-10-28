@@ -4,13 +4,7 @@ import { compareSync, hashSync } from "bcryptjs";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import nodemailer from "nodemailer";
-import {
-	SESSION_COOKIE,
-	buildFullSessionData,
-	clientIp,
-	hestia,
-	sessions,
-} from "@/lib/panel";
+import { SESSION_COOKIE, buildFullSessionData, clientIp, hestia, sessions } from "@/lib/panel";
 import { composeResetEmail, RESET_EMAIL_FALLBACK_BODY } from "@hestiacp/lib";
 
 /**
@@ -52,7 +46,7 @@ async function sendResetEmail(
 	const useSmtp = sys.USE_SERVER_SMTP === "true";
 	const fromAddr = sys.FROM_EMAIL || `noreply@${fromFallbackHost}`;
 	const fromName = sys.FROM_NAME || sys.APP_NAME || "HestiaCP";
-	let transporter;
+	let transporter: ReturnType<typeof nodemailer.createTransport>;
 	if (useSmtp) {
 		transporter = nodemailer.createTransport({
 			host: sys.SERVER_SMTP_HOST,
@@ -105,10 +99,7 @@ export async function requestResetAction(formData: FormData): Promise<void> {
 			const bodyHost = hostHeader || info?.HOSTNAME || "localhost";
 			const subjectHost = info?.HOSTNAME || bodyHost;
 			const date = new Date().toISOString().replace("T", " ").slice(0, 19);
-			const template = await hestia.readEmailTemplate(
-				"reset_password",
-				record.LANGUAGE || "en",
-			);
+			const template = await hestia.readEmailTemplate("reset_password", record.LANGUAGE || "en");
 			let subject: string;
 			let body: string;
 			if (template) {
@@ -141,14 +132,7 @@ export async function requestResetAction(formData: FormData): Promise<void> {
 					resetcode: rkey,
 				}));
 			}
-			await sendResetEmail(
-				sys,
-				record.CONTACT,
-				record.NAME || "",
-				subject,
-				body,
-				subjectHost,
-			);
+			await sendResetEmail(sys, record.CONTACT, record.NAME || "", subject, body, subjectHost);
 		}
 	}
 	redirect(sent);
@@ -205,6 +189,12 @@ export async function completeResetAction(formData: FormData): Promise<void> {
 		path: "/",
 		secure: process.env.NODE_ENV === "production",
 	});
-	await hestia.logUserLogin(user, ip, "success", String(data.token ?? ""), h.get("user-agent") ?? "");
+	await hestia.logUserLogin(
+		user,
+		ip,
+		"success",
+		String(data.token ?? ""),
+		h.get("user-agent") ?? "",
+	);
 	redirect("/users");
 }

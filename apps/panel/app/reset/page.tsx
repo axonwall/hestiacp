@@ -47,13 +47,7 @@ export default async function ResetPage({
 						<label htmlFor="code" className="form-label">
 							{t("Reset Code")}
 						</label>
-						<input
-							type="text"
-							className="form-control"
-							name="code"
-							id="code"
-							required
-						/>
+						<input type="text" className="form-control" name="code" id="code" required />
 					</div>
 					<button type="submit" className="button">
 						{t("Confirm")}

@@ -52,7 +52,7 @@ export default async function GenerateSslPage({
 				<p>{t("Certificate has been generated successfully.")}</p>
 				{downloads.map((item) => (
 					<div key={item.ext} className="u-mb20">
-						<label className="form-label u-side-by-side">
+						<label className="form-label u-side-by-side" htmlFor={`ssl-${item.ext}`}>
 							{item.label}
 							<a
 								href={`data:text/plain;charset=utf-8,${encodeURIComponent(item.value)}`}
@@ -63,7 +63,7 @@ export default async function GenerateSslPage({
 								<span className="u-hidden">{t("Download")}</span>
 							</a>
 						</label>
-						<textarea className="form-control u-min-height100" readOnly value={item.value} />
+						<textarea id={`ssl-${item.ext}`} className="form-control u-min-height100" readOnly value={item.value} />
 					</div>
 				))}
 			</div>

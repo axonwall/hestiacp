@@ -25,9 +25,7 @@ export function composeResetEmail(
 		body = template.replace(subjectMatch[0], "");
 	}
 	const replace = (text: string, extra: Record<string, string>) =>
-		text.replace(/\{\{(\w+)\}\}/g, (match, key: string) =>
-			key in extra ? extra[key] : match,
-		);
+		text.replace(/\{\{(\w+)\}\}/g, (match, key: string) => (key in extra ? extra[key] : match));
 	subject = replace(subject, {
 		date: vars.date,
 		hostname: vars.hostname,

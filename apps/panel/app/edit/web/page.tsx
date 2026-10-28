@@ -233,6 +233,7 @@ export default async function Page({
 				<a
 					className="form-link"
 					target="_blank"
+					rel="noopener"
 					href={`/generate/ssl?domain=${encodeURIComponent(domain)}`}
 				>
 					{t("Generate Self-Signed SSL Certificate")}
