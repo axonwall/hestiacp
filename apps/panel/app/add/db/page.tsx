@@ -63,6 +63,8 @@ export default async function Page({
 						</option>
 					))}
 				</select>
+				<label htmlFor="notifyEmail">{t("Email login credentials to:")}</label>
+				<input className="form-control" id="notifyEmail" name="notifyEmail" type="email" />
 				<button type="submit" className="button">
 					{t("Add")}
 				</button>

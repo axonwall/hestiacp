@@ -1,7 +1,16 @@
 export { loadConfig, type HestiaConfig } from "./config";
 export { runHestiaCommand, type CommandResult } from "./exec";
 export { humanizeUsage, humanizeTime } from "./humanize";
-export { composeResetEmail, RESET_EMAIL_FALLBACK_BODY } from "./email";
+export {
+	composeAccountReadyEmail,
+	ACCOUNT_READY_FALLBACK_BODY,
+	composeDatabaseCredentialsEmail,
+	DATABASE_CREDENTIALS_FALLBACK_BODY,
+	composeEmailCredentialsEmail,
+	EMAIL_CREDENTIALS_FALLBACK_BODY,
+	composeResetEmail,
+	RESET_EMAIL_FALLBACK_BODY,
+} from "./email";
 export {
 	HestiaClient,
 	assertUsername,

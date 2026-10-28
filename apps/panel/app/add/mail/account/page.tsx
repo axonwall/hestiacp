@@ -58,6 +58,8 @@ export default async function Page({
 						<input className="form-control" id="rate" name="rate" />
 					</>
 				) : null}
+				<label htmlFor="notifyEmail">{t("Email login credentials to:")}</label>
+				<input className="form-control" id="notifyEmail" name="notifyEmail" type="email" />
 				<button type="submit" className="button">
 					{t("Add")}
 				</button>
