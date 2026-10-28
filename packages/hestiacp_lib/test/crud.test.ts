@@ -85,6 +85,24 @@ describe("Phase 3 CRUD wrappers", () => {
 		]);
 	});
 
+	it("moves an alias DNS zone on IP change when the alias has a zone", async () => {
+		const before = (await calls()).length;
+		const dnsMoved = await client.changeWebDomainIp("demo", "example.com", "203.0.113.11", [
+			"www.example.com",
+		]);
+		const lines = (await calls()).slice(before);
+		expect(dnsMoved).toBe(true);
+		expect(lines).toEqual([
+			"v-change-web-domain-ip demo example.com 203.0.113.11 no",
+			"v-change-dns-domain-ip demo example.com 203.0.113.11 no",
+			// The alias has a DNS zone in fixtures (www.example.com),
+			// so its zone moves too — the case the hunt round-2
+			// probe could not prove before this fixture row existed.
+			"v-change-dns-domain-ip demo www.example.com 203.0.113.11 no",
+			"v-rebuild-mail-domain demo example.com",
+		]);
+	});
+
 	it("moves alias DNS zones on IP change and adds the new user commands", async () => {
 		const before = (await calls()).length;
 		const dnsMoved = await client.changeWebDomainIp("demo", "example.com", "203.0.113.11", [
@@ -99,8 +117,9 @@ describe("Phase 3 CRUD wrappers", () => {
 		expect(lines).toEqual([
 			"v-change-web-domain-ip demo example.com 203.0.113.11 no",
 			"v-change-dns-domain-ip demo example.com 203.0.113.11 no",
-			// The alias has no DNS zone in fixtures (v-list-dns-domain is
-			// keyed only by example.com), so its move is correctly skipped.
+			// www2.example.com has no DNS zone in fixtures (the fixture
+			// carries example.com and www.example.com — see the test
+			// above), so its move is correctly skipped.
 			"v-rebuild-mail-domain demo example.com",
 			"v-add-dns-on-web-alias demo www2.example.com 203.0.113.11 no",
 			"v-delete-dns-on-web-alias demo example.com www2.example.com no",

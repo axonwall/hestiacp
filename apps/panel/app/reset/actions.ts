@@ -3,7 +3,7 @@
 import { compareSync, hashSync } from "bcryptjs";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import nodemailer from "nodemailer";
+import { sendMail } from "@/lib/mail";
 import { SESSION_COOKIE, buildFullSessionData, clientIp, hestia, sessions } from "@/lib/panel";
 import { composeResetEmail, RESET_EMAIL_FALLBACK_BODY } from "@hestiacp/lib";
 
@@ -19,12 +19,12 @@ import { composeResetEmail, RESET_EMAIL_FALLBACK_BODY } from "@hestiacp/lib";
  *  the stored RKEY, require RKEYEXP within the last 900s, change
  *  the password, and log the user in, as PHP does.
  *
- * Mail delivery is nodemailer: the server SMTP relay when the
- * sys config says USE_SERVER_SMTP=true (PHPMailer's SMTP branch),
- * else the local sendmail binary (PHPMailer's default branch).
- * Send failures are swallowed — PHP ignores PHPMailer errors too
- * and reports "instructions sent" regardless. Live delivery is
- * unverified in the sandbox (no mailer there).
+ * Mail delivery is the shared @/lib/mail helper (nodemailer: the
+ * server SMTP relay when the sys config says USE_SERVER_SMTP=true,
+ * else the local sendmail binary). Send failures are swallowed —
+ * PHP ignores PHPMailer errors too and reports "instructions sent"
+ * regardless. Live delivery is unverified in the sandbox (no mailer
+ * there).
  *
  * Quirk mirrored from PHP: the re-request throttle compares
  * RKEYEXP (the last request's unix time) against now-1, so it
@@ -34,45 +34,6 @@ import { composeResetEmail, RESET_EMAIL_FALLBACK_BODY } from "@hestiacp/lib";
  * it would diverge from PHP.
  */
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-async function sendResetEmail(
-	sys: Record<string, string>,
-	to: string,
-	toName: string,
-	subject: string,
-	body: string,
-	fromFallbackHost: string,
-) {
-	const useSmtp = sys.USE_SERVER_SMTP === "true";
-	const fromAddr = sys.FROM_EMAIL || `noreply@${fromFallbackHost}`;
-	const fromName = sys.FROM_NAME || sys.APP_NAME || "HestiaCP";
-	let transporter: ReturnType<typeof nodemailer.createTransport>;
-	if (useSmtp) {
-		transporter = nodemailer.createTransport({
-			host: sys.SERVER_SMTP_HOST,
-			port: Number(sys.SERVER_SMTP_PORT) || 587,
-			secure: sys.SERVER_SMTP_SECURITY === "ssl",
-			auth: { user: sys.SERVER_SMTP_USER, pass: sys.SERVER_SMTP_PASSWD },
-		});
-	} else {
-		transporter = nodemailer.createTransport({ sendmail: true });
-	}
-	const smtpFrom =
-		useSmtp && sys.SERVER_SMTP_ADDR && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sys.SERVER_SMTP_ADDR)
-			? sys.SERVER_SMTP_ADDR
-			: fromAddr;
-	try {
-		await transporter.sendMail({
-			from: `"${fromName}" <${smtpFrom}>`,
-			to: toName ? `"${toName}" <${to}>` : to,
-			subject,
-			text: body,
-			html: body.replace(/\n/g, "<br/>"),
-		});
-	} catch {
-		// PHP ignores PHPMailer failures; the reply is "sent" either way.
-	}
-}
 
 export async function requestResetAction(formData: FormData): Promise<void> {
 	const user = String(formData.get("user") ?? "").trim();
@@ -132,7 +93,13 @@ export async function requestResetAction(formData: FormData): Promise<void> {
 					resetcode: rkey,
 				}));
 			}
-			await sendResetEmail(sys, record.CONTACT, record.NAME || "", subject, body, subjectHost);
+			await sendMail(sys, {
+				to: record.CONTACT,
+				toName: record.NAME || "",
+				subject,
+				body,
+				fromFallbackHost: subjectHost,
+			});
 		}
 	}
 	redirect(sent);

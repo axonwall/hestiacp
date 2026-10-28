@@ -41,6 +41,8 @@ export default async function AddUserPage({
 					/>
 					<label htmlFor="email">Email</label>
 					<input className="form-control" id="email" name="email" type="email" required />
+					<label htmlFor="notifyEmail">Email login credentials to:</label>
+					<input className="form-control" id="notifyEmail" name="notifyEmail" type="email" />
 					<label htmlFor="name">Full name</label>
 					<input className="form-control" id="name" name="name" required />
 					<label htmlFor="package">Package</label>
