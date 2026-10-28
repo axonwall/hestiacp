@@ -63,7 +63,12 @@ export default async function GenerateSslPage({
 								<span className="u-hidden">{t("Download")}</span>
 							</a>
 						</label>
-						<textarea id={`ssl-${item.ext}`} className="form-control u-min-height100" readOnly value={item.value} />
+						<textarea
+							id={`ssl-${item.ext}`}
+							className="form-control u-min-height100"
+							readOnly
+							value={item.value}
+						/>
 					</div>
 				))}
 			</div>
