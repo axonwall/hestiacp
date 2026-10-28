@@ -25,6 +25,10 @@ import type { PhpSessionData } from "@hestiacp/lib";
  * parked. Login attempts are logged via v-log-user-login, as PHP does.
  *
  * Note: redirect() throws by design in Next — keep it OUTSIDE try/catch.
+ *
+ * After the password verifies, PHP also rejects login-disabled accounts
+ * and accounts whose login IP allowlist does not contain the login IP;
+ * both are enforced here, before the 2FA step.
  */
 export async function loginAction(formData: FormData): Promise<void> {
 	const user = String(formData.get("user") ?? "").trim();
@@ -34,6 +38,7 @@ export async function loginAction(formData: FormData): Promise<void> {
 	const userAgent = headerList.get("user-agent") ?? "";
 
 	let failed = user.length === 0;
+	let failedReason = "";
 	let twofaRequired = false;
 	if (!failed) {
 		try {
@@ -44,6 +49,22 @@ export async function loginAction(formData: FormData): Promise<void> {
 				const record = await hestia.listUser(user);
 				if (record.SUSPENDED === "yes") {
 					failed = true;
+				} else if (record.LOGIN_DISABLED === "yes") {
+					// PHP login (web/login/index.php) rejects login-disabled
+					// accounts here, before 2FA, with a 2s sleep and a
+					// failed log carrying this reason; the per-request
+					// check (main.php) does not re-check it, so neither
+					// does requireSession.
+					failed = true;
+					failedReason = "Login disabled for this user";
+				} else if (record.LOGIN_USE_IPLIST === "yes") {
+					const allowed = (record.LOGIN_ALLOW_IPS ?? "").split(",").map((entry) => entry.trim());
+					if (!allowed.includes(ip)) {
+						failed = true;
+						failedReason = "IP address not in allowed list";
+					} else if (record.TWOFA) {
+						twofaRequired = true;
+					}
 				} else if (record.TWOFA) {
 					twofaRequired = true;
 				}
@@ -53,7 +74,12 @@ export async function loginAction(formData: FormData): Promise<void> {
 		}
 	}
 	if (failed) {
-		await hestia.logUserLogin(user, ip, "failed", "", userAgent);
+		if (failedReason) {
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+			await hestia.logUserLogin(user, ip, "failed", "", userAgent, failedReason);
+		} else {
+			await hestia.logUserLogin(user, ip, "failed", "", userAgent);
+		}
 		redirect("/login?error=1");
 	}
 

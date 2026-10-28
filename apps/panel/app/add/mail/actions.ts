@@ -9,9 +9,12 @@ export async function addMailDomainAction(formData: FormData): Promise<void> {
 	const session = await requireSession();
 	if (!csrfValid(session, formData)) redirect("/add/mail?error=csrf");
 	const user = effectiveUser(session);
+	// PHP strips a leading www. from the domain; see add/dns for the
+	// note on the strict dotted form versus PHP's looser /^www./.
 	const domain = String(formData.get("domain") ?? "")
 		.trim()
-		.toLowerCase();
+		.toLowerCase()
+		.replace(/^www\./, "");
 	if (!domain) redirect("/add/mail?error=missing");
 	const antispam = formData.get("antispam") === "yes";
 	try {

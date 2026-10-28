@@ -37,11 +37,12 @@ export default async function UserDetailPage({
 		);
 	}
 
-	const [packages, languages, shells, themes] = await Promise.all([
+	const [packages, languages, shells, themes, phpVersions] = await Promise.all([
 		hestia.listUserPackages().catch(() => ({}) as Record<string, unknown>),
 		hestia.listSysLanguages().catch(() => [] as string[]),
 		hestia.listSysShells().catch(() => [] as string[]),
 		hestia.listSysThemes().catch(() => [] as string[]),
+		hestia.listSysPhp().catch(() => [] as string[]),
 	]);
 	const [firstName, ...rest] = (record.NAME ?? "").split(" ");
 	const lastName = rest.join(" ");
@@ -166,6 +167,50 @@ export default async function UserDetailPage({
 					</select>
 					<label htmlFor="ns">Nameservers (comma-separated)</label>
 					<input className="form-control" id="ns" name="ns" defaultValue={record.NS ?? ""} />
+					<label htmlFor="sortOrder">Default List Sort Order</label>
+					<select
+						className="form-select"
+						id="sortOrder"
+						name="sortOrder"
+						defaultValue={record.SORT_ORDER ?? "date"}
+					>
+						<option value="date">Date</option>
+						<option value="name">Name</option>
+					</select>
+					{isAdmin ? (
+						<>
+							<label htmlFor="phpcli">PHP CLI Version</label>
+							<select
+								className="form-select"
+								id="phpcli"
+								name="phpcli"
+								defaultValue={record.PHPCLI ?? ""}
+							>
+								{phpVersions.map((version) => (
+									<option key={version} value={version}>
+										{version}
+									</option>
+								))}
+							</select>
+						</>
+					) : null}
+					<label>
+						<input
+							type="checkbox"
+							name="loginUseIplist"
+							value="yes"
+							defaultChecked={record.LOGIN_USE_IPLIST === "yes"}
+						/>{" "}
+						Use IP allowlist for login
+					</label>
+					<label htmlFor="loginAllowedIps">Allowed login IPs (comma-separated)</label>
+					<input
+						className="form-control"
+						id="loginAllowedIps"
+						name="loginAllowedIps"
+						defaultValue={record.LOGIN_ALLOW_IPS ?? ""}
+						placeholder="127.0.0.1,192.168.1.100"
+					/>
 					<label>
 						<input
 							type="checkbox"

@@ -433,15 +433,41 @@ export class HestiaClient {
 			await this.runChecked("v-add-mail-domain", user, domain);
 		}
 	}
-	/** IP change; also moves the DNS zone when one exists (edit/web). */
-	async changeWebDomainIp(user: string, domain: string, ip: string): Promise<void> {
+	/**
+	 * IP change (edit/web); also moves the DNS zone when one exists, moves
+	 * each alias's DNS zone when one exists, and rebuilds the mail domain
+	 * when one exists — all three are in the PHP page. Returns whether any
+	 * DNS zone moved, so the caller knows to restart DNS (PHP's
+	 * $restart_dns); the mail rebuild has no restart in PHP either
+	 * ($restart_email is set but never consumed there).
+	 */
+	async changeWebDomainIp(
+		user: string,
+		domain: string,
+		ip: string,
+		aliases: string[] = [],
+	): Promise<boolean> {
 		assertUsername(user);
 		await this.runChecked("v-change-web-domain-ip", user, domain, ip, "no");
+		const publicIp = await this.publicIpFor(user, ip);
+		let dnsMoved = false;
 		const dns = await this.listDnsDomain(user, domain).catch(() => null);
 		if (dns) {
-			const publicIp = await this.publicIpFor(user, ip);
 			await this.runChecked("v-change-dns-domain-ip", user, domain, publicIp, "no");
+			dnsMoved = true;
 		}
+		for (const alias of aliases) {
+			const aliasDns = await this.listDnsDomain(user, alias).catch(() => null);
+			if (aliasDns) {
+				await this.runChecked("v-change-dns-domain-ip", user, alias, publicIp, "no");
+				dnsMoved = true;
+			}
+		}
+		const mail = await this.listMailDomain(user, domain).catch(() => null);
+		if (mail) {
+			await this.rebuildMailDomain(user, domain);
+		}
+		return dnsMoved;
 	}
 	async changeWebDomainTpl(user: string, domain: string, tpl: string) {
 		assertUsername(user);
@@ -471,6 +497,19 @@ export class HestiaClient {
 	async deleteWebDomainAlias(user: string, domain: string, alias: string) {
 		assertUsername(user);
 		await this.runChecked("v-delete-web-domain-alias", user, domain, alias, "no");
+	}
+	/**
+	 * DNS-on-web-alias pair (edit/web alias diff): when a DNS zone exists
+	 * for the web domain, PHP also adds/removes the alias's DNS entry.
+	 * Add takes USER ALIAS IP; delete takes USER DOMAIN ALIAS.
+	 */
+	async addDnsOnWebAlias(user: string, alias: string, ip: string) {
+		assertUsername(user);
+		await this.runChecked("v-add-dns-on-web-alias", user, alias, ip, "no");
+	}
+	async deleteDnsOnWebAlias(user: string, domain: string, alias: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-dns-on-web-alias", user, domain, alias, "no");
 	}
 	async addLetsEncryptDomain(
 		user: string,
@@ -1835,6 +1874,18 @@ export class HestiaClient {
 	async changeUserLanguage(user: string, language: string): Promise<void> {
 		assertUsername(user);
 		await this.runChecked("v-change-user-language", user, language);
+	}
+
+	/** Default list sort order (edit/user): v-change-user-sort-order. */
+	async changeUserSortOrder(user: string, order: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-sort-order", user, order);
+	}
+
+	/** PHP CLI version, admin-only in PHP (edit/user): v-change-user-php-cli. */
+	async changeUserPhpCli(user: string, version: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-php-cli", user, version);
 	}
 
 	async changeUserShell(user: string, shell: string): Promise<void> {

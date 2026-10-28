@@ -111,6 +111,56 @@ JSON
 }
 JSON
 		;;
+	blocked)
+		cat << 'JSON'
+{
+    "blocked": {
+        "NAME": "Blocked User",
+        "ROLE": "user",
+        "SHELL": "/bin/bash",
+        "LANGUAGE": "en",
+        "PACKAGE": "default",
+        "CONTACT": "blocked@example.com",
+        "NS": "ns1.example.com,ns2.example.com",
+        "LOGIN_DISABLED": "yes",
+        "THEME": "default",
+        "WEB_DOMAINS": "0",
+        "DNS_DOMAINS": "0",
+        "MAIL_DOMAINS": "0",
+        "DATABASES": "0",
+        "CRON_JOBS": "0",
+        "DISK_QUOTA": "1024",
+        "SUSPENDED": "no"
+    }
+}
+JSON
+		;;
+	iplocked)
+		cat << 'JSON'
+{
+    "iplocked": {
+        "NAME": "IP Locked User",
+        "ROLE": "user",
+        "SHELL": "/bin/bash",
+        "LANGUAGE": "en",
+        "PACKAGE": "default",
+        "CONTACT": "iplocked@example.com",
+        "NS": "ns1.example.com,ns2.example.com",
+        "LOGIN_DISABLED": "no",
+        "LOGIN_USE_IPLIST": "yes",
+        "LOGIN_ALLOW_IPS": "203.0.113.99",
+        "THEME": "default",
+        "WEB_DOMAINS": "0",
+        "DNS_DOMAINS": "0",
+        "MAIL_DOMAINS": "0",
+        "DATABASES": "0",
+        "CRON_JOBS": "0",
+        "DISK_QUOTA": "1024",
+        "SUSPENDED": "no"
+    }
+}
+JSON
+		;;
 	*)
 		echo "Error: user not found" >&2
 		exit 9

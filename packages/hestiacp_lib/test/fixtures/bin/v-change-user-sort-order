@@ -1,0 +1,4 @@
+#!/bin/bash
+# Fixture: v-change-user-sort-order — log the call, succeed.
+echo "$(basename "$0") $*" >> "${HESTIA_FIXTURE_LOG:-/tmp/hestiang-fixture-calls.log}"
+exit 0

@@ -13,9 +13,14 @@ export async function addDnsDomainAction(formData: FormData): Promise<void> {
 	const session = await requireSession();
 	if (!csrfValid(session, formData)) redirect("/add/dns?error=csrf");
 	const user = effectiveUser(session);
+	// PHP strips a leading www. from the domain (web/add/web does the
+	// same); the dns/mail controllers' pattern is the looser /^www./,
+	// but the strict dotted form is what the web controller uses and
+	// avoids mangling names like wwwexample.com.
 	const domain = String(formData.get("domain") ?? "")
 		.trim()
-		.toLowerCase();
+		.toLowerCase()
+		.replace(/^www\./, "");
 	const ip = String(formData.get("ip") ?? "");
 	const ns = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => String(formData.get(`ns${i}`) ?? "").trim());
 	if (!domain || !ip) redirect("/add/dns?error=missing");
