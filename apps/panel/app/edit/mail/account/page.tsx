@@ -31,7 +31,7 @@ export default async function Page({
 		record.AUTOREPLY === "yes"
 			? await hestia.listMailAccountAutoreply(user, domain, account).catch(() => "")
 			: "";
-	const isAdmin = session.data.userContext === "admin" && !session.data.look;
+	const isAdmin = session.data.userContext === "admin";
 	const token = String(session.data.token ?? "");
 	return (
 		<div className="card">
@@ -88,8 +88,21 @@ export default async function Page({
 					id="forwards"
 					name="forwards"
 					rows={2}
-					defaultValue={(record.FWD ?? "").split(",").filter(Boolean).join("\n")}
+					defaultValue={(record.FWD ?? "")
+						.split(",")
+						.filter(Boolean)
+						.filter((f) => f !== ":blackhole:")
+						.join("\n")}
 				/>
+				<label>
+					<input
+						type="checkbox"
+						name="blackhole"
+						value="yes"
+						defaultChecked={(record.FWD ?? "").split(",").includes(":blackhole:")}
+					/>{" "}
+					{t("Discard all mail")}
+				</label>
 				<label>
 					<input
 						type="checkbox"

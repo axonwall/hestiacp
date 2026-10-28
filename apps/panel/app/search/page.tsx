@@ -32,7 +32,11 @@ export default async function SearchPage({
 			if (session.data.userContext === "admin" && !session.data.look) {
 				results = u ? await hestia.searchUserObjects(u, q) : await hestia.searchObjects(q);
 			} else {
-				results = await hestia.searchUserObjects(me, q);
+				// PHP's else branch uses $_SESSION["user"] (the real
+				// user), not the look user — so an admin impersonating
+				// someone searches their OWN objects here, unlike every
+				// other page. Mirrored as-is.
+				results = await hestia.searchUserObjects(String(session.data.user ?? me), q);
 			}
 		} catch (e) {
 			error = e instanceof Error ? e.message : String(e);

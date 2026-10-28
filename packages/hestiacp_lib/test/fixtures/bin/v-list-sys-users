@@ -1,0 +1,5 @@
+#!/bin/bash
+# Fixture: v-list-sys-users json -> flat username array
+cat << 'JSON'
+["admin", "demo"]
+JSON

@@ -8,8 +8,7 @@ import { deleteLogAction } from "./actions";
  * actions, no sort, no search. First column is the LEVEL icon
  * (Info/Warning/Error), Date/Time as <time>, Category bold.
  * Admins may pass ?user=<name> (system → the system log); the Back
- * button follows PHP's three variants. Login History is omitted:
- * /list/log/auth does not exist in Next yet. Delete follows PHP's
+ * button follows PHP's three variants. Delete follows PHP's
  * gating: hidden for a protected root admin, otherwise shown for
  * admins or when POLICY_USER_DELETE_LOGS is not "no".
  */
@@ -89,6 +88,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ u
 			<Link className="button button-secondary" href={backHref}>
 				<i className="fas fa-arrow-left icon-blue"></i>
 				{t("Back")}
+			</Link>
+			<Link className="button button-secondary" href="/list/log/auth" title={t("Login History")}>
+				<i className="fas fa-binoculars icon-green"></i>
+				{t("Login History")}
 			</Link>
 			<Link className="button button-secondary" href={refreshHref}>
 				<i className="fas fa-arrow-rotate-right icon-green"></i>

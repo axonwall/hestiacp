@@ -1,0 +1,5 @@
+#!/bin/bash
+# Fixture: v-list-remote-dns-hosts json -> one cluster host, keyed by hostname.
+cat << 'JSON'
+{"dns1.fixture.test": {"HOST": "dns1.fixture.test", "USER": "dns-cluster", "PORT": "8083"}}
+JSON

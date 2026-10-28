@@ -75,11 +75,37 @@ describe("Phase 3 CRUD wrappers", () => {
 			"v-change-web-domain-ip demo example.com 203.0.113.11 no",
 			// DNS zone exists in fixtures -> moved to the same public IP
 			"v-change-dns-domain-ip demo example.com 203.0.113.11 no",
+			// Mail domain exists in fixtures -> rebuilt on IP change (PHP)
+			"v-rebuild-mail-domain demo example.com",
 			"v-change-web-domain-tpl demo example.com caching no",
 			"v-add-web-domain-alias demo example.com www2.example.com no",
 			"v-add-web-domain-ssl-force demo example.com",
 			"v-add-web-domain-stats demo example.com awstats",
 			"v-unsuspend-domain demo example.com",
+		]);
+	});
+
+	it("moves alias DNS zones on IP change and adds the new user commands", async () => {
+		const before = (await calls()).length;
+		const dnsMoved = await client.changeWebDomainIp("demo", "example.com", "203.0.113.11", [
+			"www2.example.com",
+		]);
+		await client.addDnsOnWebAlias("demo", "www2.example.com", "203.0.113.11");
+		await client.deleteDnsOnWebAlias("demo", "example.com", "www2.example.com");
+		await client.changeUserSortOrder("demo", "name");
+		await client.changeUserPhpCli("demo", "8.3");
+		const lines = (await calls()).slice(before);
+		expect(dnsMoved).toBe(true);
+		expect(lines).toEqual([
+			"v-change-web-domain-ip demo example.com 203.0.113.11 no",
+			"v-change-dns-domain-ip demo example.com 203.0.113.11 no",
+			// The alias has no DNS zone in fixtures (v-list-dns-domain is
+			// keyed only by example.com), so its move is correctly skipped.
+			"v-rebuild-mail-domain demo example.com",
+			"v-add-dns-on-web-alias demo www2.example.com 203.0.113.11 no",
+			"v-delete-dns-on-web-alias demo example.com www2.example.com no",
+			"v-change-user-sort-order demo name",
+			"v-change-user-php-cli demo 8.3",
 		]);
 	});
 

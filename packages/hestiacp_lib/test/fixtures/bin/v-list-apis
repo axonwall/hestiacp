@@ -1,0 +1,8 @@
+#!/bin/bash
+# Fixture: v-list-apis json -> keyed catalogue with roles
+cat << 'JSON'
+{
+    "v-list-mail-accounts": {"COMMANDS": ["v-list-mail-accounts"], "ROLE": "user"},
+    "v-purge-nginx-cache": {"COMMANDS": ["v-purge-nginx-cache"], "ROLE": "admin"}
+}
+JSON

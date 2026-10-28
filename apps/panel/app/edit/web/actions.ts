@@ -12,9 +12,11 @@ function splitAliases(raw: string): string[] {
 
 /**
  * Edit a web domain (web/edit/web), changed-only like the PHP page:
- * IP (which also moves the DNS zone), templates (admin), proxy,
- * alias diff, Let's Encrypt / SSL toggles, fastcgi cache, stats system.
- * Any change restarts web + proxy at the end, as the page does.
+ * IP (which also moves the DNS zone, alias DNS zones, and rebuilds the
+ * mail domain), templates (admin), proxy, alias diff (with DNS-on-alias
+ * entries when a DNS zone exists), Let's Encrypt / SSL toggles, fastcgi
+ * cache, stats system. Any change restarts web + proxy at the end, as
+ * the page does, and DNS moves restart DNS.
  * Custom certificates, FTP accounts and stats users stay PHP-side for
  * now (see README).
  */
@@ -26,12 +28,15 @@ export async function editWebDomainAction(formData: FormData): Promise<void> {
 	const user = effectiveUser(session);
 	const isAdmin = session.data.userContext === "admin" && !session.data.look;
 	let changed = false;
+	let dnsChanged = false;
 	try {
 		const current = await hestia.listWebDomain(user, domain);
 
 		const ip = String(formData.get("ip") ?? "");
+		const effectiveIp = ip || current.IP;
 		if (ip && ip !== current.IP) {
-			await hestia.changeWebDomainIp(user, domain, ip);
+			const currentAliases = splitAliases(current.ALIAS ?? "");
+			dnsChanged = await hestia.changeWebDomainIp(user, domain, ip, currentAliases);
 			changed = true;
 		}
 
@@ -62,18 +67,36 @@ export async function editWebDomainAction(formData: FormData): Promise<void> {
 			changed = true;
 		}
 
-		// Aliases: diff the posted set against the current CSV
+		// Aliases: diff the posted set against the current CSV. When a DNS
+		// zone exists for the web domain, PHP also adds/removes the
+		// alias's DNS entry (v-add/delete-dns-on-web-alias) and restarts
+		// DNS; the add uses the post-edit (new, if changed) public IP.
 		const postedAliases = splitAliases(String(formData.get("aliases") ?? ""));
 		const currentAliases = splitAliases(current.ALIAS ?? "");
+		const aliasDiffers =
+			currentAliases.some((alias) => !postedAliases.includes(alias)) ||
+			postedAliases.some((alias) => !currentAliases.includes(alias));
+		const dnsZone = aliasDiffers
+			? await hestia.listDnsDomain(user, domain).catch(() => null)
+			: null;
+		const aliasPublicIp = dnsZone ? await hestia.publicIpFor(user, effectiveIp) : "";
 		for (const alias of currentAliases) {
 			if (!postedAliases.includes(alias)) {
 				await hestia.deleteWebDomainAlias(user, domain, alias);
+				if (dnsZone) {
+					await hestia.deleteDnsOnWebAlias(user, domain, alias);
+					dnsChanged = true;
+				}
 				changed = true;
 			}
 		}
 		for (const alias of postedAliases) {
 			if (!currentAliases.includes(alias)) {
 				await hestia.addWebDomainAlias(user, domain, alias);
+				if (dnsZone) {
+					await hestia.addDnsOnWebAlias(user, alias, aliasPublicIp);
+					dnsChanged = true;
+				}
 				changed = true;
 			}
 		}
@@ -139,6 +162,9 @@ export async function editWebDomainAction(formData: FormData): Promise<void> {
 		if (changed) {
 			await hestia.restartWeb();
 			await hestia.restartProxy();
+		}
+		if (dnsChanged) {
+			await hestia.restartDns();
 		}
 	} catch (error) {
 		redirect(`${back}&error=${encodeURIComponent(errorMessage(error))}`);

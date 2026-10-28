@@ -108,7 +108,19 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 								title={t("Edit Domain")}
 								icon="fa-pencil icon-orange"
 							/>,
+							<RowAction
+								key="download"
+								href={`/download/site?site=${encodeURIComponent(key)}&token=${encodeURIComponent(token)}`}
+								title={t("Download Site")}
+								icon="fa-download icon-orange"
+							/>,
 						]),
+				<RowAction
+					key="logs"
+					href={`/list/web-log?domain=${encodeURIComponent(key)}&type=access`}
+					title={t("View Logs")}
+					icon="fa-binoculars icon-purple"
+				/>,
 				<form key="toggle" action={toggleWebDomainAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
 					<input type="hidden" name="domain" value={key} />

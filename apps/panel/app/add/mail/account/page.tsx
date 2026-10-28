@@ -12,7 +12,7 @@ export default async function Page({
 	const user = effectiveUser(session);
 	const domains = await hestia.listMailDomains(user).catch(() => ({}));
 	const token = String(session.data.token ?? "");
-	const isAdmin = session.data.userContext === "admin" && !session.data.look;
+	const isAdmin = session.data.userContext === "admin";
 	return (
 		<div className="card">
 			<h1>{t("Add Mail Account")}</h1>
@@ -46,6 +46,9 @@ export default async function Page({
 				<textarea className="form-control" id="aliases" name="aliases" rows={2} />
 				<label htmlFor="forwards">{t("Forwarders")}</label>
 				<textarea className="form-control" id="forwards" name="forwards" rows={2} />
+				<label>
+					<input type="checkbox" name="blackhole" value="yes" /> {t("Discard all mail")}
+				</label>
 				<label>
 					<input type="checkbox" name="fwdOnly" value="yes" /> {t("Forward only")}
 				</label>

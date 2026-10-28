@@ -25,7 +25,9 @@ cat << 'JSON'
         "NS": "ns1.example.com,ns2.example.com",
         "SHELL": "nologin",
         "BACKUPS": "unlimited",
-        "BACKUPS_INCREMENTAL": "no"
+        "BACKUPS_INCREMENTAL": "no",
+        "DATE": "2026-10-25",
+        "TIME": "05:10:02"
     },
     "small": {
         "WEB_TEMPLATE": "default",
@@ -50,7 +52,9 @@ cat << 'JSON'
         "NS": "ns1.example.com,ns2.example.com",
         "SHELL": "nologin",
         "BACKUPS": "3",
-        "BACKUPS_INCREMENTAL": "no"
+        "BACKUPS_INCREMENTAL": "no",
+        "DATE": "2026-10-20",
+        "TIME": "12:00:00"
     }
 }
 JSON

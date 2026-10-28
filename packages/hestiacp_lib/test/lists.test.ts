@@ -31,7 +31,9 @@ describe("Phase 2 list wrappers", () => {
 		expect(Object.keys(await client.listDatabases("demo"))).toEqual(["demo_main"]);
 		expect((await client.listCronJobs("demo"))["2"].CMD).toContain("cron.php");
 		expect(Object.keys(await client.listUserBackups("demo"))[0]).toContain(".tar");
-		expect((await client.listUserSshKeys("demo"))["1"].KEY).toContain("demo@laptop");
+		expect((await client.listUserSshKeys("demo"))["demo"].KEY).toBe(
+			"AAAAC3NzaC1lZDI1NTE5AAAAIFIxture",
+		);
 		expect((await client.listAccessKeys("demo"))["fixturekey1"].USER).toBe("demo");
 		expect((await client.listUserLog("demo"))["1"].CATEGORY).toBe("Web");
 		expect((await client.listUserNotifications("demo"))["1"].ACK).toBe("no");

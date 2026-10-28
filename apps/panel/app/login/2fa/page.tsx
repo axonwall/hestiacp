@@ -28,8 +28,11 @@ export default async function TwofaPage({
 				</p>
 				{query.error ? <p className="error">{t("Invalid or missing 2FA token")}</p> : null}
 				<div className="u-mb20">
-					<label htmlFor="twofa" className="form-label">
+					<label htmlFor="twofa" className="form-label u-side-by-side">
 						{t("Authentication code")}
+						<a className="login-form-link" href="/reset2fa">
+							{t("Forgot Token")}
+						</a>
 					</label>
 					<input
 						id="twofa"

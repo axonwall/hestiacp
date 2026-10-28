@@ -86,6 +86,30 @@ export async function editUserAction(formData: FormData): Promise<void> {
 	if (loginDisabled !== (record.LOGIN_DISABLED ?? "no")) {
 		steps.push(() => hestia.changeUserConfigValue(user, "LOGIN_DISABLED", loginDisabled));
 	}
+	const sortOrder = get("sortOrder");
+	if (sortOrder && sortOrder !== (record.SORT_ORDER ?? "")) {
+		steps.push(() => hestia.changeUserSortOrder(user, sortOrder));
+	}
+	if (isAdmin) {
+		const phpcli = get("phpcli");
+		if (phpcli && phpcli !== (record.PHPCLI ?? "")) {
+			steps.push(() => hestia.changeUserPhpCli(user, phpcli));
+		}
+	}
+	// Login IP allowlist (edit/user): PHP writes LOGIN_ALLOW_IPS only when
+	// the flag flips; Next also writes it when the list itself changes
+	// while the flag stays on, so editing the list alone works. Turning
+	// the flag off clears the list, as PHP does.
+	const useIplist = formData.get("loginUseIplist") === "yes" ? "yes" : "no";
+	const allowedIps = get("loginAllowedIps");
+	const storedUseIplist = record.LOGIN_USE_IPLIST ?? "no";
+	const storedAllowedIps = record.LOGIN_ALLOW_IPS ?? "";
+	if (useIplist !== storedUseIplist || (useIplist === "yes" && allowedIps !== storedAllowedIps)) {
+		steps.push(() => hestia.changeUserConfigValue(user, "LOGIN_USE_IPLIST", useIplist));
+		steps.push(() =>
+			hestia.changeUserConfigValue(user, "LOGIN_ALLOW_IPS", useIplist === "yes" ? allowedIps : ""),
+		);
+	}
 
 	try {
 		for (const step of steps) {

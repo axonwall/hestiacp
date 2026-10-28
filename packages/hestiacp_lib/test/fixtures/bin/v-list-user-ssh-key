@@ -1,14 +1,16 @@
 #!/bin/bash
 # Fixture: v-list-user-ssh-key (read-only list double)
+# Real shape (bin/v-list-user-ssh-key json_list): rows keyed by ID,
+# ID = the key comment minus its last word, KEY = material only.
 cat << 'JSON'
 {
-    "1": {
-        "ID": "1",
-        "KEY": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFIxture demo@laptop"
+    "demo": {
+        "ID": "demo",
+        "KEY": "AAAAC3NzaC1lZDI1NTE5AAAAIFIxture"
     },
-    "2": {
+    "filemanager.ssh.key": {
         "ID": "filemanager.ssh.key",
-        "KEY": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFMsystem filemanager@local"
+        "KEY": "AAAAC3NzaC1lZDI1NTE5AAAAIFMsystem"
     }
 }
 JSON

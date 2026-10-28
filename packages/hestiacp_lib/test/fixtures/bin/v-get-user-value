@@ -1,0 +1,12 @@
+#!/bin/bash
+# Fixture: v-get-user-value USER KEY -> plain value.
+# RKEYEXP: /tmp/hestiang-rkeyexp holds an override timestamp;
+# otherwise an old timestamp (no recent request: the request path
+# stays open; completion tests set the override to now).
+if [ "$2" = "RKEYEXP" ]; then
+	if [ -f /tmp/hestiang-rkeyexp ]; then
+		cat /tmp/hestiang-rkeyexp
+	else
+		echo 1000000000
+	fi
+fi

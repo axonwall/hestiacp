@@ -1,20 +1,34 @@
-import { requireSession } from "@/lib/panel";
+import { redirect } from "next/navigation";
+import Terminal from "@/components/Terminal";
+import { effectiveUser, getT, hestia, requireSession } from "@/lib/panel";
 
 /**
- * /list/terminal/ — shell placeholder for Phase 4. The PHP panel's page
- * embeds xterm and talks to the standalone Node terminal server, whose
- * auth shim reads the PHP-format session this panel now writes — so the
- * hand-off is already compatible; wiring the socket UI is Phase 4 work.
+ * Web terminal (web/list/terminal): PHP renders the xterm div
+ * and the browser talks to the standalone terminal service at
+ * wss://host/_shell/ (cutover vhost proxies it to
+ * localhost:8085). The service checks the HESTIASID cookie and
+ * validates the session via its PHP helper, honouring
+ * impersonation (look user) exactly as this panel does.
+ * nologin shells are redirected, as PHP redirects them to
+ * /list/user/.
+ *
+ * Live socket handshakes are unverified in the sandbox (no
+ * terminal service there); the wiring, cookie name, origin
+ * rule, and session-helper path were all confirmed against
+ * src/deb/web-terminal/server.js.
  */
 export default async function TerminalPage() {
-	await requireSession();
+	const session = await requireSession();
+	const t = await getT();
+	const user = effectiveUser(session);
+	const record = await hestia.listUser(user).catch(() => null);
+	if (record?.SHELL === "nologin") {
+		redirect("/users");
+	}
 	return (
 		<div className="card">
-			<h1>Web terminal</h1>
-			<p>
-				The terminal UI lands in Phase 4. Session compatibility is already in place: the terminal
-				server authenticates against the same PHP-format session files this panel writes.
-			</p>
+			<h1>{t("Web terminal")}</h1>
+			<Terminal />
 		</div>
 	);
 }

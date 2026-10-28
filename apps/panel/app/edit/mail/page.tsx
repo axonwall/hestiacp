@@ -226,6 +226,18 @@ export default async function Page({
 					{t("Save")}
 				</button>
 			</form>
+			<span>
+				{" "}
+				/{" "}
+				<a
+					className="form-link"
+					target="_blank"
+					rel="noopener"
+					href={`/generate/ssl?domain=${encodeURIComponent(domain)}`}
+				>
+					{t("Generate Self-Signed SSL Certificate")}
+				</a>
+			</span>
 		</div>
 	);
 }

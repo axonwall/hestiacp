@@ -8,6 +8,39 @@ import { runHestiaCommand, type CommandResult } from "./exec";
 /** One flat row of any v-list-* JSON map. Values are strings, as emitted. */
 export type HestiaRow = Record<string, string>;
 
+/** Periods accepted by v-export-rrd and PHP /list/rrd/ajax.php. */
+export const RRD_PERIODS = [
+	"daily",
+	"weekly",
+	"monthly",
+	"yearly",
+	"biennially",
+	"triennially",
+] as const;
+
+/** rrdtool xport --json output, as consumed by web/js/src/rrdCharts.js. */
+export interface RrdExport {
+	data: number[][];
+	meta: { start: number; step: number; legend: string[] };
+}
+
+/** One v-list-access-key / v-add-access-key record (flat, JSON form). */
+export interface AccessKeyRecord {
+	ACCESS_KEY_ID: string;
+	SECRET_ACCESS_KEY: string;
+	USER: string;
+	PERMISSIONS: string[];
+	COMMENT: string;
+	TIME: string;
+	DATE: string;
+}
+
+/** One v-list-apis entry: its commands plus the role allowed to use it. */
+export interface ApiEntry {
+	COMMANDS: string[];
+	ROLE: string;
+}
+
 /** One entry of a restic snapshot listing (restic ls --json line). */
 export interface ResticFileEntry {
 	name: string;
@@ -105,6 +138,40 @@ export class HestiaClient {
 		assertUsername(user);
 		return this.listRows("v-list-web-domains", user);
 	}
+
+	/** Site dump (PHP /download/site/): v-dump-site prints filename then path. */
+	async dumpSite(user: string, site: string): Promise<{ filename: string; path: string }> {
+		assertUsername(user);
+		const result = await this.raw("v-dump-site", user, site, "full");
+		if (result.code !== 0) {
+			throw new Error(
+				`v-dump-site exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
+			);
+		}
+		const [filename, path] = result.stdout.trim().split("\n");
+		if (!filename || !path) {
+			throw new Error("v-dump-site returned an unexpected output shape");
+		}
+		return { filename, path };
+	}
+
+	/** Raw access/error log lines (PHP /list/web-log/ and /download/web-log/). */
+	async listWebDomainLog(
+		user: string,
+		domain: string,
+		type: "access" | "error",
+		limit?: string,
+	): Promise<string> {
+		assertUsername(user);
+		const args = limit ? [user, domain, limit] : [user, domain];
+		const result = await this.raw(`v-list-web-domain-${type}log`, ...args);
+		if (result.code !== 0) {
+			throw new Error(
+				`v-list-web-domain-${type}log exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
+			);
+		}
+		return result.stdout;
+	}
 	listDnsDomains(user: string) {
 		assertUsername(user);
 		return this.listRows("v-list-dns-domains", user);
@@ -112,6 +179,12 @@ export class HestiaClient {
 	listDnsRecords(user: string, domain: string) {
 		assertUsername(user);
 		return this.listRows("v-list-dns-records", user, domain);
+	}
+
+	/** Public DNSSEC key of one domain (PHP /list/dns/?action=dnssec). */
+	listDnssecPublicKey(user: string, domain: string) {
+		assertUsername(user);
+		return this.listRows("v-list-dnssec-public-key", user, domain);
 	}
 	listMailDomains(user: string) {
 		assertUsername(user);
@@ -124,6 +197,22 @@ export class HestiaClient {
 	listDatabases(user: string) {
 		assertUsername(user);
 		return this.listRows("v-list-databases", user);
+	}
+
+	/** Database dump (PHP /download/database/): v-dump-database prints the archive path. */
+	async dumpDatabase(user: string, database: string): Promise<string> {
+		assertUsername(user);
+		const result = await this.raw("v-dump-database", user, database, "file", "gzip");
+		if (result.code !== 0) {
+			throw new Error(
+				`v-dump-database exited ${result.code}: ${result.stderr.trim() || result.stdout.trim()}`,
+			);
+		}
+		const path = result.stdout.split("\n")[0]?.trim();
+		if (!path) {
+			throw new Error("v-dump-database returned no output");
+		}
+		return path;
 	}
 	listCronJobs(user: string) {
 		assertUsername(user);
@@ -141,9 +230,25 @@ export class HestiaClient {
 		assertUsername(user);
 		return this.listRows("v-list-access-keys", user);
 	}
+
+	/** One access key (PHP /list/access-key/?key=): flat record. */
+	async listAccessKey(keyId: string): Promise<AccessKeyRecord> {
+		return this.json<AccessKeyRecord>("v-list-access-key", keyId, "json");
+	}
+
+	/** API catalogue (PHP /add/access-key/ permission list). */
+	async listApis(): Promise<Record<string, ApiEntry>> {
+		return this.json<Record<string, ApiEntry>>("v-list-apis", "json");
+	}
 	listUserLog(user: string) {
 		assertUsername(user);
 		return this.listRows("v-list-user-log", user);
+	}
+
+	/** Login history (PHP /list/log/auth/). */
+	listUserAuthLog(user: string) {
+		assertUsername(user);
+		return this.listRows("v-list-user-auth-log", user);
 	}
 	listUserNotifications(user: string) {
 		assertUsername(user);
@@ -154,10 +259,20 @@ export class HestiaClient {
 		return this.listRows("v-list-user-stats", user);
 	}
 
+	/** Overall statistics (PHP /list/stats/ with no ?user=). */
+	listUsersStats() {
+		return this.listRows("v-list-users-stats");
+	}
+
 	/* ---- Server / admin lists ---- */
 
 	listSysServices() {
 		return this.listRows("v-list-sys-services");
+	}
+
+	/** Flat username list (PHP /list/stats/ per-user select). */
+	async listSysUsers(): Promise<string[]> {
+		return this.json<string[]>("v-list-sys-users", "json");
 	}
 	/** v-list-sys-info returns one flat record, not a map of rows. */
 	async listSysInfo(): Promise<HestiaRow> {
@@ -184,6 +299,22 @@ export class HestiaClient {
 	}
 	listSysRrd() {
 		return this.listRows("v-list-sys-rrd");
+	}
+
+	/**
+	 * RRD chart export (PHP /list/rrd/ajax.php): v-export-rrd SERVICE
+	 * PERIOD. The service name is allowlisted to the characters rrdtool
+	 * chart names use; the period must be one of RRD_PERIODS. The
+	 * command prints rrdtool xport --json directly (no "json" argument).
+	 */
+	async exportRrd(service: string, period: string): Promise<RrdExport> {
+		if (!/^[A-Za-z0-9_.-]+$/.test(service)) {
+			throw new Error(`invalid RRD service: ${service}`);
+		}
+		if (!(RRD_PERIODS as readonly string[]).includes(period)) {
+			throw new Error(`invalid RRD period: ${period}`);
+		}
+		return this.json<RrdExport>("v-export-rrd", service, period);
 	}
 
 	/* ==================================================================
@@ -302,15 +433,41 @@ export class HestiaClient {
 			await this.runChecked("v-add-mail-domain", user, domain);
 		}
 	}
-	/** IP change; also moves the DNS zone when one exists (edit/web). */
-	async changeWebDomainIp(user: string, domain: string, ip: string): Promise<void> {
+	/**
+	 * IP change (edit/web); also moves the DNS zone when one exists, moves
+	 * each alias's DNS zone when one exists, and rebuilds the mail domain
+	 * when one exists — all three are in the PHP page. Returns whether any
+	 * DNS zone moved, so the caller knows to restart DNS (PHP's
+	 * $restart_dns); the mail rebuild has no restart in PHP either
+	 * ($restart_email is set but never consumed there).
+	 */
+	async changeWebDomainIp(
+		user: string,
+		domain: string,
+		ip: string,
+		aliases: string[] = [],
+	): Promise<boolean> {
 		assertUsername(user);
 		await this.runChecked("v-change-web-domain-ip", user, domain, ip, "no");
+		const publicIp = await this.publicIpFor(user, ip);
+		let dnsMoved = false;
 		const dns = await this.listDnsDomain(user, domain).catch(() => null);
 		if (dns) {
-			const publicIp = await this.publicIpFor(user, ip);
 			await this.runChecked("v-change-dns-domain-ip", user, domain, publicIp, "no");
+			dnsMoved = true;
 		}
+		for (const alias of aliases) {
+			const aliasDns = await this.listDnsDomain(user, alias).catch(() => null);
+			if (aliasDns) {
+				await this.runChecked("v-change-dns-domain-ip", user, alias, publicIp, "no");
+				dnsMoved = true;
+			}
+		}
+		const mail = await this.listMailDomain(user, domain).catch(() => null);
+		if (mail) {
+			await this.rebuildMailDomain(user, domain);
+		}
+		return dnsMoved;
 	}
 	async changeWebDomainTpl(user: string, domain: string, tpl: string) {
 		assertUsername(user);
@@ -340,6 +497,19 @@ export class HestiaClient {
 	async deleteWebDomainAlias(user: string, domain: string, alias: string) {
 		assertUsername(user);
 		await this.runChecked("v-delete-web-domain-alias", user, domain, alias, "no");
+	}
+	/**
+	 * DNS-on-web-alias pair (edit/web alias diff): when a DNS zone exists
+	 * for the web domain, PHP also adds/removes the alias's DNS entry.
+	 * Add takes USER ALIAS IP; delete takes USER DOMAIN ALIAS.
+	 */
+	async addDnsOnWebAlias(user: string, alias: string, ip: string) {
+		assertUsername(user);
+		await this.runChecked("v-add-dns-on-web-alias", user, alias, ip, "no");
+	}
+	async deleteDnsOnWebAlias(user: string, domain: string, alias: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-dns-on-web-alias", user, domain, alias, "no");
 	}
 	async addLetsEncryptDomain(
 		user: string,
@@ -867,7 +1037,7 @@ export class HestiaClient {
 		domain: string,
 		cert: { crt: string; key: string; ca?: string },
 	): Record<string, string> {
-		const norm = (s: string) => s.replace(/\r\n/g, "\n") + "\n";
+		const norm = (s: string) => `${s.replace(/\r\n/g, "\n")}\n`;
 		const files: Record<string, string> = {};
 		if (cert.crt) files[`${domain}.crt`] = norm(cert.crt);
 		if (cert.key) files[`${domain}.key`] = norm(cert.key);
@@ -1193,6 +1363,18 @@ export class HestiaClient {
 	async deleteAccessKey(keyId: string) {
 		await this.runChecked("v-delete-access-key", keyId);
 	}
+
+	/** Create an access key (PHP /add/access-key/): returns the new record including the secret. */
+	async addAccessKey(user: string, permissions: string, comment: string): Promise<AccessKeyRecord> {
+		assertUsername(user);
+		return this.json<AccessKeyRecord>("v-add-access-key", user, permissions, comment, "json");
+	}
+
+	/** Add an SSH key (PHP /add/key/): v-add-user-ssh-key USER KEY. */
+	async addUserSshKey(user: string, key: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-add-user-ssh-key", user, key);
+	}
 	async deleteUserSshKey(user: string, key: string) {
 		assertUsername(user);
 		await this.runChecked("v-delete-user-ssh-key", user, key);
@@ -1200,6 +1382,97 @@ export class HestiaClient {
 	async deleteUserLog(user: string) {
 		assertUsername(user);
 		await this.runChecked("v-delete-user-log", user);
+	}
+
+	/** Delete a user's auth log (PHP /delete/log/auth/). */
+	async deleteUserAuthLog(user: string) {
+		assertUsername(user);
+		await this.runChecked("v-delete-user-auth-log", user);
+	}
+
+	/** v-get-user-value USER KEY: plain (unformatted) single value. */
+	async getUserValue(user: string, key: string): Promise<string> {
+		assertUsername(user);
+		const result = await this.raw("v-get-user-value", user, key);
+		if (result.code !== 0) {
+			throw new Error(`v-get-user-value exited ${result.code}`);
+		}
+		return result.stdout.trim();
+	}
+
+	/**
+	 * v-change-user-rkey USER FILE: the reset-key hash travels via a
+	 * staged 0600 file, exactly like v-change-user-password (PHP
+	 * writes the bcrypt hash to a temp file and passes the path).
+	 */
+	async changeUserRkey(user: string, hash: string): Promise<void> {
+		assertUsername(user);
+		await this.withStagedFile(`${hash}\n`, (path) =>
+			this.runChecked("v-change-user-rkey", user, path),
+		);
+	}
+
+	/**
+	 * Read a Hestia email template (PHP get_email_template): the
+	 * per-language file under <hestia>/data/templates/email/, then
+	 * the unlocalized one, else null (the caller falls back to the
+	 * translated string, as PHP does when no template exists).
+	 */
+	async readEmailTemplate(name: string, language: string): Promise<string | null> {
+		const { readFile } = await import("node:fs/promises");
+		const root = dirname(this.config.binDir);
+		for (const candidate of [
+			join(root, "data", "templates", "email", language, `${name}.html`),
+			join(root, "data", "templates", "email", `${name}.html`),
+		]) {
+			try {
+				return await readFile(candidate, "utf8");
+			} catch {
+				// Try the next candidate.
+			}
+		}
+		return null;
+	}
+
+	/** Reboot the appliance (PHP /restart/system/): v-restart-system yes. */
+	async restartSystem() {
+		await this.runChecked("v-restart-system", "yes");
+	}
+
+	/**
+	 * Generate a self-signed cert (PHP /generate/ssl/):
+	 * v-generate-ssl-cert DOMAIN EMAIL COUNTRY STATE CITY ORG IT
+	 * ALIASES json KEY_ALGO. Aliases are newline-joined; the org
+	 * unit is hardcoded to IT, as PHP does.
+	 */
+	async generateSslCert(
+		domain: string,
+		email: string,
+		country: string,
+		state: string,
+		locality: string,
+		org: string,
+		aliases: string,
+		keyAlgo: string,
+	): Promise<{ CRT: string; KEY: string; CSR: string }> {
+		const data = await this.json<Record<string, { CRT: string; KEY: string; CSR: string }>>(
+			"v-generate-ssl-cert",
+			domain,
+			email,
+			country,
+			state,
+			locality,
+			org,
+			"IT",
+			aliases,
+			"json",
+			keyAlgo,
+		);
+		const record = data[domain];
+		if (!record) {
+			throw new Error(`v-generate-ssl-cert returned no record for ${domain}`);
+		}
+		return record;
 	}
 	async acknowledgeUserNotification(user: string, notification: string) {
 		assertUsername(user);
@@ -1248,6 +1521,79 @@ export class HestiaClient {
 	}
 	async changeSysConfigValue(key: string, value: string) {
 		await this.runChecked("v-change-sys-config-value", key, value);
+	}
+	async changeSysApi(status: "enable" | "disable") {
+		await this.runChecked("v-change-sys-api", status);
+	}
+	async addSysPmaSso() {
+		await this.runChecked("v-add-sys-pma-sso", "quiet");
+	}
+	async deleteSysPmaSso() {
+		await this.runChecked("v-delete-sys-pma-sso", "quiet");
+	}
+	async addSysPmaRestrict() {
+		await this.runChecked("v-add-sys-pma-restrict", "quiet");
+	}
+	async deleteSysPmaRestrict() {
+		await this.runChecked("v-delete-sys-pma-restrict", "quiet");
+	}
+	async addSysCgroups() {
+		await this.runChecked("v-add-sys-cgroups");
+	}
+	async deleteSysCgroups() {
+		await this.runChecked("v-delete-sys-cgroups");
+	}
+	async changeSysWebmail(alias: string) {
+		await this.runChecked("v-change-sys-webmail", alias);
+	}
+	async changeSysDbAlias(kind: "pma" | "pga", alias: string) {
+		await this.runChecked("v-change-sys-db-alias", kind, alias);
+	}
+	async addSysSmtpRelay(host: string, user: string, pass: string, port: string) {
+		await this.withStagedFile(`${pass}\n`, (file) =>
+			this.runChecked("v-add-sys-smtp-relay", host, user, file, port),
+		);
+	}
+	async deleteSysSmtpRelay() {
+		await this.runChecked("v-delete-sys-smtp-relay");
+	}
+	async changeDatabaseHostPassword(password: string) {
+		await this.withStagedFile(`${password}\n`, (file) =>
+			this.runChecked("v-change-database-host-password", "mysql", "localhost", "root", file),
+		);
+	}
+	async listSysHestiaSsl(): Promise<Record<string, Record<string, string>>> {
+		return this.json("v-list-sys-hestia-ssl", "json");
+	}
+	async changeSysHestiaSsl(crt: string, key: string) {
+		const norm = (s: string) => `${s.replace(/\r\n/g, "\n")}\n`;
+		await this.withStagedDir(
+			{ "certificate.crt": norm(crt), "certificate.key": norm(key) },
+			(dir) => this.runChecked("v-change-sys-hestia-ssl", dir),
+		);
+	}
+	async addWebPhp(version: string) {
+		await this.runChecked("v-add-web-php", version);
+	}
+	async deleteWebPhp(version: string) {
+		await this.runChecked("v-delete-web-php", version);
+	}
+	async changeSysPhp(version: string) {
+		await this.runChecked("v-change-sys-php", version);
+	}
+	async listSysPhp(): Promise<string[]> {
+		return this.json("v-list-sys-php", "json");
+	}
+	async listRemoteDnsHosts(): Promise<Record<string, Record<string, string>>> {
+		return this.json("v-list-remote-dns-hosts", "json");
+	}
+	async addBackupHostB2(bucket: string, appId: string, appKey: string) {
+		await this.withStagedFile(`${appKey}\n`, (file) =>
+			this.runChecked("v-add-backup-host", "b2", bucket, appId, file),
+		);
+	}
+	async addBackupHostRclone(host: string, path: string) {
+		await this.runChecked("v-add-backup-host", "rclone", host, "", "", path);
 	}
 	async getSysTimezones(): Promise<string[]> {
 		const result = await this.raw("v-get-sys-timezones");
@@ -1530,6 +1876,18 @@ export class HestiaClient {
 		await this.runChecked("v-change-user-language", user, language);
 	}
 
+	/** Default list sort order (edit/user): v-change-user-sort-order. */
+	async changeUserSortOrder(user: string, order: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-sort-order", user, order);
+	}
+
+	/** PHP CLI version, admin-only in PHP (edit/user): v-change-user-php-cli. */
+	async changeUserPhpCli(user: string, version: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-change-user-php-cli", user, version);
+	}
+
 	async changeUserShell(user: string, shell: string): Promise<void> {
 		assertUsername(user);
 		await this.runChecked("v-change-user-shell", user, shell);
@@ -1573,6 +1931,54 @@ export class HestiaClient {
 	async deleteUser(user: string): Promise<void> {
 		assertUsername(user);
 		await this.runChecked("v-delete-user", user);
+	}
+
+	/** PHP /bulk/user/ "rebuild" (Rebuild All): v-rebuild-all. */
+	async rebuildAll(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-all", user, "no");
+	}
+
+	/** PHP /bulk/user/ "rebuild user" (Rebuild User Profile). */
+	async rebuildUser(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-user", user, "no");
+	}
+
+	/** PHP /bulk/user/ "rebuild web". */
+	async rebuildWebDomains(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-web-domains", user);
+	}
+
+	/** PHP /bulk/user/ "rebuild dns". */
+	async rebuildDnsDomains(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-dns-domains", user);
+	}
+
+	/** PHP /bulk/user/ "rebuild mail". */
+	async rebuildMailDomains(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-mail-domains", user);
+	}
+
+	/** PHP /bulk/user/ "rebuild db". */
+	async rebuildDatabases(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-databases", user);
+	}
+
+	/** PHP /bulk/user/ "rebuild cron". */
+	async rebuildCronJobs(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-rebuild-cron-jobs", user);
+	}
+
+	/** PHP /bulk/user/ "update counters". */
+	async updateUserCounters(user: string): Promise<void> {
+		assertUsername(user);
+		await this.runChecked("v-update-user-counters", user);
 	}
 
 	// ---- Two-factor authentication ----
@@ -1671,6 +2077,11 @@ export class HestiaClient {
 
 	async deleteUserPackage(name: string): Promise<void> {
 		await this.runChecked("v-delete-user-package", name);
+	}
+
+	/** PHP /copy/package/: v-copy-user-package PACKAGE PACKAGE-copy. */
+	async copyUserPackage(name: string): Promise<void> {
+		await this.runChecked("v-copy-user-package", name, `${name}-copy`);
 	}
 
 	// ---- System enumerations used by admin forms ----

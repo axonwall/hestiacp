@@ -1,0 +1,6 @@
+#!/bin/bash
+# Fixture: v-list-web-domain-accesslog USER DOMAIN [LIMIT]
+cat << 'LOG'
+203.0.113.50 - - [26/Oct/2026:09:15:00 +0000] "GET / HTTP/1.1" 200 1234
+203.0.113.51 - - [26/Oct/2026:09:16:00 +0000] "GET /about HTTP/1.1" 200 567
+LOG

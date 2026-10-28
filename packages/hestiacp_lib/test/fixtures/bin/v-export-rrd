@@ -1,0 +1,18 @@
+#!/bin/bash
+# Fixture: v-export-rrd SERVICE PERIOD -> rrdtool xport --json shape
+cat << 'JSON'
+{
+    "meta": {
+        "start": 1761540000,
+        "step": 300,
+        "legend": ["Load", "Processes"]
+    },
+    "data": [
+        [0.42, 118],
+        [0.51, 121],
+        [0.38, 115],
+        [0.66, 130],
+        [0.47, 119]
+    ]
+}
+JSON

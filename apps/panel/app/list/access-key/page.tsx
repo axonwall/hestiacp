@@ -6,10 +6,8 @@ import { bulkAccessKeyAction, deleteAccessKeyAction } from "./actions";
 
 /**
  * Access keys (web/templates/pages/list_access_keys.php). The heading
- * is deliberately NOT linked: PHP links it to the key-detail view
- * (/list/access-key/?key=…), which Next does not have yet, so a link
- * would 404. Likewise the Add Access Key toolbar button is omitted
- * until /add/access-key exists.
+ * links to the key-detail view, and the toolbar carries the Add Access
+ * Key button, as in PHP.
  */
 export default async function Page({ searchParams }: { searchParams: Promise<{ sort?: string }> }) {
 	const session = await requireSession();
@@ -29,6 +27,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 				{ key: "DATE", label: t("Date"), center: true, format: bold },
 				{ key: "TIME", label: t("Time"), center: true, format: bold },
 			]}
+			rowHref={(key) => `/list/access-key/${encodeURIComponent(key)}`}
 			rowActions={(key) => [
 				<form key="delete" action={deleteAccessKeyAction} style={{ display: "inline" }}>
 					<input type="hidden" name="token" value={token} />
@@ -76,6 +75,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ s
 			<Link className="button button-secondary" href="/edit/user">
 				<i className="fas fa-arrow-left icon-blue"></i>
 				{t("Back")}
+			</Link>
+			<Link className="button button-secondary js-button-create" href="/add/access-key">
+				<i className="fas fa-circle-plus icon-green"></i>
+				{t("Add Access Key")}
 			</Link>
 		</ListView>
 	);
